@@ -13,11 +13,12 @@ const interpolate = (x, input, output) => {
   return output[0] + (output[1] - output[0]) * t;
 };
 const runOnJS = (fn) => fn;
-const Animated = { View, Text, Image, ScrollView };
+const createAnimatedComponent = (C) => C;
+const Animated = { View, Text, Image, ScrollView, createAnimatedComponent };
 
 module.exports = {
   __esModule: true,
   default: Animated,
   ...Animated,
-  useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, runOnJS,
+  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, runOnJS,
 };
