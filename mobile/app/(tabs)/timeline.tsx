@@ -1,11 +1,3 @@
-import { Text } from 'react-native';
-import { Screen } from '@/ui/Screen';
-import { heading } from '@/theme/type';
+import { TimelineScreen } from '@/features/timeline/TimelineScreen';
 
-export default function TimelineScreen() {
-  return (
-    <Screen>
-      <Text style={heading(34)}>Your pages</Text>
-    </Screen>
-  );
-}
+export default TimelineScreen;
