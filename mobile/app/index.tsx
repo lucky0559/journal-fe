@@ -1,5 +1,7 @@
-import { Text } from 'react-native';
+import { Redirect } from 'expo-router';
+import { useSettings } from '@/state';
 
-export default function Index() {
-  return <Text>Journal</Text>;
+export default function Start() {
+  const onboarded = useSettings((s) => s.settings.onboarded);
+  return <Redirect href={onboarded ? '/(tabs)' : '/onboarding'} />;
 }
