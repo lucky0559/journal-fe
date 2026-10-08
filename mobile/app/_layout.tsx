@@ -12,10 +12,13 @@ import { colors } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Button } from '@/ui/Button';
 import { ToastHost } from '@/ui/Toast';
+import { LockOverlay } from '@/features/lock/LockOverlay';
+import { useRelockOnBackground } from '@/features/lock/useRelockOnBackground';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
+  useRelockOnBackground();
   const fontsReady = useAppFonts();
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
 
@@ -46,6 +49,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }} />
+        <LockOverlay />
         <ToastHost />
       </SafeAreaProvider>
     </GestureHandlerRootView>

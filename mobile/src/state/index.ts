@@ -5,6 +5,8 @@ import { localOnlyGateway } from '@/data/sharing';
 import { createEntriesStore } from './entriesStore';
 import { createSettingsStore } from './settingsStore';
 import { useLock } from './lockStore';
+import { reconcileLock } from '@/features/lock/reconcileLock';
+import { pinVault } from '@/data/pinVaultInstance';
 import { DEMO_DATA } from '@/config';
 import { demoEntries } from '@/domain/demoData';
 import { todayIso } from '@/lib/dates';
@@ -25,5 +27,7 @@ export async function bootstrapState(): Promise<void> {
     await useEntries.getState().replaceAll(demoEntries(todayIso()));
   }
   const { lockOn, onboarded } = useSettings.getState().settings;
-  if (lockOn && onboarded) useLock.getState().lock();
+  const stillOn = await reconcileLock(lockOn, pinVault);
+  if (lockOn && !stillOn) await useSettings.getState().update({ lockOn: false });
+  if (stillOn && onboarded) useLock.getState().lock();
 }
