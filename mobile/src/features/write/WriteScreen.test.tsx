@@ -16,6 +16,10 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: () => mockParams,
   useNavigation: () => ({ addListener: (t: string, h: (e: unknown) => void) => { mockListeners[t] = h; return () => {}; }, dispatch: mockDispatch }),
 }));
+jest.mock('./useVoiceRecorder', () => ({
+  useVoiceRecorder: () => ({ recording: false, seconds: 0, start: jest.fn(), stop: jest.fn(async () => null) }),
+}));
+jest.mock('@/services/photoPicker', () => ({ pickPhotos: jest.fn() }));
 jest.mock('@/lib/id', () => ({ newId: () => 'new-1' }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');

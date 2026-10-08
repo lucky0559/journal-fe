@@ -3,7 +3,9 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COPY, saveToast } from '@/domain/copy';
-import { hasContent, isDirty } from '@/domain/draft';
+import { addedUris, draftReducer, hasContent, isDirty, orphanedUris } from '@/domain/draft';
+import { deleteMedia } from '@/data/mediaStore';
+import { pickPhotos } from '@/services/photoPicker';
 import { fmtShort, todayIso } from '@/lib/dates';
 import { MOODS, moodIndex } from '@/lib/mood';
 import { useEntries } from '@/state';
@@ -19,7 +21,10 @@ import { ScreenFade } from '@/ui/ScreenFade';
 import { AttachmentsRow } from './AttachmentsRow';
 import { StickerSheet } from './Stickers';
 import { Toolbar } from './Toolbar';
+import { PhotoSheet } from './PhotoSheet';
+import { RecordingBanner } from './RecordingBanner';
 import { VisibilityPill, VisibilitySheet } from './VisibilityPill';
+import { useVoiceRecorder } from './useVoiceRecorder';
 import { useDiscardGuard } from './useDiscardGuard';
 import { useDraft } from './useDraft';
 
@@ -31,17 +36,45 @@ export function WriteScreen() {
   const { original, initial, draft, dispatch } = useDraft(params);
   const [visOpen, setVisOpen] = useState(false);
   const [stickerOpen, setStickerOpen] = useState(false);
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const voice = useVoiceRecorder();
+
+  const addPhotos = async (source: 'library' | 'camera') => {
+    setPhotoOpen(false);
+    const r = await pickPhotos(source);
+    if (r.ok) r.photos.forEach((photo) => dispatch({ type: 'addPhoto', photo }));
+    else if (r.reason === 'denied') show('Camera permission is off');
+  };
+
+  const toggleVoice = async () => {
+    if (voice.recording) {
+      const v = await voice.stop(true);
+      if (v) dispatch({ type: 'addVoice', voice: v });
+      return;
+    }
+    const r = await voice.start();
+    if (r === 'denied') show('Microphone permission is off');
+    else if (r === 'error') show('Couldn’t start recording');
+  };
 
   const draftRef = useRef(draft);
   draftRef.current = draft;
-  const shouldGuard = useCallback(() => isDirty(draftRef.current, initial), [initial]);
-  const onDiscard = useCallback(() => {}, []); // Task 17 deletes files added during this session here
+  const shouldGuard = useCallback(() => voice.recording || isDirty(draftRef.current, initial), [voice.recording, initial]);
+  const onDiscard = useCallback(() => {
+    voice.stop(false);
+    addedUris(original, draftRef.current).forEach(deleteMedia);
+  }, [voice, original]);
   const disarm = useDiscardGuard(shouldGuard, onDiscard);
 
   const save = async () => {
-    const d = draftRef.current;
+    let d = draftRef.current;
+    if (voice.recording) {
+      const v = await voice.stop(true);
+      if (v) d = draftReducer(d, { type: 'addVoice', voice: v });
+    }
     if (!hasContent(d)) return show(COPY.emptySave);
     await useEntries.getState().save(d);
+    orphanedUris(original, d).forEach(deleteMedia);
     useTimelineUi.getState().reset(d.date);
     show(saveToast(d, todayIso()));
     disarm();
@@ -93,12 +126,14 @@ export function WriteScreen() {
             />
 
             <AttachmentsRow draft={draft} dispatch={dispatch} />
+            {voice.recording ? <RecordingBanner seconds={voice.seconds} onDone={toggleVoice} /> : null}
           </ScrollView>
         </View>
 
-        <Toolbar onSticker={() => setStickerOpen(true)} />
+        <Toolbar onSticker={() => setStickerOpen(true)} onPhoto={() => setPhotoOpen(true)} onVoice={toggleVoice} recording={voice.recording} />
       </ScreenFade>
 
+      <PhotoSheet visible={photoOpen} onClose={() => setPhotoOpen(false)} onPick={addPhotos} />
       <StickerSheet
         visible={stickerOpen}
         onClose={() => setStickerOpen(false)}
