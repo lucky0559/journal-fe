@@ -1,11 +1,3 @@
-import { Text } from 'react-native';
-import { Screen } from '@/ui/Screen';
-import { heading } from '@/theme/type';
+import { TodayScreen } from '@/features/today/TodayScreen';
 
-export default function TodayScreen() {
-  return (
-    <Screen>
-      <Text style={heading(34)}>Today</Text>
-    </Screen>
-  );
-}
+export default TodayScreen;
