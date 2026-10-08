@@ -5,6 +5,7 @@ import type { Entry } from '@/domain/types';
 import { VIS } from '@/domain/visibility';
 import { fmtLong } from '@/lib/dates';
 import { useLock } from '@/state/lockStore';
+import { colors, ramp } from '@/theme/tokens';
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -26,9 +27,9 @@ export function buildExportHtml(entries: Entry[], name: string): string {
     })
     .join('\n');
   return `<!doctype html><html><head><meta charset="utf-8"/><style>
-body{font-family:Georgia,serif;color:#201e1d;padding:32px;line-height:1.5}
+body{font-family:Georgia,serif;color:${colors.text};padding:32px;line-height:1.5}
 h1{font-size:28px}h2{font-size:16px;margin:0}section{margin:24px 0;page-break-inside:avoid}
-.meta{color:#645c50;font-size:12px;margin:2px 0}.prompt{font-style:italic;color:#8c491a}
+.meta{color:${ramp.neutral[700]};font-size:12px;margin:2px 0}.prompt{font-style:italic;color:${ramp.accent[700]}}
 </style></head><body><h1>${title}</h1>${pages || '<p>No pages yet.</p>'}</body></html>`;
 }
 

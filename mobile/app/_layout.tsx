@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -22,6 +22,14 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 Notifications.setNotificationHandler({
   handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
 });
+
+// Keep the layout intact at large system font sizes without ignoring them.
+const withFontCap = (C: unknown) => {
+  const T = C as { defaultProps?: object };
+  T.defaultProps = { ...T.defaultProps, maxFontSizeMultiplier: 1.3 };
+};
+withFontCap(Text);
+withFontCap(TextInput);
 
 export default function RootLayout() {
   useRelockOnBackground();

@@ -18,7 +18,14 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.luckyangelo.journal",
-      "softwareKeyboardLayoutMode": "resize"
+      "softwareKeyboardLayoutMode": "resize",
+      "allowBackup": false,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "POST_NOTIFICATIONS",
+        "USE_BIOMETRIC"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -55,7 +62,8 @@
         {
           "microphonePermission": "Journal records voice notes for your pages."
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "scheme": "journal",
     "backgroundColor": "#f5ead8"
