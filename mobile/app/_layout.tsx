@@ -12,13 +12,20 @@ import { colors } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Button } from '@/ui/Button';
 import { ToastHost } from '@/ui/Toast';
+import * as Notifications from 'expo-notifications';
+import { useRemindersSync } from '@/services/useRemindersSync';
 import { LockOverlay } from '@/features/lock/LockOverlay';
 import { useRelockOnBackground } from '@/features/lock/useRelockOnBackground';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
+});
+
 export default function RootLayout() {
   useRelockOnBackground();
+  useRemindersSync();
   const fontsReady = useAppFonts();
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
 
