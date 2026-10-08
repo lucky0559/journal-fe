@@ -48,7 +48,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }}>
       <SafeAreaProvider>
         <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }}>
+          <Stack.Screen name="write" options={{ animation: 'slide_from_bottom' }} />
+        </Stack>
         <LockOverlay />
         <ToastHost />
       </SafeAreaProvider>
