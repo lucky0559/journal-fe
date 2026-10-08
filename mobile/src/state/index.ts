@@ -5,6 +5,9 @@ import { localOnlyGateway } from '@/data/sharing';
 import { createEntriesStore } from './entriesStore';
 import { createSettingsStore } from './settingsStore';
 import { useLock } from './lockStore';
+import { DEMO_DATA } from '@/config';
+import { demoEntries } from '@/domain/demoData';
+import { todayIso } from '@/lib/dates';
 
 let db: Db | null = null;
 const need = (): Db => {
@@ -18,6 +21,9 @@ export const useSettings = createSettingsStore(() => createSettingsRepo(need()))
 export async function bootstrapState(): Promise<void> {
   db = await openDb();
   await Promise.all([useSettings.getState().load(), useEntries.getState().load()]);
+  if (DEMO_DATA && !useSettings.getState().settings.onboarded && useEntries.getState().entries.length === 0) {
+    await useEntries.getState().replaceAll(demoEntries(todayIso()));
+  }
   const { lockOn, onboarded } = useSettings.getState().settings;
   if (lockOn && onboarded) useLock.getState().lock();
 }
