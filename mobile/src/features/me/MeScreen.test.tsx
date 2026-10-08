@@ -1,18 +1,21 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useAuth } from '@/auth';
 import { useSettings } from '@/state';
 import { useLock } from '@/state/lockStore';
 import { useToast } from '@/state/toastStore';
 import { MeScreen } from './MeScreen';
 
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
+const mockSignOut = jest.fn(async () => {});
 const mockClear = jest.fn(async () => {});
 const mockExport = jest.fn(async (..._a: unknown[]) => 'shared');
 const mockReplaceAll = jest.fn(async (..._a: unknown[]) => {});
 const mockUpdate = jest.fn(async (..._a: unknown[]) => {});
 let mockDemo = false;
 
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, replace: mockReplace }) }));
 jest.mock('@/config', () => ({ get DEMO_DATA() { return mockDemo; } }));
 jest.mock('@/data/pinVaultInstance', () => ({ pinVault: { clear: () => mockClear() } }));
 jest.mock('@/services/exporter', () => ({ exportPages: (...a: unknown[]) => mockExport(...a) }));
@@ -125,4 +128,24 @@ it('reset demo data restores the sample pages in demo builds', async () => {
   await act(async () => { fireEvent.press(screen.getByText('Reset demo data')); });
   expect(mockReplaceAll).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ id: 'demo-1' })]));
   expect(useToast.getState().message).toBe('Demo data restored');
+});
+
+describe('Google account', () => {
+  it('shows who is signed in and signs out to the login screen', async () => {
+    useAuth.setState({
+      status: 'signedIn', signOut: (() => mockSignOut()) as never,
+      user: { id: 'g1', email: 'maya@example.com', name: 'Maya Cruz', givenName: 'Maya', photo: null },
+    });
+    wrap();
+    expect(screen.getByText('maya@example.com')).toBeTruthy();
+    await act(async () => { fireEvent.press(screen.getByText('Sign out')); });
+    expect(mockSignOut).toHaveBeenCalled();
+    expect(mockReplace).toHaveBeenCalledWith('/login');
+  });
+
+  it('hides the account row when nobody is signed in', () => {
+    useAuth.setState({ status: 'signedOut', user: null });
+    wrap();
+    expect(screen.queryByText('Sign out')).toBeNull();
+  });
 });

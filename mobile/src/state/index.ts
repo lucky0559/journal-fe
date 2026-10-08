@@ -5,6 +5,7 @@ import { localOnlyGateway } from '@/data/sharing';
 import { createEntriesStore } from './entriesStore';
 import { createSettingsStore } from './settingsStore';
 import { useLock } from './lockStore';
+import { useAuth } from '@/auth';
 import { reconcileLock } from '@/features/lock/reconcileLock';
 import { pinVault } from '@/data/pinVaultInstance';
 import { DEMO_DATA } from '@/config';
@@ -22,7 +23,7 @@ export const useSettings = createSettingsStore(() => createSettingsRepo(need()))
 
 export async function bootstrapState(): Promise<void> {
   db = await openDb();
-  await Promise.all([useSettings.getState().load(), useEntries.getState().load()]);
+  await Promise.all([useSettings.getState().load(), useEntries.getState().load(), useAuth.getState().restore()]);
   if (DEMO_DATA && !useSettings.getState().settings.onboarded && useEntries.getState().entries.length === 0) {
     await useEntries.getState().replaceAll(demoEntries(todayIso()));
   }

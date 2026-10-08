@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/auth';
 import { DEMO_DATA } from '@/config';
 import { pinVault } from '@/data/pinVaultInstance';
 import { demoEntries } from '@/domain/demoData';
@@ -31,7 +32,7 @@ function Row({ title, sub, right }: { title: string; sub: string; right: React.R
   );
 }
 
-function ListButton({ label, onPress, danger }: { label: string; onPress: () => void; danger?: boolean }) {
+function ListButton({ label, sub, onPress, danger }: { label: string; sub?: string; onPress: () => void; danger?: boolean }) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -39,6 +40,7 @@ function ListButton({ label, onPress, danger }: { label: string; onPress: () => 
       style={({ pressed }) => ({ height: 52, paddingHorizontal: 14, borderRadius: 24, justifyContent: 'center', backgroundColor: pressed ? (danger ? ramp.accent[100] : ramp.neutral[300]) : 'transparent' })}
     >
       <Text style={[body(15, 'semi'), { color: danger ? ramp.accent[700] : colors.text }]}>{label}</Text>
+      {sub ? <Text style={[body(12), { color: ramp.neutral[700] }]}>{sub}</Text> : null}
     </Pressable>
   );
 }
@@ -49,6 +51,8 @@ export function MeScreen() {
   const update = useSettings((s) => s.update);
   const entries = useEntries((s) => s.entries);
   const show = useToast((s) => s.show);
+  const account = useAuth((s) => s.user);
+  const signOut = useAuth((s) => s.signOut);
 
   const toggleLock = async () => {
     if (settings.lockOn) {
@@ -114,6 +118,12 @@ export function MeScreen() {
 
       <View style={{ backgroundColor: colors.surface, borderRadius: radii.container, padding: 8 }}>
         <ListButton label="Export my pages" onPress={doExport} />
+        {account ? (
+          <ListButton
+            label="Sign out" sub={account.email}
+            onPress={async () => { await signOut(); router.replace('/login'); }}
+          />
+        ) : null}
         <ListButton label="Replay the welcome" onPress={() => router.push('/onboarding')} />
         {DEMO_DATA ? (
           <ListButton

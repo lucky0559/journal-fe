@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { parseRadii } from '@/lib/blob';
 import { TIMES } from '@/lib/time';
+import { useAuth } from '@/auth';
 import { useSettings } from '@/state';
 import { colors, radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
@@ -23,7 +24,8 @@ export function OnboardingScreen() {
   const settings = useSettings((s) => s.settings);
   const update = useSettings((s) => s.update);
   const [step, setStep] = useState(0);
-  const [name, setName] = useState(settings.name);
+  const googleName = useAuth((s) => s.user?.givenName);
+  const [name, setName] = useState(settings.name || googleName || '');
   const [time, setTime] = useState<string | null>(settings.remind ? settings.remindTime : null);
 
   useEffect(() => {

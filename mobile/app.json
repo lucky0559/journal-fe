@@ -63,7 +63,8 @@
           "microphonePermission": "Journal records voice notes for your pages."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "@react-native-google-signin/google-signin"
     ],
     "scheme": "journal",
     "backgroundColor": "#f5ead8"

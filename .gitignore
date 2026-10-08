@@ -5,3 +5,5 @@ android/
 ios/
 *.log
 .superpowers/
+.env.local
+.env*.local

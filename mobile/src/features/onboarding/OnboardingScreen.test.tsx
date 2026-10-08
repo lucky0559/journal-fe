@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useAuth } from '@/auth';
 import { useSettings } from '@/state';
 import { OnboardingScreen } from './OnboardingScreen';
 
@@ -69,4 +70,12 @@ it('"Not now" finishes onboarding without a PIN', async () => {
   await act(async () => { fireEvent.press(screen.getByText('Not now')); });
   expect(update).toHaveBeenCalledWith({ onboarded: true });
   expect(mockReplace).toHaveBeenCalledWith('/(tabs)');
+});
+
+it('suggests the first name from the Google account', () => {
+  useAuth.setState({ user: { id: 'g1', email: 'm@x.com', name: 'Maya Cruz', givenName: 'Maya', photo: null } });
+  wrap();
+  fireEvent.press(screen.getByText('Let’s begin'));
+  expect(screen.getByDisplayValue('Maya')).toBeTruthy();
+  useAuth.setState({ user: null });
 });
