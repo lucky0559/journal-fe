@@ -461,7 +461,7 @@ import { MOODS, moodIndex, moodColor, moodRotation, moodRadii } from './mood';
 
 describe('mood', () => {
   it('buckets 0-100 into five labels', () => {
-    expect([0, 19, 20, 39, 40, 59, 60, 79, 80, 100].map(moodIndex)).toEqual([0, 0, 1, 1, 2, 2, 3, 3, 4, 4]);
+    expect([0, 19, 20, 39, 40, 59, 60, 79, 80, 100].map(moodIndex)).toEqual([0, 0, 0, 1, 1, 2, 2, 3, 3, 4]);
     expect(MOODS.map(([l]) => l)).toEqual(['Heavy', 'Low', 'Okay', 'Good', 'Bright']);
     expect(MOODS[2][1]).toBe('Somewhere in the middle');
     expect(MOODS[4][1]).toBe('Let’s catch this one');
