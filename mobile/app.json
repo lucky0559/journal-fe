@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Journal",
+    "slug": "journ-al",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.luckyangelo.journal",
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-status-bar",
+      "expo-sqlite",
+      "expo-image",
+      "expo-sharing",
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f5ead8"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#c67139"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Journal lets you attach photos to your pages.",
+          "cameraPermission": "Journal lets you take a photo for a page."
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Journal records voice notes for your pages."
+        }
+      ]
+    ],
+    "scheme": "journal",
+    "backgroundColor": "#f5ead8"
+  }
+}

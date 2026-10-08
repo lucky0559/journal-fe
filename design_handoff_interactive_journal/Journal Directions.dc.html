@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="organic.css"><style>body{margin:0;background:#e9dcc6;font-family:var(--font-body);color:var(--color-text)}a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}.dv-turn{padding:40px 44px 32px;scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 var(--font-body);color:#201e1d}.dv-intro{max-width:720px;font-size:13px;line-height:1.55;color:var(--color-neutral-800);margin:0 0 24px}.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#201e1d;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 var(--font-body);color:var(--color-neutral-800);max-width:372px}.dv-opt:target .dv-oid{background:var(--color-accent);color:#fff}.dv-next{margin:26px 0 0;font:12px/1.5 var(--font-body);color:var(--color-neutral-700)}</style></helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Today screen — three directions</span></div>
+<p class="dv-intro">Android, Organic system. Audience: young adults new to journaling, so each direction lowers the bar to a first mark on the page differently: a mood slider, a scrapbook page, or a deck of prompts. All three are live — drag the slider, open the + menu, swipe the cards. Pick one (or mix) and I'll build the full prototype: onboarding, write, timeline, settings + lock.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Check-in first. Drag the slider; the blob reshapes with your mood, then a prompt follows.</div>
+<div style="width:372px;height:800px;border-radius:44px;background:#201e1d;padding:8px;box-sizing:border-box;box-shadow:var(--shadow-lg)">
+<div style="position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--color-bg);display:flex;flex-direction:column">
+<div style="height:36px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;font-weight:600;position:relative"><span>9:41</span><div style="position:absolute;left:50%;top:11px;width:13px;height:13px;margin-left:-6px;border-radius:50%;background:#201e1d"></div><div style="display:flex;gap:5px;align-items:center"><div style="width:14px;height:10px;border-radius:2px;background:var(--color-text)"></div><div style="width:9px;height:13px;border-radius:2px;background:var(--color-text)"></div></div></div>
+<div style="flex:1;overflow-y:auto;scrollbar-width:none;padding:14px 22px 24px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--color-neutral-700)">Thursday, 8 October</span><div style="width:36px;height:36px;border-radius:50%;background:var(--color-accent-2-300);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:15px;color:var(--color-accent-2-900)">M</div></div>
+<div style="font-family:var(--font-heading);font-size:34px;line-height:1.08;letter-spacing:-.015em">Good evening, Maya.</div>
+<div style="background:var(--color-surface);border-radius:32px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:18px">
+<div style="font-size:15px;font-weight:600">How are you arriving?</div>
+<div style="display:flex;align-items:center;gap:18px">
+<div style="width:92px;height:92px;flex:none;background:{{ blobColor }};border-radius:{{ blobRadius }};transform:rotate({{ blobRot }}deg);transition:background .2s,border-radius .3s"></div>
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:var(--font-heading);font-size:30px;line-height:1.1">{{ moodLabel }}</span><span style="font-size:13px;color:var(--color-neutral-700)">{{ moodHint }}</span></div>
+</div>
+<div onPointerDown="{{ slideDown }}" onPointerMove="{{ slideMove }}" onPointerUp="{{ slideUp }}" style="position:relative;height:44px;display:flex;align-items:center;cursor:pointer;touch-action:none">
+<div style="width:100%;height:12px;border-radius:999px;background:linear-gradient(90deg,var(--color-accent-2-500),var(--color-neutral-300),var(--color-accent-500))"></div>
+<div style="position:absolute;top:50%;left:{{ moodPct }};width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--color-neutral-100);box-shadow:var(--shadow-md);border:3px solid {{ blobColor }};box-sizing:border-box;pointer-events:none"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-neutral-700);margin-top:-10px"><span>Heavy</span><span>Bright</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ feelings }}" as="f" hint-placeholder-count="6">
+<button onClick="{{ f.toggle }}" style="height:34px;padding:0 14px;border-radius:999px;border:1.5px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s">{{ f.name }}</button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:600">Tonight's prompt</span><span style="font-size:12px;color:var(--color-neutral-700)">picked for "{{ moodLabel }}"</span></div>
+<div style="background:var(--color-accent-200);border-radius:32px;padding:22px;display:flex;flex-direction:column;gap:20px">
+<div style="font-family:var(--font-heading);font-size:23px;line-height:1.2;color:var(--color-accent-900);text-wrap:pretty">{{ promptA }}</div>
+<div style="display:flex;gap:10px;align-items:center">
+<button style="height:48px;padding:0 22px;border-radius:999px;border:none;background:var(--color-accent);color:var(--color-bg);font-family:var(--font-heading);font-size:16px;cursor:pointer" style-hover="background:var(--color-accent-600)">Start writing</button>
+<button onClick="{{ shuffleA }}" style="width:48px;height:48px;border-radius:50%;border:1.5px solid var(--color-accent-400);background:transparent;color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-accent-300)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+</div>
+</div>
+</div>
+</div>
+<div style="height:76px;flex:none;display:flex;justify-content:space-around;align-items:center;background:var(--color-surface)">
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--color-accent-900)"><div style="width:60px;height:32px;border-radius:999px;background:var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>Today</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--color-neutral-700)"><div style="width:60px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg></div>Timeline</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--color-neutral-700)"><div style="width:60px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg></div>Me</div>
+</div>
+<div style="height:18px;flex:none;background:var(--color-surface);display:flex;justify-content:center;align-items:flex-start"><div style="width:108px;height:4px;border-radius:999px;background:var(--color-text);opacity:.7"></div></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Scrapbook page. Today is a collage you add to through the day. Tap + for photo, voice, sticker or text.</div>
+<div style="width:372px;height:800px;border-radius:44px;background:#201e1d;padding:8px;box-sizing:border-box;box-shadow:var(--shadow-lg)">
+<div style="position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--color-bg);display:flex;flex-direction:column">
+<div style="height:36px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;font-weight:600;position:relative"><span>9:41</span><div style="position:absolute;left:50%;top:11px;width:13px;height:13px;margin-left:-6px;border-radius:50%;background:#201e1d"></div><div style="display:flex;gap:5px;align-items:center"><div style="width:14px;height:10px;border-radius:2px;background:var(--color-text)"></div><div style="width:9px;height:13px;border-radius:2px;background:var(--color-text)"></div></div></div>
+<div style="flex:1;overflow:hidden;padding:14px 20px 0;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end">
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700)">Today's page</span><span style="font-family:var(--font-heading);font-size:36px;line-height:1.05">Thu 8 Oct</span></div>
+<span style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--color-accent-2-200);color:var(--color-accent-2-800)">4 pages in a row</span>
+</div>
+<div style="position:relative;height:490px">
+<div style="position:absolute;left:0;top:6px;width:196px;height:228px;transform:rotate(-4deg);border-radius:26px;background:var(--color-neutral-100);padding:8px;box-sizing:border-box;box-shadow:var(--shadow-md)">
+<div style="width:100%;height:100%;border-radius:20px;background:repeating-linear-gradient(135deg,var(--color-neutral-200) 0 8px,var(--color-neutral-300) 8px 16px);display:flex;align-items:flex-end;padding:12px;box-sizing:border-box"><span style="font:500 10px ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">photo · afternoon walk</span></div>
+</div>
+<div style="position:absolute;right:6px;top:10px;width:104px;height:104px;border-radius:50%;background:var(--color-accent-2-300);transform:rotate(9deg);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)"><span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-2-800)">feeling</span><span style="font-family:var(--font-heading);font-size:24px;color:var(--color-accent-2-900)">calm</span></div>
+<div style="position:absolute;right:0;top:146px;width:178px;transform:rotate(3deg);background:var(--color-neutral-100);border-radius:26px;padding:16px 18px;box-sizing:border-box;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;font-weight:700;color:var(--color-accent-700)">4:12 pm</span><span style="font-size:15px;line-height:1.45">Found a bench by the river and just stayed for an hour. Didn't check my phone once.</span></div>
+<div style="position:absolute;left:8px;top:332px;width:196px;height:56px;transform:rotate(-2deg);border-radius:999px;background:var(--color-accent-200);display:flex;align-items:center;gap:10px;padding:0 16px 0 8px;box-sizing:border-box;box-shadow:var(--shadow-sm)">
+<div style="width:40px;height:40px;flex:none;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><div style="width:0;height:0;border-left:11px solid var(--color-bg);border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px"></div></div>
+<div style="flex:1;display:flex;align-items:center;gap:3px;height:28px"><sc-for list="{{ bars }}" as="b" hint-placeholder-count="16"><div style="flex:1;height:{{ b }};border-radius:2px;background:var(--color-accent-600)"></div></sc-for></div>
+<span style="font-size:12px;font-weight:700;color:var(--color-accent-800)">0:42</span>
+</div>
+<div style="position:absolute;left:150px;top:396px;width:84px;height:84px;border-radius:50%;background:var(--color-neutral-100);padding:6px;box-sizing:border-box;transform:rotate(6deg);box-shadow:var(--shadow-sm)"><div style="width:100%;height:100%;border-radius:50%;background:repeating-linear-gradient(135deg,var(--color-neutral-200) 0 7px,var(--color-neutral-300) 7px 14px);display:flex;align-items:center;justify-content:center"><span style="font:500 10px ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">photo · coffee</span></div></div>
+<div style="position:absolute;left:0;top:250px;width:150px;height:66px;border-radius:26px;border:2px dashed var(--color-neutral-400);display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;box-sizing:border-box;font-size:13px;color:var(--color-neutral-700)">What happened tonight?</div>
+</div>
+</div>
+<sc-if value="{{ dialOpen }}" hint-placeholder-val="{{ false }}"><div onClick="{{ toggleDial }}" style="position:absolute;inset:0;background:color-mix(in srgb,var(--color-neutral-900) 30%,transparent);z-index:4"></div></sc-if>
+<div style="position:absolute;right:18px;bottom:112px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+<sc-for list="{{ dialItems }}" as="d" hint-placeholder-count="4">
+<button onClick="{{ d.onClick }}" style="height:46px;padding:0 18px 0 14px;border-radius:999px;border:none;background:var(--color-neutral-100);box-shadow:var(--shadow-md);display:flex;align-items:center;gap:10px;font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--color-text);cursor:pointer;opacity:{{ d.opacity }};transform:translateY({{ d.y }}px) scale({{ d.s }});transition:all .22s cubic-bezier(.3,1.3,.5,1) {{ d.delay }}ms;pointer-events:{{ d.pe }}" style-hover="background:var(--color-accent-100)"><span style="width:28px;height:28px;border-radius:50%;background:{{ d.c }}"></span>{{ d.label }}</button>
+</sc-for>
+<button onClick="{{ toggleDial }}" style="width:64px;height:64px;border-radius:22px;border:none;background:var(--color-accent);color:var(--color-bg);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);cursor:pointer" style-hover="background:var(--color-accent-600)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ fabRot }}deg);transition:transform .25s"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</div>
+<sc-if value="{{ toastB }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:112px;transform:translateX(-50%);z-index:6;background:var(--color-neutral-900);color:var(--color-bg);font-size:13px;font-weight:600;padding:10px 16px;border-radius:999px;white-space:nowrap">{{ toastB }}</div></sc-if>
+<div style="height:76px;flex:none;display:flex;justify-content:space-around;align-items:center;background:var(--color-surface)">
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--color-accent-900)"><div style="width:60px;height:32px;border-radius:999px;background:var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>Today</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--color-neutral-700)"><div style="width:60px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg></div>Timeline</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--color-neutral-700)"><div style="width:60px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg></div>Me</div>
+</div>
+<div style="height:18px;flex:none;background:var(--color-surface);display:flex;justify-content:center;align-items:flex-start"><div style="width:108px;height:4px;border-radius:999px;background:var(--color-text);opacity:.7"></div></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Prompt deck. Pick a mood, then swipe: right to write, left to skip. Drag the top card or use the buttons.</div>
+<div style="width:372px;height:800px;border-radius:44px;background:#201e1d;padding:8px;box-sizing:border-box;box-shadow:var(--shadow-lg)">
+<div style="position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--color-bg);display:flex;flex-direction:column">
+<div style="height:36px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;font-weight:600;position:relative"><span>9:41</span><div style="position:absolute;left:50%;top:11px;width:13px;height:13px;margin-left:-6px;border-radius:50%;background:#201e1d"></div><div style="display:flex;gap:5px;align-items:center"><div style="width:14px;height:10px;border-radius:2px;background:var(--color-text)"></div><div style="width:9px;height:13px;border-radius:2px;background:var(--color-text)"></div></div></div>
+<div style="flex:1;overflow:hidden;padding:14px 22px 0;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-family:var(--font-heading);font-size:32px;line-height:1.08">Pick a way in.</span><span style="font-size:14px;color:var(--color-neutral-700)">Swipe right to write, left to skip.</span></div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start">
+<sc-for list="{{ moodDots }}" as="m" hint-placeholder-count="5">
+<button onClick="{{ m.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;font-family:var(--font-body);width:56px">
+<div style="width:46px;height:46px;border-radius:{{ m.r }};background:{{ m.c }};transform:scale({{ m.scale }});box-shadow:{{ m.ring }};transition:transform .25s cubic-bezier(.3,1.5,.5,1),box-shadow .2s"></div>
+<span style="font-size:12px;font-weight:{{ m.w }};color:var(--color-text)">{{ m.label }}</span>
+</button>
+</sc-for>
+</div>
+<div style="position:relative;flex:1;margin-top:6px">
+<sc-for list="{{ deck }}" as="c" hint-placeholder-count="3">
+<div onPointerDown="{{ c.down }}" onPointerMove="{{ c.move }}" onPointerUp="{{ c.up }}" style="position:absolute;left:0;right:0;top:0;height:330px;border-radius:34px;background:{{ c.bg }};padding:24px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;transform:{{ c.transform }};transition:{{ c.transition }};z-index:{{ c.z }};box-shadow:var(--shadow-md);cursor:grab;touch-action:none;user-select:none">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ c.ink }}">{{ c.kicker }}</span><span style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--color-neutral-100);color:{{ c.ink }};opacity:{{ c.hintOp }}">{{ c.hint }}</span></div>
+<div style="font-family:var(--font-heading);font-size:28px;line-height:1.16;color:{{ c.ink }};text-wrap:pretty">{{ c.text }}</div>
+<span style="font-size:13px;color:{{ c.ink }};opacity:.75">{{ c.foot }}</span>
+</div>
+</sc-for>
+<div style="position:absolute;left:0;right:0;top:362px;display:flex;justify-content:center;gap:22px">
+<button onClick="{{ skipC }}" style="width:60px;height:60px;border-radius:50%;border:1.5px solid var(--color-divider);background:var(--color-neutral-100);color:var(--color-neutral-800);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-200)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+<button onClick="{{ writeC }}" style="height:60px;padding:0 28px;border-radius:999px;border:none;background:var(--color-accent);color:var(--color-bg);font-family:var(--font-heading);font-size:18px;cursor:pointer" style-hover="background:var(--color-accent-600)">Write this</button>
+</div>
+</div>
+</div>
+<sc-if value="{{ toastC }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:112px;transform:translateX(-50%);z-index:6;background:var(--color-neutral-900);color:var(--color-bg);font-size:13px;font-weight:600;padding:10px 16px;border-radius:999px;white-space:nowrap">{{ toastC }}</div></sc-if>
+<div style="height:76px;flex:none;display:flex;justify-content:space-around;align-items:center;background:var(--color-surface)">
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--color-accent-900)"><div style="width:60px;height:32px;border-radius:999px;background:var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>Today</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--color-neutral-700)"><div style="width:60px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg></div>Timeline</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--color-neutral-700)"><div style="width:60px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg></div>Me</div>
+</div>
+<div style="height:18px;flex:none;background:var(--color-surface);display:flex;justify-content:center;align-items:flex-start"><div style="width:108px;height:4px;border-radius:999px;background:var(--color-text);opacity:.7"></div></div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "build the prototype from <a class="dv-oid" href="#1a">1a</a>" · "<a class="dv-oid" href="#1c">1c</a>'s deck, but the write screen should feel like <a class="dv-oid" href="#1b">1b</a>" · "more directions for Today"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PROMPTS = [
+  "What made you smile today, even a little?",
+  "Describe one sound you heard today.",
+  "What would you tell this morning's version of you?",
+  "Who did you feel close to today?",
+  "What's taking up the most room in your head right now?",
+  "Name something small you're looking forward to."
+];
+const MOODS = [
+  { label: 'Heavy', hint: 'Go easy tonight', c: 'var(--color-accent-2-600)', r: '58% 42% 38% 62% / 64% 46% 54% 36%' },
+  { label: 'Low', hint: 'That counts too', c: 'var(--color-accent-2-400)', r: '50% 50% 42% 58% / 56% 48% 52% 44%' },
+  { label: 'Okay', hint: 'Somewhere in the middle', c: 'var(--color-neutral-400)', r: '50%' },
+  { label: 'Good', hint: 'Nice. Hold onto it', c: 'var(--color-accent-400)', r: '46% 54% 50% 50% / 50% 46% 54% 50%' },
+  { label: 'Bright', hint: 'Let\u2019s catch this one', c: 'var(--color-accent-500)', r: '40% 60% 60% 40% / 42% 44% 56% 58%' }
+];
+const SHAPE_LO = [62, 38, 34, 66, 70, 44, 56, 30];
+const SHAPE_HI = [44, 56, 58, 42, 40, 42, 58, 60];
+const CARD_BG = [['var(--color-accent-200)', 'var(--color-accent-900)'], ['var(--color-accent-2-200)', 'var(--color-accent-2-900)'], ['var(--color-neutral-200)', 'var(--color-neutral-900)']];
+
+class Component extends DCLogic {
+  state = { mood: 62, feel: { grateful: true }, pA: 0, dial: false, toastB: '', moodC: 3, idx: 0, dx: 0, anim: false, toastC: '' };
+
+  setMoodFromX(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const v = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+    this.setState({ mood: Math.round(v) });
+  }
+  toast(key, msg) {
+    this.setState({ [key]: msg });
+    clearTimeout(this['t' + key]);
+    this['t' + key] = setTimeout(() => this.setState({ [key]: '' }), 1800);
+  }
+  fly(dir) {
+    if (this.state.anim) return;
+    this.setState({ anim: true, dx: dir * 460 });
+    if (dir > 0) this.toast('toastC', 'Opening a fresh page\u2026');
+    setTimeout(() => this.setState(s => ({ idx: s.idx + 1, dx: 0, anim: false, snap: true })), 260);
+    setTimeout(() => this.setState({ snap: false }), 300);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const t = s.mood / 100;
+    const shape = SHAPE_LO.map((a, i) => Math.round(a + (SHAPE_HI[i] - a) * t) + '%');
+    const mi = Math.min(4, Math.floor(s.mood / 20.001));
+    const feelings = ['grateful', 'tired', 'anxious', 'proud', 'lonely', 'calm'].map(name => {
+      const on = !!s.feel[name];
+      return {
+        name, toggle: () => this.setState(st => ({ feel: { ...st.feel, [name]: !st.feel[name] } })),
+        bg: on ? 'var(--color-accent-2-600)' : 'transparent', fg: on ? 'var(--color-neutral-100)' : 'var(--color-neutral-800)',
+        border: on ? 'var(--color-accent-2-600)' : 'var(--color-divider)'
+      };
+    });
+    const open = s.dial;
+    const dialDefs = [['Text', 'var(--color-neutral-300)'], ['Sticker', 'var(--color-accent-2-300)'], ['Voice note', 'var(--color-accent-300)'], ['Photo', 'var(--color-accent-400)']];
+    const dialItems = dialDefs.map(([label, c], i) => ({
+      label, c, opacity: open ? 1 : 0, y: open ? 0 : 16, s: open ? 1 : 0.9, pe: open ? 'auto' : 'none', delay: open ? (3 - i) * 35 : 0,
+      onClick: () => { this.setState({ dial: false }); this.toast('toastB', label + ' added to today'); }
+    }));
+    const moodDots = MOODS.map((m, i) => ({
+      label: m.label, c: m.c, r: m.r, scale: s.moodC === i ? 1.12 : 0.9, w: s.moodC === i ? 700 : 500,
+      ring: s.moodC === i ? '0 0 0 3px var(--color-bg), 0 0 0 5.5px var(--color-text)' : 'none',
+      onClick: () => this.setState({ moodC: i })
+    }));
+    const down = e => { if (s.anim) return; e.currentTarget.setPointerCapture(e.pointerId); this.sx = e.clientX; this.dragging = true; };
+    const move = e => { if (this.dragging) this.setState({ dx: e.clientX - this.sx }); };
+    const up = () => { if (!this.dragging) return; this.dragging = false; const dx = this.state.dx; if (Math.abs(dx) > 90) this.fly(dx > 0 ? 1 : -1); else this.setState({ dx: 0 }); };
+    const deck = [2, 1, 0].map(depth => {
+      const n = s.idx + depth;
+      const [bg, ink] = CARD_BG[n % 3];
+      const top = depth === 0;
+      const dx = top ? s.dx : 0;
+      const shift = top ? 0 : Math.min(1, Math.abs(s.dx) / 120);
+      const d = depth - (depth === 1 ? shift : depth === 2 ? shift : 0);
+      return {
+        bg, ink, text: PROMPTS[n % PROMPTS.length], kicker: 'For a ' + MOODS[s.moodC].label.toLowerCase() + ' day', foot: (n % PROMPTS.length + 1) + ' of ' + PROMPTS.length + ' tonight',
+        z: 10 - depth,
+        transform: top ? `translateX(${dx}px) rotate(${dx / 16}deg)` : `translateY(${d * 16}px) scale(${1 - d * 0.05})`,
+        transition: this.dragging && top ? 'none' : s.snap ? 'none' : 'transform .26s cubic-bezier(.3,.9,.4,1)',
+        hint: dx > 0 ? 'Write' : 'Skip', hintOp: top ? Math.min(1, Math.abs(dx) / 80) : 0,
+        down: top ? down : undefined, move: top ? move : undefined, up: top ? up : undefined
+      };
+    });
+    return {
+      blobColor: `color-mix(in oklch, var(--color-accent-500) ${s.mood}%, var(--color-accent-2-600))`,
+      blobRadius: `${shape[0]} ${shape[1]} ${shape[2]} ${shape[3]} / ${shape[4]} ${shape[5]} ${shape[6]} ${shape[7]}`,
+      blobRot: Math.round(-12 + t * 24), moodPct: s.mood + '%', moodLabel: MOODS[mi].label, moodHint: MOODS[mi].hint,
+      slideDown: e => { e.currentTarget.setPointerCapture(e.pointerId); this.sliding = true; this.setMoodFromX(e); },
+      slideMove: e => { if (this.sliding) this.setMoodFromX(e); },
+      slideUp: () => { this.sliding = false; },
+      feelings, promptA: PROMPTS[(s.pA + mi) % PROMPTS.length], shuffleA: () => this.setState(st => ({ pA: st.pA + 1 })),
+      bars: [40, 70, 55, 90, 65, 35, 80, 100, 60, 45, 75, 50, 85, 40, 60, 30].map(h => h + '%'),
+      dialOpen: open, dialItems, fabRot: open ? 45 : 0, toggleDial: () => this.setState(st => ({ dial: !st.dial })), toastB: s.toastB,
+      moodDots, deck, skipC: () => this.fly(-1), writeC: () => this.fly(1), toastC: s.toastC
+    };
+  }
+}
+</script>
+</body>
+</html>
