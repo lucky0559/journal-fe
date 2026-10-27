@@ -6,7 +6,7 @@ import { createEntryRepo } from './entryRepo';
 
 const entry = (over: Partial<Entry> = {}): Entry => ({
   id: 'a', createdAt: 1000, date: '2026-10-07', time: '10:02 pm', mood: 72, feelings: ['calm'],
-  text: 'hi', prompt: '', vis: 'private', photos: [], voices: [], stickers: [], ...over,
+  text: 'hi', prompt: '', vis: 'private', photos: [], voices: [], stickers: [], publishedAt: null, ...over,
 });
 
 async function setup() {
@@ -60,6 +60,35 @@ describe('entryRepo', () => {
     );
     const [e] = await repo.list();
     expect(e).toMatchObject({ id: 'bad', feelings: [], photos: [], voices: [], stickers: [] });
+  });
+
+  it('remembers when a page was last synced and the remote file keys', async () => {
+    const { repo } = await setup();
+    const e = entry({
+      vis: 'public', publishedAt: 1234,
+      photos: [{ id: 'p1', uri: 'file:///x.jpg', remoteKey: 'u/1.jpg' }],
+      voices: [{ id: 'v1', uri: 'file:///v.m4a', seconds: 3, remoteKey: 'u/2.m4a' }],
+    });
+    await repo.upsert(e);
+    expect(await repo.list()).toEqual([e]);
+  });
+
+  it('keeps a persistent queue of pages still to unpublish', async () => {
+    const { repo } = await setup();
+    expect(await repo.pendingUnpublish()).toEqual([]);
+    await repo.queueUnpublish('a');
+    await repo.queueUnpublish('a');
+    await repo.queueUnpublish('b');
+    expect((await repo.pendingUnpublish()).sort()).toEqual(['a', 'b']);
+    await repo.unqueueUnpublish('a');
+    expect(await repo.pendingUnpublish()).toEqual(['b']);
+  });
+
+  it('replaceAll leaves the unpublish queue alone', async () => {
+    const { repo } = await setup();
+    await repo.queueUnpublish('a');
+    await repo.replaceAll([]);
+    expect(await repo.pendingUnpublish()).toEqual(['a']);
   });
 
   it('migrate is idempotent', async () => {

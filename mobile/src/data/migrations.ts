@@ -17,6 +17,8 @@ const MIGRATIONS: string[] = [
    );
    CREATE INDEX IF NOT EXISTS entries_date ON entries (date DESC, created_at DESC);
    CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);`,
+  `ALTER TABLE entries ADD COLUMN published_at INTEGER;
+   CREATE TABLE IF NOT EXISTS unpublish_queue (entry_id TEXT PRIMARY KEY NOT NULL);`,
 ];
 
 export async function migrate(db: Db): Promise<void> {

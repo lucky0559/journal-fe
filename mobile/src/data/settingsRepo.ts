@@ -1,7 +1,7 @@
 import type { Settings } from '@/domain/types';
 import type { Db } from './db';
 
-export const DEFAULT_SETTINGS: Settings = { name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false };
+export const DEFAULT_SETTINGS: Settings = { name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false, syncOwner: '' };
 
 export interface SettingsRepo {
   load(): Promise<Settings>;

@@ -32,7 +32,7 @@ jest.mock('@/state', () => {
   };
 });
 
-const DEFAULTS = { name: 'Maya', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: true };
+const DEFAULTS = { name: 'Maya', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: true, syncOwner: '' };
 const withSettings = (patch: Partial<typeof DEFAULTS>) => useSettings.setState({ settings: { ...DEFAULTS, ...patch } });
 
 const wrap = () =>

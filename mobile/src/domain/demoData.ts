@@ -20,7 +20,8 @@ export function demoEntries(today: string): Entry[] {
     const date = addDays(today, -daysAgo);
     return {
       id: `demo-${i + 1}`, createdAt: Date.parse(`${date}T12:00:00`) + (SEEDS.length - i), date, feelings: [],
-      prompt: '', vis: 'private', photos: [], voices: [], stickers: [], ...s,
+      // publishedAt: 1 marks demo pages as already synced so sample content never uploads to a real account
+      prompt: '', vis: 'private', photos: [], voices: [], stickers: [], publishedAt: 1, ...s,
     };
   });
 }

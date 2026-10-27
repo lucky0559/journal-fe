@@ -1,7 +1,8 @@
 import { openDb, type Db } from '@/data/db';
 import { createEntryRepo } from '@/data/entryRepo';
 import { createSettingsRepo } from '@/data/settingsRepo';
-import { localOnlyGateway } from '@/data/sharing';
+import { api } from '@/api';
+import { createApiSharingGateway } from '@/api/apiSharingGateway';
 import { createEntriesStore } from './entriesStore';
 import { createSettingsStore } from './settingsStore';
 import { useLock } from './lockStore';
@@ -18,7 +19,7 @@ const need = (): Db => {
   return db;
 };
 
-export const useEntries = createEntriesStore(() => createEntryRepo(need()), localOnlyGateway);
+export const useEntries = createEntriesStore(() => createEntryRepo(need()), createApiSharingGateway({ api }));
 export const useSettings = createSettingsStore(() => createSettingsRepo(need()));
 
 export async function bootstrapState(): Promise<void> {

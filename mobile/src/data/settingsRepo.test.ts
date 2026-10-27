@@ -12,7 +12,7 @@ describe('settingsRepo', () => {
 
   it('returns defaults on a fresh database', async () => {
     expect(await (await setup()).load()).toEqual(DEFAULT_SETTINGS);
-    expect(DEFAULT_SETTINGS).toEqual({ name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false });
+    expect(DEFAULT_SETTINGS).toEqual({ name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false, syncOwner: '' });
   });
 
   it('persists partial updates and keeps other keys', async () => {
