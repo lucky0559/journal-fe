@@ -16,4 +16,6 @@ it('labels the friend button for each state', () => {
   expect(friendButton('none')).toEqual({ label: 'Add friend', filled: true });
   expect(friendButton('requested')).toEqual({ label: 'Request sent', filled: false });
   expect(friendButton('friends')).toEqual({ label: 'Friends', filled: false });
+  expect(friendButton('incoming')).toEqual({ label: 'Accept request', filled: true });
+  expect(friendButton('self')).toEqual({ label: 'This is you', filled: false });
 });
