@@ -1,3 +1,4 @@
+import { Alert, Share } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuth } from '@/auth';
@@ -9,6 +10,7 @@ import { MeScreen } from './MeScreen';
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
 const mockSignOut = jest.fn(async () => {});
+const mockDeleteAccount = jest.fn(async () => {});
 const mockClear = jest.fn(async () => {});
 const mockExport = jest.fn(async (..._a: unknown[]) => 'shared');
 const mockReplaceAll = jest.fn(async (..._a: unknown[]) => {});
@@ -18,6 +20,7 @@ let mockDemo = false;
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, replace: mockReplace }) }));
 jest.mock('@/config', () => ({ get DEMO_DATA() { return mockDemo; } }));
 jest.mock('@/data/pinVaultInstance', () => ({ pinVault: { clear: () => mockClear() } }));
+jest.mock('@/social', () => ({ social: { deleteAccount: () => mockDeleteAccount() } }));
 jest.mock('@/services/exporter', () => ({ exportPages: (...a: unknown[]) => mockExport(...a) }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');
@@ -147,5 +150,42 @@ describe('Google account', () => {
     useAuth.setState({ status: 'signedOut', user: null });
     wrap();
     expect(screen.queryByText('Sign out')).toBeNull();
+  });
+});
+
+describe('sharing and deleting the account', () => {
+  const user = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', email: 'maya@example.com', name: 'Maya Cruz', givenName: 'Maya', photo: null };
+  beforeEach(() => {
+    useAuth.setState({ status: 'signedIn', user, signOut: (() => mockSignOut()) as never });
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    jest.spyOn(Share, 'share').mockResolvedValue({ action: 'sharedAction' } as never);
+  });
+
+  it('shares a profile link friends can open', async () => {
+    wrap();
+    await act(async () => { fireEvent.press(screen.getByText('Share my profile link')); });
+    expect(Share.share).toHaveBeenCalledWith({ message: `Add me on Journal: journal:///friends/${user.id}` });
+  });
+
+  it('asks before deleting the account, then deletes it, signs out and goes to login', async () => {
+    wrap();
+    fireEvent.press(screen.getByText('Delete my account'));
+    expect(Alert.alert).toHaveBeenCalledWith('Delete your account?', expect.stringContaining('Pages on this phone stay'), expect.any(Array));
+    expect(mockDeleteAccount).not.toHaveBeenCalled();
+    const buttons = (Alert.alert as jest.Mock).mock.calls[0][2] as { text: string; onPress?: () => void }[];
+    await act(async () => { buttons.find((b) => b.text === 'Delete')!.onPress!(); });
+    expect(mockDeleteAccount).toHaveBeenCalled();
+    expect(mockSignOut).toHaveBeenCalled();
+    expect(mockReplace).toHaveBeenCalledWith('/login');
+  });
+
+  it('keeps the account and says so if deletion fails', async () => {
+    mockDeleteAccount.mockRejectedValueOnce(new Error('offline'));
+    wrap();
+    fireEvent.press(screen.getByText('Delete my account'));
+    const buttons = (Alert.alert as jest.Mock).mock.calls[0][2] as { text: string; onPress?: () => void }[];
+    await act(async () => { buttons.find((b) => b.text === 'Delete')!.onPress!(); });
+    expect(mockSignOut).not.toHaveBeenCalled();
+    expect(useToast.getState().message).toBe('Couldn’t delete your account. Try again.');
   });
 });

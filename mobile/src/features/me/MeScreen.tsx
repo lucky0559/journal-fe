@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/auth';
 import { DEMO_DATA } from '@/config';
@@ -7,6 +7,7 @@ import { demoEntries } from '@/domain/demoData';
 import { todayIso } from '@/lib/dates';
 import { TIMES } from '@/lib/time';
 import { exportPages } from '@/services/exporter';
+import { social } from '@/social';
 import { useEntries, useSettings } from '@/state';
 import { useLock } from '@/state/lockStore';
 import { useToast } from '@/state/toastStore';
@@ -124,7 +125,36 @@ export function MeScreen() {
             onPress={async () => { await signOut(); router.replace('/login'); }}
           />
         ) : null}
+        {account ? (
+          <ListButton
+            label="Share my profile link"
+            onPress={() => void Share.share({ message: `Add me on Journal: journal:///friends/${account.id}` })}
+          />
+        ) : null}
         <ListButton label="Replay the welcome" onPress={() => router.push('/onboarding')} />
+        {account ? (
+          <ListButton
+            label="Delete my account" danger
+            onPress={() =>
+              Alert.alert('Delete your account?', 'This removes your account and everything you shared from our servers. Pages on this phone stay.', [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await social.deleteAccount();
+                      await signOut();
+                      router.replace('/login');
+                    } catch {
+                      show('Couldn’t delete your account. Try again.');
+                    }
+                  },
+                },
+              ])
+            }
+          />
+        ) : null}
         {DEMO_DATA ? (
           <ListButton
             label="Reset demo data" danger

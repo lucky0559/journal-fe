@@ -9,7 +9,7 @@ import { Icon } from '@/ui/Icon';
 
 const BARS = [40, 75, 55, 95, 60, 35, 80, 100, 55, 70, 45, 30];
 
-export function VoicePill({ voice, onRemove }: { voice: Voice; onRemove: () => void }) {
+export function VoicePill({ voice, onRemove }: { voice: Voice; onRemove?: () => void }) {
   const player = useAudioPlayer(voice.uri || null);
   const status = useAudioPlayerStatus(player);
   const [fake, setFake] = useState(false); // demo notes have no audio; just toggle the icon
@@ -37,9 +37,11 @@ export function VoicePill({ voice, onRemove }: { voice: Voice; onRemove: () => v
         {BARS.map((h, i) => <View key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 2, backgroundColor: ramp.accent[600] }} />)}
       </View>
       <Text style={[body(12, 'bold'), { color: ramp.accent[800] }]}>{secs(voice.seconds)}</Text>
-      <Pressable accessibilityRole="button" accessibilityLabel="Remove voice note" onPress={onRemove} hitSlop={9} style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name="x" size={13} color={ramp.accent[800]} />
-      </Pressable>
+      {onRemove ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Remove voice note" onPress={onRemove} hitSlop={9} style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="x" size={13} color={ramp.accent[800]} />
+        </Pressable>
+      ) : null}
     </View>
   );
 }
