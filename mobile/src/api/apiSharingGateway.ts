@@ -12,19 +12,25 @@ const contentType = (kind: 'photo' | 'voice', uri: string) =>
 interface Deps {
   api: ApiClient;
   fetchImpl?: typeof fetch;
-  readFile?: (uri: string) => Promise<Blob>;
+}
+
+interface UploadSlot {
+  key: string;
+  uploadUrl: string;
+  fields: Record<string, string>;
+  fileField: string;
 }
 
 /** Publishes pages to journ-al-be. Only the shareable fields are sent: never mood or feelings. */
-export function createApiSharingGateway({ api, fetchImpl, readFile }: Deps): SharingGateway {
-  const read = readFile ?? (async (uri: string) => (await fetch(uri)).blob());
-
+export function createApiSharingGateway({ api, fetchImpl }: Deps): SharingGateway {
   async function upload(kind: 'photo' | 'voice', uri: string): Promise<string> {
-    const ct = contentType(kind, uri);
-    const slot = await api.request<{ key: string; uploadUrl: string; headers: Record<string, string> }>('POST', '/media/upload-url', {
-      body: { kind, contentType: ct },
-    });
-    const res = await (fetchImpl ?? fetch)(slot.uploadUrl, { method: 'PUT', headers: slot.headers, body: await read(uri) });
+    const type = contentType(kind, uri);
+    const slot = await api.request<UploadSlot>('POST', '/media/upload-url', { body: { kind, contentType: type } });
+    // Multipart form straight to the storage provider (signed by the server). React Native streams `{uri,name,type}` from disk.
+    const form = new FormData();
+    for (const [name, value] of Object.entries(slot.fields)) form.append(name, value);
+    form.append(slot.fileField, { uri, name: `upload.${extOf(uri) || (kind === 'photo' ? 'jpg' : 'm4a')}`, type } as unknown as Blob);
+    const res = await (fetchImpl ?? fetch)(slot.uploadUrl, { method: 'POST', body: form });
     if (!res.ok) throw new Error(`Upload failed (${res.status})`);
     return slot.key;
   }

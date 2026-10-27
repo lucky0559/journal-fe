@@ -18,19 +18,27 @@ function setup(responses: Record<string, unknown> = {}) {
       if (typeof r === 'function') return (r as () => unknown)();
       if (method === 'POST' && path === '/media/upload-url') {
         const n = calls.filter((c) => c.path === '/media/upload-url').length;
-        return { key: `u/${n}.bin`, uploadUrl: `http://r2/put/${n}`, headers: { 'Content-Type': (opts?.body as { contentType: string }).contentType } };
+        return { key: `u/${n}.bin`, uploadUrl: `http://media/upload/${n}`, fields: { public_id: `u/${n}`, signature: 'sig' }, fileField: 'file' };
       }
       return r ?? {};
     }),
   } as unknown as ApiClient;
-  const puts: { url: string; headers: Record<string, string>; body: unknown }[] = [];
+  const puts: { url: string; method?: string; form: [string, unknown][] }[] = [];
   const fetchImpl = (async (url: string, init: RequestInit) => {
-    puts.push({ url, headers: init.headers as Record<string, string>, body: init.body });
+    puts.push({ url, method: init.method, form: (init.body as unknown as FakeForm).parts });
     return { ok: true, status: 200 } as Response;
   }) as unknown as typeof fetch;
-  const readFile = jest.fn(async (uri: string) => `bytes:${uri}`);
-  return { gw: createApiSharingGateway({ api, fetchImpl, readFile: readFile as never }), calls, puts, readFile };
+  return { gw: createApiSharingGateway({ api, fetchImpl }), calls, puts };
 }
+
+/** Node's FormData flattens file descriptors to strings, so record the parts as given. */
+class FakeForm {
+  parts: [string, unknown][] = [];
+  append(name: string, value: unknown) { this.parts.push([name, value]); }
+}
+const realFormData = globalThis.FormData;
+beforeAll(() => { globalThis.FormData = FakeForm as never; });
+afterAll(() => { globalThis.FormData = realFormData; });
 
 describe('apiSharingGateway.publish', () => {
   it('puts only shareable fields: no mood, no feelings, no local ids', async () => {
@@ -51,8 +59,14 @@ describe('apiSharingGateway.publish', () => {
     const uploads = calls.filter((c) => c.path === '/media/upload-url').map((c) => c.body);
     expect(uploads).toEqual([{ kind: 'photo', contentType: 'image/jpeg' }, { kind: 'voice', contentType: 'audio/mp4' }]);
     expect(puts).toEqual([
-      { url: 'http://r2/put/1', headers: { 'Content-Type': 'image/jpeg' }, body: 'bytes:file:///doc/media/a.jpg' },
-      { url: 'http://r2/put/2', headers: { 'Content-Type': 'audio/mp4' }, body: 'bytes:file:///doc/media/b.m4a' },
+      {
+        url: 'http://media/upload/1', method: 'POST',
+        form: [['public_id', 'u/1'], ['signature', 'sig'], ['file', { uri: 'file:///doc/media/a.jpg', name: 'upload.jpg', type: 'image/jpeg' }]],
+      },
+      {
+        url: 'http://media/upload/2', method: 'POST',
+        form: [['public_id', 'u/2'], ['signature', 'sig'], ['file', { uri: 'file:///doc/media/b.m4a', name: 'upload.m4a', type: 'audio/mp4' }]],
+      },
     ]);
     expect(calls[calls.length - 1].body).toMatchObject({ photos: ['u/1.bin'], voices: [{ key: 'u/2.bin', seconds: 38 }] });
     expect(out.photos[0].remoteKey).toBe('u/1.bin');
@@ -84,8 +98,8 @@ describe('apiSharingGateway.publish', () => {
 
   it('fails if the storage upload is rejected, without publishing the page', async () => {
     const { calls } = setup();
-    const api = { request: jest.fn(async (m: string, p: string) => (p === '/media/upload-url' ? { key: 'k', uploadUrl: 'http://r2/put', headers: {} } : {})) } as unknown as ApiClient;
-    const gw = createApiSharingGateway({ api, fetchImpl: (async () => ({ ok: false, status: 403 })) as never, readFile: (async () => 'b') as never });
+    const api = { request: jest.fn(async (m: string, p: string) => (p === '/media/upload-url' ? { key: 'k', uploadUrl: 'http://media/upload', fields: {}, fileField: 'file' } : {})) } as unknown as ApiClient;
+    const gw = createApiSharingGateway({ api, fetchImpl: (async () => ({ ok: false, status: 403 })) as never });
     await expect(gw.publish(entry({ photos: [{ id: 'p', uri: 'file:///a.jpg' }] }))).rejects.toThrow();
     expect((api.request as jest.Mock).mock.calls.some((c) => c[0] === 'PUT')).toBe(false);
     expect(calls).toHaveLength(0);
