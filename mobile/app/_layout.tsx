@@ -13,6 +13,7 @@ import { body, heading } from '@/theme/type';
 import { Button } from '@/ui/Button';
 import { ToastHost } from '@/ui/Toast';
 import * as Notifications from 'expo-notifications';
+import { useSignedOutRedirect } from '@/auth/useSignedOutRedirect';
 import { useRemindersSync } from '@/services/useRemindersSync';
 import { LockOverlay } from '@/features/lock/LockOverlay';
 import { useRelockOnBackground } from '@/features/lock/useRelockOnBackground';
@@ -34,6 +35,7 @@ withFontCap(TextInput);
 export default function RootLayout() {
   useRelockOnBackground();
   useRemindersSync();
+  useSignedOutRedirect();
   const fontsReady = useAppFonts();
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
 

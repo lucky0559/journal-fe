@@ -5,15 +5,15 @@ import { createAuthStore } from './authStore';
 
 const user: AuthUser = { id: 'g1', email: 'maya@example.com', name: 'Maya Cruz', givenName: 'Maya', photo: null };
 
-function setup(over: { provider?: Partial<AuthProvider>; exchange?: jest.Mock; saved?: AuthUser | null } = {}) {
+function setup(over: { provider?: Partial<AuthProvider>; exchange?: jest.Mock; saved?: { user: AuthUser; token: string } | null } = {}) {
   const provider: AuthProvider = {
     signIn: jest.fn(async () => ({ ok: true as const, idToken: 'tok', user })),
     signOut: jest.fn(async () => {}),
     ...over.provider,
   };
-  let saved: AuthUser | null = over.saved ?? null;
+  let saved: { user: AuthUser; token: string } | null = over.saved ?? null;
   const vault = {
-    save: jest.fn(async (u: AuthUser) => { saved = u; }),
+    save: jest.fn(async (u: AuthUser, token: string) => { saved = { user: u, token }; }),
     load: jest.fn(async () => saved),
     clear: jest.fn(async () => { saved = null; }),
   };
@@ -23,11 +23,11 @@ function setup(over: { provider?: Partial<AuthProvider>; exchange?: jest.Mock; s
 }
 
 describe('authStore', () => {
-  it('starts unknown and restores a saved user', async () => {
-    const { useStore } = setup({ saved: user });
+  it('starts unknown and restores a saved user with their app token', async () => {
+    const { useStore } = setup({ saved: { user, token: 'saved-token' } });
     expect(useStore.getState().status).toBe('unknown');
     await useStore.getState().restore();
-    expect(useStore.getState()).toMatchObject({ status: 'signedIn', user });
+    expect(useStore.getState()).toMatchObject({ status: 'signedIn', user, token: 'saved-token' });
   });
 
   it('restores to signed out when nothing is saved', async () => {
@@ -36,12 +36,20 @@ describe('authStore', () => {
     expect(useStore.getState()).toMatchObject({ status: 'signedOut', user: null });
   });
 
-  it('signs in, exchanges the id token and persists only the user', async () => {
+  it('signs in, exchanges the id token and persists the user with the app token', async () => {
     const { useStore, vault, gateway } = setup();
     await useStore.getState().signIn();
     expect(gateway.exchange).toHaveBeenCalledWith('tok', user);
-    expect(vault.save).toHaveBeenCalledWith(user);
+    expect(vault.save).toHaveBeenCalledWith(user, 'session-tok');
     expect(useStore.getState()).toMatchObject({ status: 'signedIn', user, token: 'session-tok', error: '', busy: false });
+  });
+
+  it('adopts the server’s version of the user when the backend returns one', async () => {
+    const serverUser = { ...user, id: 'server-uuid' };
+    const { useStore, vault } = setup({ exchange: jest.fn(async () => ({ token: 'jwt', user: serverUser })) });
+    await useStore.getState().signIn();
+    expect(useStore.getState().user).toEqual(serverUser);
+    expect(vault.save).toHaveBeenCalledWith(serverUser, 'jwt');
   });
 
   it('a cancelled sign-in is silent and leaves the user signed out', async () => {
@@ -96,5 +104,13 @@ describe('authStore', () => {
 describe('localAuthGateway', () => {
   it('echoes the id token until a backend exists', async () => {
     expect(await localAuthGateway.exchange('tok', user)).toEqual({ token: 'tok' });
+  });
+});
+
+describe('restore without a usable session', () => {
+  it('a saved user with no token is treated as signed out', async () => {
+    const { useStore } = setup({ saved: { user, token: '' } });
+    await useStore.getState().restore();
+    expect(useStore.getState()).toMatchObject({ status: 'signedOut', user: null, token: null });
   });
 });

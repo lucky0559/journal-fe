@@ -29,8 +29,8 @@ export function createAuthStore(deps: { provider: AuthProvider; gateway: AuthGat
     busy: false,
     error: '',
     async restore() {
-      const user = await deps.vault.load();
-      set(user ? { status: 'signedIn', user } : { status: 'signedOut', user: null });
+      const session = await deps.vault.load();
+      set(session?.token ? { status: 'signedIn', user: session.user, token: session.token } : { status: 'signedOut', user: null, token: null });
     },
     async signIn() {
       if (get().busy) return;
@@ -42,9 +42,10 @@ export function createAuthStore(deps: { provider: AuthProvider; gateway: AuthGat
           return;
         }
         try {
-          const { token } = await deps.gateway.exchange(r.idToken, r.user);
-          await deps.vault.save(r.user);
-          set({ busy: false, status: 'signedIn', user: r.user, token, error: '' });
+          const { token, user: serverUser } = await deps.gateway.exchange(r.idToken, r.user);
+          const user = serverUser ?? r.user;
+          await deps.vault.save(user, token);
+          set({ busy: false, status: 'signedIn', user, token, error: '' });
         } catch {
           await deps.provider.signOut();
           set({ busy: false, status: 'signedOut', user: null, token: null, error: MESSAGES.error });

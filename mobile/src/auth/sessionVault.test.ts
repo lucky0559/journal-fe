@@ -14,30 +14,32 @@ function setup() {
   return { vault: createSessionVault(store), mem };
 }
 
-it('round-trips the signed-in user', async () => {
+it('round-trips the signed-in user and app token', async () => {
   const { vault } = setup();
   expect(await vault.load()).toBeNull();
-  await vault.save(user);
-  expect(await vault.load()).toEqual(user);
+  await vault.save(user, 'app-token');
+  expect(await vault.load()).toEqual({ user, token: 'app-token' });
 });
 
 it('forgets the user on clear', async () => {
   const { vault } = setup();
-  await vault.save(user);
+  await vault.save(user, 'app-token');
   await vault.clear();
   expect(await vault.load()).toBeNull();
 });
 
 it('treats corrupt or incomplete data as signed out', async () => {
   const { vault, mem } = setup();
-  mem.set('journal.session.v1', '{oops');
+  mem.set('journal.session.v2', '{oops');
   expect(await vault.load()).toBeNull();
-  mem.set('journal.session.v1', JSON.stringify({ id: 'x' }));
+  mem.set('journal.session.v2', JSON.stringify({ user: { id: 'x' }, token: 't' }));
+  expect(await vault.load()).toBeNull();
+  mem.set('journal.session.v2', JSON.stringify({ user, token: '' }));
   expect(await vault.load()).toBeNull();
 });
 
-it('never stores an id token', async () => {
+it('stores only the profile fields, never extra properties such as a Google id token', async () => {
   const { vault, mem } = setup();
-  await vault.save({ ...user, idToken: 'secret' } as never);
+  await vault.save({ ...user, idToken: 'secret' } as never, 'app-token');
   expect([...mem.values()].join('')).not.toContain('secret');
 });

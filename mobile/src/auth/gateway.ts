@@ -2,10 +2,10 @@ import type { AuthUser } from './types';
 
 /**
  * Boundary for the future backend: trade a Google ID token for an app session.
- * v1 has no server, so the token is echoed back and only kept in memory.
+ * `localAuthGateway` (no server) echoes the token; the real one is `createApiAuthGateway`.
  */
 export interface AuthGateway {
-  exchange(idToken: string, user: AuthUser): Promise<{ token: string }>;
+  exchange(idToken: string, user: AuthUser): Promise<{ token: string; user?: AuthUser }>;
 }
 
 export const localAuthGateway: AuthGateway = {

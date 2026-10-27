@@ -1,7 +1,8 @@
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { pinKeyValueStore } from '@/data/pinVaultInstance';
 import { createAuthStore } from './authStore';
-import { localAuthGateway } from './gateway';
+import { api, bindSession } from '@/api';
+import { createApiAuthGateway } from '@/api/apiAuthGateway';
 import { createGoogleProvider, type GoogleSdk } from './googleProvider';
 import { createSessionVault } from './sessionVault';
 
@@ -21,6 +22,8 @@ const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '';
 
 export const useAuth = createAuthStore({
   provider: createGoogleProvider(sdk, WEB_CLIENT_ID),
-  gateway: localAuthGateway,
+  gateway: createApiAuthGateway(api),
   vault: createSessionVault(pinKeyValueStore),
 });
+
+bindSession({ getToken: () => useAuth.getState().token, onUnauthorized: () => { void useAuth.getState().signOut(); } });
