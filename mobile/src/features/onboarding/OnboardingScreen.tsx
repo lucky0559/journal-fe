@@ -14,6 +14,7 @@ import { Chip } from '@/ui/Chip';
 import { Icon } from '@/ui/Icon';
 import { ScreenFade } from '@/ui/ScreenFade';
 import { ONBOARDING_CTA, canContinue } from './onboardingLogic';
+import { StepDots } from './StepDots';
 
 const BLOB = parseRadii('58% 42% 38% 62% / 64% 46% 54% 36%');
 const CIRCLE = parseRadii('50%');
@@ -55,11 +56,7 @@ export function OnboardingScreen() {
               <Icon name="arrow-left" size={22} />
             </Pressable>
           ) : <View />}
-          <View style={{ flexDirection: 'row', gap: 6 }}>
-            {[0, 1, 2, 3].map((i) => (
-              <View key={i} style={{ height: 8, width: i === step ? 26 : 8, borderRadius: 4, backgroundColor: i <= step ? colors.accent : ramp.neutral[300] }} />
-            ))}
-          </View>
+          <StepDots count={ONBOARDING_CTA.length} step={step} />
         </View>
 
         <View style={{ flex: 1, gap: step === 0 ? 20 : 16, paddingTop: step === 0 ? 0 : 40 }}>

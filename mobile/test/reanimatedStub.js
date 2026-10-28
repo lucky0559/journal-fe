@@ -12,6 +12,7 @@ const interpolate = (x, input, output) => {
   const t = Math.min(1, Math.max(0, (x - input[0]) / (input[1] - input[0])));
   return output[0] + (output[1] - output[0]) * t;
 };
+const interpolateColor = (x, input, output) => (x >= input[input.length - 1] ? output[output.length - 1] : output[0]);
 const runOnJS = (fn) => fn;
 const createAnimatedComponent = (C) => C;
 const Animated = { View, Text, Image, ScrollView, createAnimatedComponent };
@@ -20,5 +21,5 @@ module.exports = {
   __esModule: true,
   default: Animated,
   ...Animated,
-  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, runOnJS,
+  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, runOnJS,
 };
