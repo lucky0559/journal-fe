@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import type { Voice } from '@/domain/types';
@@ -12,10 +11,9 @@ const BARS = [40, 75, 55, 95, 60, 35, 80, 100, 55, 70, 45, 30];
 export function VoicePill({ voice, onRemove }: { voice: Voice; onRemove?: () => void }) {
   const player = useAudioPlayer(voice.uri || null);
   const status = useAudioPlayerStatus(player);
-  const [fake, setFake] = useState(false); // demo notes have no audio; just toggle the icon
-  const playing = voice.uri ? status.playing : fake;
+  const playing = voice.uri ? status.playing : false;
   const toggle = () => {
-    if (!voice.uri) return setFake((f) => !f);
+    if (!voice.uri) return; // nothing to play
     if (status.playing) player.pause();
     else {
       if (status.didJustFinish || status.currentTime >= status.duration) player.seekTo(0);

@@ -54,7 +54,7 @@ it('deletes a file that exists and ignores one that does not', () => {
   expect(mockDelete).toHaveBeenCalledTimes(1);
 });
 
-it('never throws, and ignores empty uris (demo media)', () => {
+it('never throws, and ignores empty uris (placeholder media)', () => {
   mockDelete.mockImplementationOnce(() => { throw new Error('io'); });
   expect(() => deleteMedia('file:///doc/media/abc.jpg')).not.toThrow();
   deleteMedia('');

@@ -9,9 +9,7 @@ import { useLock } from './lockStore';
 import { useAuth } from '@/auth';
 import { reconcileLock } from '@/features/lock/reconcileLock';
 import { pinVault } from '@/data/pinVaultInstance';
-import { DEMO_DATA } from '@/config';
-import { demoEntries } from '@/domain/demoData';
-import { todayIso } from '@/lib/dates';
+import { isLegacyDemoEntry } from '@/domain/legacyDemo';
 
 let db: Db | null = null;
 const need = (): Db => {
@@ -25,9 +23,9 @@ export const useSettings = createSettingsStore(() => createSettingsRepo(need()))
 export async function bootstrapState(): Promise<void> {
   db = await openDb();
   await Promise.all([useSettings.getState().load(), useEntries.getState().load(), useAuth.getState().restore()]);
-  if (DEMO_DATA && !useSettings.getState().settings.onboarded && useEntries.getState().entries.length === 0) {
-    await useEntries.getState().replaceAll(demoEntries(todayIso()));
-  }
+  // Earlier development builds seeded sample pages: clear them out of any phone that still has them.
+  const leftovers = useEntries.getState().entries.filter(isLegacyDemoEntry);
+  if (leftovers.length) await useEntries.getState().dropLocal(leftovers.map((e) => e.id));
   const { lockOn, onboarded } = useSettings.getState().settings;
   const stillOn = await reconcileLock(lockOn, pinVault);
   if (lockOn && !stillOn) await useSettings.getState().update({ lockOn: false });

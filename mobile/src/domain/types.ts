@@ -1,6 +1,6 @@
 export type Visibility = 'private' | 'friends' | 'public';
-export interface Photo { id: string; uri: string; label?: string; remoteKey?: string /* key of the uploaded copy in the account */ }      // uri '' = striped placeholder (demo data)
-export interface Voice { id: string; uri: string; seconds: number; remoteKey?: string }      // uri '' = demo voice note (silent)
+export interface Photo { id: string; uri: string; label?: string; remoteKey?: string /* key of the uploaded copy in the account */ }      // uri '' = striped placeholder (no file)
+export interface Voice { id: string; uri: string; seconds: number; remoteKey?: string }      // uri '' = no file (silent)
 export interface Entry {
   id: string; createdAt: number; date: string /* YYYY-MM-DD */; time: string /* '9:41 pm' */;
   mood: number /* 0-100 */; feelings: string[]; text: string; prompt: string; vis: Visibility;

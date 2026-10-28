@@ -10,8 +10,7 @@ npm test                  # Jest (jest-expo + React Native Testing Library)
 npm run typecheck
 ```
 
-- `EXPO_PUBLIC_DEMO_DATA=1` (set in `.env.development`) seeds sample pages and shows "Reset demo data" in Me. Preview and production builds do not include it.
-- Friends and Public come from the backend (`../journ-al-be`); private pages never leave the device. Only pages set to Friends or Public are uploaded, and never their mood or feelings.
+- The whole journal is saved to the signed-in account on the backend (`../journ-al-be`) and restored on any phone that signs in with the same Google account. Only pages set to Friends or Public are visible to other people, and mood and feelings are only ever visible to you.
 - Design reference: `../design_handoff_interactive_journal/`. Plan: `../docs/superpowers/plans/2026-10-08-interactive-journal-app.md`.
 
 ## Google sign-in

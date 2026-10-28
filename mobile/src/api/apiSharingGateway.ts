@@ -64,7 +64,7 @@ export function createApiSharingGateway({ api, fetchImpl, download = downloadMed
   async function withKeys(entry: Entry, fresh: boolean): Promise<Entry> {
     const photos = [];
     for (const p of entry.photos) {
-      if (!p.uri) { photos.push(p); continue; } // demo placeholder: nothing to upload
+      if (!p.uri) { photos.push(p); continue; } // a placeholder with no file: nothing to upload
       photos.push({ ...p, remoteKey: !fresh && p.remoteKey ? p.remoteKey : await upload('photo', p.uri) });
     }
     const voices = [];

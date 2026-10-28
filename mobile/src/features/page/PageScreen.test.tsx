@@ -15,12 +15,12 @@ jest.mock('expo-router', () => ({
 }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');
-  const { demoEntries } = require('@/domain/demoData');
+  const { sampleEntries } = require('../../../test/sampleEntries');
   const { sortEntries } = require('@/state/entriesStore');
-  return { useEntries: create(() => ({ entries: sortEntries(demoEntries('2026-10-08')) })) };
+  return { useEntries: create(() => ({ entries: sortEntries(sampleEntries('2026-10-08')) })) };
 });
 
-// demo pages, newest first: demo-1 (7 Oct) ... demo-8 (20 Sep)
+// sample pages, newest first: sample-1 (7 Oct) ... sample-8 (20 Sep)
 const wrap = () =>
   render(
     <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 360, height: 800 }, insets: { top: 0, left: 0, right: 0, bottom: 0 } }}>
@@ -31,7 +31,7 @@ const wrap = () =>
 beforeEach(() => {
   jest.clearAllMocks();
   mockCanGoBack = true;
-  mockParams = { id: 'demo-1' };
+  mockParams = { id: 'sample-1' };
 });
 
 describe('reading a page', () => {
@@ -53,13 +53,13 @@ describe('reading a page', () => {
 
   it('shows the photos, stickers and who can read the page', () => {
     wrap();
-    expect(screen.getByText('photo · dinner')).toBeTruthy(); // the demo photo has no file, so its label shows
+    expect(screen.getByText('photo · dinner')).toBeTruthy(); // the sample photo has no file, so its label shows
     expect(screen.getByText('cozy')).toBeTruthy();
     expect(screen.getByLabelText(/^Friends\./)).toBeTruthy();
   });
 
   it('plays voice notes and does not let you remove them while reading', () => {
-    mockParams = { id: 'demo-2' };
+    mockParams = { id: 'sample-2' };
     wrap();
     expect(screen.getByRole('button', { name: 'Play voice note' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Remove voice note' })).toBeNull();
@@ -67,10 +67,10 @@ describe('reading a page', () => {
   });
 
   it('lists the feelings written with the page', () => {
-    mockParams = { id: 'demo-1' };
+    mockParams = { id: 'sample-1' };
     wrap();
     expect(screen.queryByText('Prompt')).toBeTruthy();
-    // demo pages have no feelings: none are shown
+    // the sample pages have no feelings: none are shown
     expect(screen.queryByText('grateful')).toBeNull();
   });
 
@@ -85,25 +85,25 @@ describe('moving around the journal', () => {
   it('edits through the Edit button', () => {
     wrap();
     fireEvent.press(screen.getByText('Edit'));
-    expect(mockPush).toHaveBeenCalledWith({ pathname: '/write', params: { entryId: 'demo-1' } });
+    expect(mockPush).toHaveBeenCalledWith({ pathname: '/write', params: { entryId: 'sample-1' } });
   });
 
   it('turns to the older and newer pages, remembering which way it turned', () => {
-    mockParams = { id: 'demo-3' };
+    mockParams = { id: 'sample-3' };
     wrap();
     fireEvent.press(screen.getByRole('button', { name: /^Older page, / }));
-    expect(mockSetParams).toHaveBeenLastCalledWith({ id: 'demo-4', dir: 'older' });
+    expect(mockSetParams).toHaveBeenLastCalledWith({ id: 'sample-4', dir: 'older' });
     fireEvent.press(screen.getByRole('button', { name: /^Newer page, / }));
-    expect(mockSetParams).toHaveBeenLastCalledWith({ id: 'demo-2', dir: 'newer' });
+    expect(mockSetParams).toHaveBeenLastCalledWith({ id: 'sample-2', dir: 'newer' });
   });
 
   it('has no newer page after the latest one and no older page before the first', () => {
-    mockParams = { id: 'demo-1' };
+    mockParams = { id: 'sample-1' };
     const latest = wrap();
     expect(screen.queryByRole('button', { name: /^Newer page/ })).toBeNull();
     expect(screen.getByRole('button', { name: /^Older page/ })).toBeTruthy();
     latest.unmount();
-    mockParams = { id: 'demo-8' };
+    mockParams = { id: 'sample-8' };
     wrap();
     expect(screen.queryByRole('button', { name: /^Older page/ })).toBeNull();
     expect(screen.getByText('Page 1 of 8')).toBeTruthy();

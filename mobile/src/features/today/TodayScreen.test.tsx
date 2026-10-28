@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { demoEntries } from '@/domain/demoData';
+import { sampleEntries } from '../../../test/sampleEntries';
 import { useCheckin } from '@/state/checkinStore';
 import { TodayScreen } from './TodayScreen';
 
@@ -9,10 +9,10 @@ const mockNavigate = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, navigate: mockNavigate }), usePathname: () => '/' }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');
-  const { demoEntries } = require('@/domain/demoData');
+  const { sampleEntries } = require('../../../test/sampleEntries');
   return {
     useSettings: create(() => ({ settings: { name: 'Maya', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: true } })),
-    useEntries: create(() => ({ entries: demoEntries('2026-10-08') })),
+    useEntries: create(() => ({ entries: sampleEntries('2026-10-08') })),
   };
 });
 
@@ -28,7 +28,7 @@ beforeEach(() => { jest.clearAllMocks(); useCheckin.setState({ mood: 62, feeling
 it('greets by name and shows the check-in, prompts and the two latest pages', () => {
   wrap();
   expect(screen.getByText(/, Maya\.$/)).toBeTruthy();
-  expect(screen.getByText('How are you arriving?')).toBeTruthy();
+  expect(screen.getByText('How are you feeling today?')).toBeTruthy();
   expect(screen.getByText('Good')).toBeTruthy();
   expect(screen.getByText('Nice. Hold onto it')).toBeTruthy();
   expect(screen.getByText('Tonight’s prompts')).toBeTruthy();

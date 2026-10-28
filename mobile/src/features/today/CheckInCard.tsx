@@ -19,7 +19,7 @@ export function CheckInCard() {
   const position = useSharedValue(initial);
   return (
     <View style={{ backgroundColor: colors.surface, borderRadius: radii.container, paddingTop: 22, paddingHorizontal: 20, paddingBottom: 18, gap: 18 }}>
-      <Text style={body(15, 'semi')}>How are you arriving?</Text>
+      <Text style={body(15, 'semi')}>How are you feeling today?</Text>
       <MoodReadout position={position} initial={initial} />
       <MoodControl position={position} />
       <FeelingChips />

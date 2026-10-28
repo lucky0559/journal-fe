@@ -7,8 +7,8 @@ const mockPush = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }), usePathname: () => '/timeline' }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');
-  const { demoEntries } = require('@/domain/demoData');
-  return { useEntries: create(() => ({ entries: demoEntries('2026-10-08') })) };
+  const { sampleEntries } = require('../../../test/sampleEntries');
+  return { useEntries: create(() => ({ entries: sampleEntries('2026-10-08') })) };
 });
 
 const wrap = () =>
@@ -40,7 +40,7 @@ describe('calendar', () => {
     expect(screen.getByText('Saturday, 3 October')).toBeTruthy();
     expect(screen.getByText('6:12 pm · Bright')).toBeTruthy();
     fireEvent.press(screen.getByRole('button', { name: /Found a bench/ }));
-    expect(mockPush).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: 'demo-4' } }); // opens to be read, not edited
+    expect(mockPush).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: 'sample-4' } }); // opens to be read, not edited
   });
 
   it('writes for a past day that has no page', () => {

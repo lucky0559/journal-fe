@@ -1,8 +1,8 @@
-import { demoEntries } from '@/domain/demoData';
+import { sampleEntries } from '../../test/sampleEntries';
 import type { Entry } from '@/domain/types';
 import { buildExportHtml } from './exporter';
 
-const base = demoEntries('2026-10-08');
+const base = sampleEntries('2026-10-08');
 
 it('lists pages oldest first with date, time, mood and audience', () => {
   const html = buildExportHtml(base, 'Maya');

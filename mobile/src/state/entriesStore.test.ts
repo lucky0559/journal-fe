@@ -189,9 +189,9 @@ describe('syncPending', () => {
     expect(s.gateway.publish).toHaveBeenCalledTimes(1);
   });
 
-  it('leaves demo pages (already marked as synced) alone', async () => {
+  it('leaves pages that are already synced alone', async () => {
     const s = setup();
-    s.saved.set('demo', entry({ id: 'demo', publishedAt: 1 }));
+    s.saved.set('done', entry({ id: 'done', publishedAt: 1 }));
     await s.useStore.getState().load();
     await s.useStore.getState().syncPending();
     expect(s.gateway.publish).not.toHaveBeenCalled();
@@ -279,6 +279,20 @@ describe('detachFromAccount (the account was deleted)', () => {
     expect(s.saved.get('f')!.photos[0]).toEqual({ id: 'p', uri: 'file:///doc/media/p.jpg' });
     expect(s.queue.size).toBe(0);
     expect(s.gateway.unpublish).not.toHaveBeenCalled();
+  });
+});
+
+describe('dropLocal', () => {
+  it('removes pages from the phone without asking the server or queueing anything', async () => {
+    const s = setup();
+    s.saved.set('a', entry({ id: 'a', publishedAt: 5 }));
+    s.saved.set('b', entry({ id: 'b', publishedAt: null }));
+    await s.useStore.getState().load();
+    await s.useStore.getState().dropLocal(['a']);
+    expect(s.useStore.getState().entries.map((e) => e.id)).toEqual(['b']);
+    expect([...s.saved.keys()]).toEqual(['b']);
+    expect(s.gateway.unpublish).not.toHaveBeenCalled();
+    expect(s.queue.size).toBe(0);
   });
 });
 

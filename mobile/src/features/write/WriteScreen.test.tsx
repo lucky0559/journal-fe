@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { demoEntries } from '@/domain/demoData';
+import { sampleEntries } from '../../../test/sampleEntries';
 import { useToast } from '@/state/toastStore';
 import { WriteScreen } from './WriteScreen';
 
@@ -24,8 +24,8 @@ jest.mock('@/services/photoPicker', () => ({ pickPhotos: jest.fn() }));
 jest.mock('@/lib/id', () => ({ newId: () => 'new-1' }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');
-  const { demoEntries } = require('@/domain/demoData');
-  return { useEntries: create(() => ({ entries: demoEntries('2026-10-08'), save: (e: unknown) => mockSave(e) })) };
+  const { sampleEntries } = require('../../../test/sampleEntries');
+  return { useEntries: create(() => ({ entries: sampleEntries('2026-10-08'), save: (e: unknown) => mockSave(e) })) };
 });
 
 const wrap = () =>
@@ -126,14 +126,14 @@ describe('new page', () => {
 
 describe('editing an existing page', () => {
   it('loads it and keeps its id, time and creation stamp on save', async () => {
-    mockParams = { entryId: 'demo-1' };
+    mockParams = { entryId: 'sample-1' };
     wrap();
     expect(screen.getByDisplayValue(/Made pasta with Jun/)).toBeTruthy();
     expect(screen.getByText('Wed, 7 Oct · 10:02 pm')).toBeTruthy();
     fireEvent.changeText(screen.getByDisplayValue(/Made pasta with Jun/), 'Edited');
     await act(async () => { fireEvent.press(screen.getByText('Save')); });
-    const original = demoEntries('2026-10-08')[0];
-    expect(saved()).toMatchObject({ id: 'demo-1', time: '10:02 pm', createdAt: original.createdAt, text: 'Edited', vis: 'friends' });
+    const original = sampleEntries('2026-10-08')[0];
+    expect(saved()).toMatchObject({ id: 'sample-1', time: '10:02 pm', createdAt: original.createdAt, text: 'Edited', vis: 'friends' });
     expect(useToast.getState().message).toBe('Saved · shared with friends');
     expect(mockBack).toHaveBeenCalled(); // back to the page being read
     expect(mockReplace).not.toHaveBeenCalled();

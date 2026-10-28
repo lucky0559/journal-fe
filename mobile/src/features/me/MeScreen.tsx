@@ -1,10 +1,7 @@
 import { Alert, Pressable, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/auth';
-import { DEMO_DATA } from '@/config';
 import { pinVault } from '@/data/pinVaultInstance';
-import { demoEntries } from '@/domain/demoData';
-import { todayIso } from '@/lib/dates';
 import { TIMES } from '@/lib/time';
 import { exportPages } from '@/services/exporter';
 import { social } from '@/social';
@@ -156,12 +153,6 @@ export function MeScreen() {
                 },
               ])
             }
-          />
-        ) : null}
-        {DEMO_DATA ? (
-          <ListButton
-            label="Reset demo data" danger
-            onPress={async () => { await useEntries.getState().replaceAll(demoEntries(todayIso())); show('Demo data restored'); }}
           />
         ) : null}
       </View>

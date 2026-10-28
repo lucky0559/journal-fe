@@ -15,6 +15,8 @@ export interface EntriesState {
   /** Resolves when the saves to the account that are in flight have finished. */
   idle(): Promise<void>;
   replaceAll(es: Entry[]): Promise<void>;
+  /** Removes pages from this phone only: nothing is asked of the server. */
+  dropLocal(ids: string[]): Promise<void>;
   /** Retry everything that did not reach the account (queued deletions first, then every unsynced page). */
   syncPending(): Promise<void>;
   /** Bring in what the account has that this phone doesn't (and newer versions of synced pages). Returns how many pages changed. */
@@ -101,6 +103,12 @@ export function createEntriesStore(getRepo: () => EntryRepo, gateway: SharingGat
         await getRepo().replaceAll(es);
         set({ entries: sortEntries(es) });
         await Promise.allSettled(removed.map((e) => deleteRemote(e.id)));
+      },
+      async dropLocal(ids) {
+        const gone = new Set(ids);
+        const keep = get().entries.filter((e) => !gone.has(e.id));
+        await getRepo().replaceAll(keep);
+        set({ entries: sortEntries(keep) });
       },
       async syncPending() {
         if (syncing) return;

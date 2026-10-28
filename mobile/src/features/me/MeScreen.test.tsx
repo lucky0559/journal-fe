@@ -13,19 +13,16 @@ const mockSignOut = jest.fn(async () => {});
 const mockDeleteAccount = jest.fn(async () => {});
 const mockClear = jest.fn(async () => {});
 const mockExport = jest.fn(async (..._a: unknown[]) => 'shared');
-const mockReplaceAll = jest.fn(async (..._a: unknown[]) => {});
 const mockDetach = jest.fn(async () => {});
 const mockUpdate = jest.fn(async (..._a: unknown[]) => {});
-let mockDemo = false;
 
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, replace: mockReplace }) }));
-jest.mock('@/config', () => ({ get DEMO_DATA() { return mockDemo; } }));
 jest.mock('@/data/pinVaultInstance', () => ({ pinVault: { clear: () => mockClear() } }));
 jest.mock('@/social', () => ({ social: { deleteAccount: () => mockDeleteAccount() } }));
 jest.mock('@/services/exporter', () => ({ exportPages: (...a: unknown[]) => mockExport(...a) }));
 jest.mock('@/state', () => {
   const { create } = require('zustand');
-  const { demoEntries } = require('@/domain/demoData');
+  const { sampleEntries } = require('../../../test/sampleEntries');
   return {
     useSettings: create(() => ({
       settings: { name: 'Maya', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: true },
@@ -33,8 +30,7 @@ jest.mock('@/state', () => {
       update: (...a: unknown[]) => mockUpdate(...a),
     })),
     useEntries: create(() => ({
-      entries: demoEntries('2026-10-08'),
-      replaceAll: (...a: unknown[]) => mockReplaceAll(...a),
+      entries: sampleEntries('2026-10-08'),
       detachFromAccount: () => mockDetach(),
     })),
   };
@@ -52,7 +48,6 @@ const wrap = () =>
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockDemo = false;
   withSettings({});
   useToast.setState({ message: '' });
   useLock.setState({ locked: false, suspended: 0 });
@@ -105,7 +100,7 @@ it('"Lock now" locks the app', () => {
 it('export announces itself and runs the exporter with all pages', async () => {
   wrap();
   await act(async () => { fireEvent.press(screen.getByText('Export my pages')); });
-  expect(mockExport).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ id: 'demo-1' })]), 'Maya');
+  expect(mockExport).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ id: 'sample-1' })]), 'Maya');
   expect(useToast.getState().message).toBe('Exporting 8 pages as PDF…');
 });
 
@@ -125,17 +120,9 @@ it('replay pushes the welcome flow', () => {
   expect(mockPush).toHaveBeenCalledWith('/onboarding');
 });
 
-it('has no "Reset demo data" row outside demo builds', () => {
+it('has no demo data controls', () => {
   wrap();
-  expect(screen.queryByText('Reset demo data')).toBeNull();
-});
-
-it('reset demo data restores the sample pages in demo builds', async () => {
-  mockDemo = true;
-  wrap();
-  await act(async () => { fireEvent.press(screen.getByText('Reset demo data')); });
-  expect(mockReplaceAll).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ id: 'demo-1' })]));
-  expect(useToast.getState().message).toBe('Demo data restored');
+  expect(screen.queryByText(/demo/i)).toBeNull();
 });
 
 describe('Google account', () => {

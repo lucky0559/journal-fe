@@ -100,7 +100,7 @@ describe('apiSharingGateway.publish', () => {
     expect(calls[0].body).toMatchObject({ photos: ['u/old.png'] });
   });
 
-  it('skips placeholder media that has no file (demo data)', async () => {
+  it('skips placeholder media that has no file', async () => {
     const { gw, calls } = setup();
     const out = await gw.publish(entry({ photos: [{ id: 'p', uri: '', label: 'photo · river' }], voices: [{ id: 'v', uri: '', seconds: 38 }] }));
     expect(calls).toHaveLength(1);
