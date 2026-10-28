@@ -11,6 +11,7 @@ import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
+import { SlideIn } from '@/ui/SlideIn';
 import { AddFriendSheet } from './AddFriendSheet';
 import { PostCard } from './PostCard';
 import { UPDATE_FAILED, useIncomingRequests } from './useIncomingRequests';
@@ -18,6 +19,12 @@ import { UPDATE_FAILED, useIncomingRequests } from './useIncomingRequests';
 export function FeedScreen() {
   const router = useRouter();
   const [tab, setTab] = useState<'friends' | 'public'>('friends');
+  // Public sits to the right of Friends, so its pages slide in from the right and Friends' from the left (none on first show).
+  const [from, setFrom] = useState<1 | 0 | -1>(0);
+  const choose = (next: 'friends' | 'public') => {
+    setFrom(next === 'public' ? 1 : -1);
+    setTab(next);
+  };
   const [adding, setAdding] = useState(false);
   const feed = usePagedPosts({ key: tab, fetchPage: (before) => social.feed(tab, before), social });
   const requests = useIncomingRequests(social, () => void feed.refresh());
@@ -52,49 +59,52 @@ export function FeedScreen() {
             <Text style={body(14, 'semi')}>Add a friend</Text>
           </Pressable>
         </View>
-        <Segmented options={[{ key: 'friends', label: 'Friends' }, { key: 'public', label: 'Public' }]} value={tab} onChange={setTab} />
+        <Segmented options={[{ key: 'friends', label: 'Friends' }, { key: 'public', label: 'Public' }]} value={tab} onChange={choose} />
+      </View>
+
+      <SlideIn key={tab} from={from} style={{ gap: 18, marginTop: -4 }}>
         <Text style={[body(13, 'body', 1.45), { color: ramp.neutral[700] }]}>
           {tab === 'friends' ? 'Pages your friends chose to share with you.' : 'Pages anyone has made public. Tap a name to see more.'}
         </Text>
-      </View>
 
-      {tab === 'friends' && requests.items.length ? (
-        <View style={{ gap: 10 }}>
-          <Text style={body(15, 'semi')}>Friend requests</Text>
-          {requests.items.map((u) => (
-            <View key={u.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: ramp.neutral[100], borderRadius: radii.card, padding: 12 }}>
-              <Avatar initial={initialOf(u.name)} color={avatarColor(u.id)} onPress={() => openProfile(u.id)} />
-              <Pressable accessibilityRole="button" accessibilityLabel={`${u.name}, profile`} onPress={() => openProfile(u.id)} style={{ flex: 1 }}>
-                <Text style={body(15, 'bold')}>{u.name}</Text>
-              </Pressable>
-              <Button label="Accept" accessibilityLabel={`Accept ${u.givenName}`} height={44} fontSize={14} onPress={() => requests.accept(u)} />
-              <Button label="Decline" variant="ghost" accessibilityLabel={`Decline ${u.givenName}`} height={44} onPress={() => requests.decline(u)} />
-            </View>
-          ))}
-        </View>
-      ) : null}
+        {tab === 'friends' && requests.items.length ? (
+          <View style={{ gap: 10 }}>
+            <Text style={body(15, 'semi')}>Friend requests</Text>
+            {requests.items.map((u) => (
+              <View key={u.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: ramp.neutral[100], borderRadius: radii.card, padding: 12 }}>
+                <Avatar initial={initialOf(u.name)} color={avatarColor(u.id)} onPress={() => openProfile(u.id)} />
+                <Pressable accessibilityRole="button" accessibilityLabel={`${u.name}, profile`} onPress={() => openProfile(u.id)} style={{ flex: 1 }}>
+                  <Text style={body(15, 'bold')}>{u.name}</Text>
+                </Pressable>
+                <Button label="Accept" accessibilityLabel={`Accept ${u.givenName}`} height={44} fontSize={14} onPress={() => requests.accept(u)} />
+                <Button label="Decline" variant="ghost" accessibilityLabel={`Decline ${u.givenName}`} height={44} onPress={() => requests.decline(u)} />
+              </View>
+            ))}
+          </View>
+        ) : null}
 
-      {feed.status === 'loading' ? <Text style={[body(15), { color: ramp.neutral[700] }]}>Loading…</Text> : null}
-      {feed.status === 'error' ? (
-        <View style={{ gap: 10, alignItems: 'flex-start' }}>
-          <Text style={body(15)}>Couldn’t load pages.</Text>
-          <Button label="Try again" variant="outline" height={44} onPress={() => void feed.refresh()} />
-        </View>
-      ) : null}
-      {feed.status === 'ready' && feed.posts.length === 0 ? (
-        <Text style={[body(15, 'body', 1.45), { color: ramp.neutral[700] }]}>{tab === 'friends' ? 'No pages from friends yet.' : 'No public pages yet.'}</Text>
-      ) : null}
+        {feed.status === 'loading' ? <Text style={[body(15), { color: ramp.neutral[700] }]}>Loading…</Text> : null}
+        {feed.status === 'error' ? (
+          <View style={{ gap: 10, alignItems: 'flex-start' }}>
+            <Text style={body(15)}>Couldn’t load pages.</Text>
+            <Button label="Try again" variant="outline" height={44} onPress={() => void feed.refresh()} />
+          </View>
+        ) : null}
+        {feed.status === 'ready' && feed.posts.length === 0 ? (
+          <Text style={[body(15, 'body', 1.45), { color: ramp.neutral[700] }]}>{tab === 'friends' ? 'No pages from friends yet.' : 'No public pages yet.'}</Text>
+        ) : null}
 
-      {feed.posts.map((p) => (
-        <PostCard key={p.id} post={p} onOpenProfile={() => openProfile(p.author.id)} onReact={(kind) => void react(p.id, kind)} />
-      ))}
+        {feed.posts.map((p) => (
+          <PostCard key={p.id} post={p} onOpenProfile={() => openProfile(p.author.id)} onReact={(kind) => void react(p.id, kind)} />
+        ))}
 
-      {feed.hasMore ? (
-        <View style={{ alignItems: 'flex-start', gap: 6 }}>
-          {feed.loadMoreFailed ? <Text style={[body(13), { color: ramp.accent[700] }]}>Couldn’t load more.</Text> : null}
-          <Button label="Load more" variant="outline" height={44} disabled={feed.loadingMore} onPress={() => void feed.loadMore()} />
-        </View>
-      ) : null}
+        {feed.hasMore ? (
+          <View style={{ alignItems: 'flex-start', gap: 6 }}>
+            {feed.loadMoreFailed ? <Text style={[body(13), { color: ramp.accent[700] }]}>Couldn’t load more.</Text> : null}
+            <Button label="Load more" variant="outline" height={44} disabled={feed.loadingMore} onPress={() => void feed.loadMore()} />
+          </View>
+        ) : null}
+      </SlideIn>
 
       <AddFriendSheet visible={adding} onClose={() => setAdding(false)} onFound={openProfile} />
     </Screen>
