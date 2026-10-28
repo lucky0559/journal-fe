@@ -1,4 +1,4 @@
-import { Directory, File, Paths } from 'expo-file-system';
+import { Directory, File, Paths, UploadType } from 'expo-file-system';
 
 const mediaDir = () => new Directory(Paths.document, 'media');
 
@@ -17,6 +17,15 @@ export async function downloadMedia(url: string, id: string, ext: string): Promi
   if (!dir.exists) dir.create({ intermediates: true });
   const file = await File.downloadFileAsync(url, new File(dir, `${id}.${ext}`), { idempotent: true });
   return file.uri;
+}
+
+/**
+ * Sends a file on the phone to a signed upload address as a multipart form (the provider's fields first, then the file)
+ * and returns the HTTP status. The file is streamed from disk by the native side.
+ */
+export async function uploadFile(uri: string, url: string, fields: Record<string, string>, fieldName: string, mimeType: string): Promise<number> {
+  const res = await new File(uri).upload(url, { httpMethod: 'POST', uploadType: UploadType.MULTIPART, fieldName, mimeType, parameters: fields });
+  return res.status;
 }
 
 export function deleteMedia(uri: string): void {

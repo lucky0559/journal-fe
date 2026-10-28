@@ -33,7 +33,13 @@ const withKeys = <T extends { id: string; remoteKey?: string }>(local: T[], sent
   return local.map((f) => (f.remoteKey || !keys.get(f.id) ? f : { ...f, remoteKey: keys.get(f.id) }));
 };
 
-export function createEntriesStore(getRepo: () => EntryRepo, gateway: SharingGateway, now: () => number = Date.now) {
+/** `report` hears about background failures (saving to the account, restoring); the app only wires it up in development. */
+export function createEntriesStore(
+  getRepo: () => EntryRepo,
+  gateway: SharingGateway,
+  now: () => number = Date.now,
+  report: (what: string, error: unknown) => void = () => {},
+) {
   return create<EntriesState>()((set, get) => {
     let syncing = false;
     let restoring = false;
@@ -51,8 +57,9 @@ export function createEntriesStore(getRepo: () => EntryRepo, gateway: SharingGat
       try {
         await gateway.unpublish(id);
         await repo.unqueueUnpublish(id);
-      } catch {
+      } catch (error) {
         // offline or server error: it remains queued and syncPending() retries it
+        report(`deleting page ${id} from the account`, error);
       }
     };
 
@@ -71,8 +78,9 @@ export function createEntriesStore(getRepo: () => EntryRepo, gateway: SharingGat
           // Edited while it was uploading: keep the edit, remember the uploads. It stays pending and goes next.
           await put({ ...latest, photos: withKeys(latest.photos, sent.photos), voices: withKeys(latest.voices, sent.voices) });
         }
-      } catch {
+      } catch (error) {
         // stays unsynced (publishedAt null); syncPending() retries it
+        report(`saving page ${id} to the account`, error);
       }
     };
 

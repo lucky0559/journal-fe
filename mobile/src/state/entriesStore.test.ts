@@ -9,7 +9,7 @@ const entry = (over: Partial<Entry> = {}): Entry => ({
   vis: 'private', photos: [], voices: [], stickers: [], publishedAt: null, ...over,
 });
 
-function setup(gw: Partial<SharingGateway> = {}) {
+function setup(gw: Partial<SharingGateway> = {}, report?: (what: string, error: unknown) => void) {
   const saved = new Map<string, Entry>();
   const queue = new Set<string>();
   const repo: EntryRepo = {
@@ -27,7 +27,7 @@ function setup(gw: Partial<SharingGateway> = {}) {
     localize: jest.fn(async (e: Entry) => e),
     ...gw,
   };
-  const useStore = createEntriesStore(() => repo, gateway, () => 777);
+  const useStore = createEntriesStore(() => repo, gateway, () => 777, report);
   return { useStore, gateway, saved, queue };
 }
 
@@ -95,11 +95,13 @@ describe('saving to the account', () => {
     expect(s.saved.get('a')!.photos[0].remoteKey).toBe('u/1.jpg');
   });
 
-  it('keeps the local save and leaves the page pending when saving fails', async () => {
-    const s = setup({ publish: jest.fn(async () => { throw new Error('offline'); }) });
+  it('keeps the local save and leaves the page pending when saving fails, and says why', async () => {
+    const report = jest.fn();
+    const s = setup({ publish: jest.fn(async () => { throw new Error('offline'); }) }, report);
     await expect(saveAndSync(s, entry({ vis: 'public' }))).resolves.toBeUndefined();
     expect(s.saved.get('a')).toBeDefined();
     expect(s.saved.get('a')!.publishedAt).toBeNull();
+    expect(report).toHaveBeenCalledWith('saving page a to the account', expect.objectContaining({ message: 'offline' }));
   });
 
   it('an edit to a synced page is pending again until it syncs', async () => {

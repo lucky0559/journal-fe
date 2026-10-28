@@ -1,5 +1,5 @@
 import type { SharingGateway } from '@/data/sharing';
-import { downloadMedia } from '@/data/mediaStore';
+import { downloadMedia, uploadFile } from '@/data/mediaStore';
 import type { Entry, Visibility } from '@/domain/types';
 import { ApiError, type ApiClient } from './client';
 
@@ -12,7 +12,8 @@ const contentType = (kind: 'photo' | 'voice', uri: string) =>
 
 interface Deps {
   api: ApiClient;
-  fetchImpl?: typeof fetch;
+  /** Sends a file on the phone to a signed upload address as a multipart form; returns the HTTP status. */
+  send?: (uri: string, url: string, fields: Record<string, string>, fieldName: string, mimeType: string) => Promise<number>;
   /** Saves a remote file onto the phone and returns its uri. */
   download?: (url: string, id: string, ext: string) => Promise<string>;
 }
@@ -47,16 +48,13 @@ interface UploadSlot {
  * Keeps the whole journal in the account on journ-al-be: every page, including Only me ones with their mood and
  * feelings. The server only ever shows another person a page they are allowed to read, and never its mood or feelings.
  */
-export function createApiSharingGateway({ api, fetchImpl, download = downloadMedia }: Deps): SharingGateway {
+export function createApiSharingGateway({ api, send = uploadFile, download = downloadMedia }: Deps): SharingGateway {
   async function upload(kind: 'photo' | 'voice', uri: string): Promise<string> {
     const type = contentType(kind, uri);
     const slot = await api.request<UploadSlot>('POST', '/media/upload-url', { body: { kind, contentType: type } });
-    // Multipart form straight to the storage provider (signed by the server). React Native streams `{uri,name,type}` from disk.
-    const form = new FormData();
-    for (const [name, value] of Object.entries(slot.fields)) form.append(name, value);
-    form.append(slot.fileField, { uri, name: `upload.${extOf(uri) || (kind === 'photo' ? 'jpg' : 'm4a')}`, type } as unknown as Blob);
-    const res = await (fetchImpl ?? fetch)(slot.uploadUrl, { method: 'POST', body: form });
-    if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+    // Straight to the storage provider, signed by the server, streamed from disk by the native side.
+    const status = await send(uri, slot.uploadUrl, slot.fields, slot.fileField, type);
+    if (status < 200 || status >= 300) throw new Error(`Upload failed (${status})`);
     return slot.key;
   }
 

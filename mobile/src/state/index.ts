@@ -17,7 +17,12 @@ const need = (): Db => {
   return db;
 };
 
-export const useEntries = createEntriesStore(() => createEntryRepo(need()), createApiSharingGateway({ api }));
+export const useEntries = createEntriesStore(
+  () => createEntryRepo(need()),
+  createApiSharingGateway({ api }),
+  Date.now,
+  __DEV__ ? (what, error) => console.warn(`[sync] ${what} failed:`, error instanceof Error ? error.message : error) : undefined,
+);
 export const useSettings = createSettingsStore(() => createSettingsRepo(need()));
 
 export async function bootstrapState(): Promise<void> {
