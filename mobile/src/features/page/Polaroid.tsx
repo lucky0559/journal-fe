@@ -10,7 +10,7 @@ export function Polaroid({ uri, label, index }: { uri: string; label?: string; i
     <View style={{ width: '82%', alignSelf: right ? 'flex-end' : 'flex-start', transform: [{ rotate: `${right ? 2.2 : -2.2}deg` }], marginTop: 6 }}>
       <View style={[{ backgroundColor: colors.paper, padding: 10, paddingBottom: 34, borderRadius: 3 }, shadows.md]}>
         <PhotoTile height={210} radius={2} uri={uri} label={label} />
-        {uri && label ? <Text numberOfLines={1} style={[body(12), { color: ramp.neutral[700], marginTop: 8 }]}>{label}</Text> : null}
+        {uri && label ? <Text numberOfLines={1} style={[body(12), { color: colors.paperInk, marginTop: 8 }]}>{label}</Text> : null}
       </View>
       <View
         pointerEvents="none"

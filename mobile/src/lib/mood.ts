@@ -1,4 +1,4 @@
-import { ramp } from '@/theme/tokens';
+import { colors } from '@/theme/tokens';
 import { mixOklch } from './oklch';
 import type { Radii } from './blob';
 
@@ -15,7 +15,7 @@ export const moodIndex = (v: number): 0 | 1 | 2 | 3 | 4 => {
   return Math.min(4, Math.floor(v / 20.001)) as 0 | 1 | 2 | 3 | 4;
 };
 
-export const moodColor = (v: number): string => mixOklch(ramp.accent2[600], ramp.accent[500], v / 100);
+export const moodColor = (v: number): string => mixOklch(colors.moodLow, colors.moodHigh, v / 100);
 
 /** The colour for every whole mood 0-100, so a drag can look colours up on the UI thread instead of mixing OKLCH per frame. */
 export const MOOD_COLORS: readonly string[] = Array.from({ length: 101 }, (_, i) => moodColor(i));

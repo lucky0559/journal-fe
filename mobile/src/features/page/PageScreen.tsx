@@ -138,7 +138,7 @@ function Paper({ entry }: { entry: Entry }) {
   return (
     <View
       style={[
-        { backgroundColor: PAPER, borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(32,30,29,0.06)' },
+        { backgroundColor: PAPER, borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider },
         shadows.md,
       ]}
     >

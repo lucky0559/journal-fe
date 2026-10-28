@@ -8,9 +8,15 @@ describe('mood', () => {
     expect(MOODS[4][1]).toBe('Let’s catch this one');
   });
 
-  it('maps mood 0 to sage-600 and 100 to accent-500', () => {
-    expect(moodColor(0)).toBe('#728157');
-    expect(moodColor(100)).toBe('#d67f48');
+  it('maps mood 0 to dusk violet and 100 to lamp amber', () => {
+    expect(moodColor(0)).toBe('#7a77ba');
+    expect(moodColor(100)).toBe('#f8ac3d');
+  });
+
+  it('passes through rose between the two, so the middle of the scale is warm and not muddy', () => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(moodColor(50).slice(i, i + 2), 16));
+    expect(r).toBeGreaterThan(g); // red leads green: pink, not olive or grey
+    expect(r).toBeGreaterThan(b);
   });
 
   it('has a lookup colour for every whole mood, matching moodColor', () => {

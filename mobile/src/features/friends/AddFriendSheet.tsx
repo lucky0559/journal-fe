@@ -29,7 +29,7 @@ export function AddFriendSheet({ visible, onClose, onFound }: { visible: boolean
         autoCorrect={false}
         style={{ height: 56, borderRadius: radii.pill, borderWidth: 1.5, borderColor: colors.divider, backgroundColor: ramp.neutral[100], paddingHorizontal: 22, fontFamily: 'Figtree_400Regular', fontSize: 16, color: colors.text }}
       />
-      {error ? <Text accessibilityLiveRegion="polite" style={[body(14), { color: ramp.accent[700] }]}>{error}</Text> : null}
+      {error ? <Text accessibilityLiveRegion="polite" style={[body(14), { color: colors.danger }]}>{error}</Text> : null}
       <Button label="Find" onPress={submit} />
     </Sheet>
   );

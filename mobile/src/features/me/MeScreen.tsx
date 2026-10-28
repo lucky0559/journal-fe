@@ -37,7 +37,7 @@ function ListButton({ label, sub, onPress, danger }: { label: string; sub?: stri
       onPress={onPress}
       style={({ pressed }) => ({ height: 52, paddingHorizontal: 14, borderRadius: 24, justifyContent: 'center', backgroundColor: pressed ? (danger ? ramp.accent[100] : ramp.neutral[300]) : 'transparent' })}
     >
-      <Text style={[body(15, 'semi'), { color: danger ? ramp.accent[700] : colors.text }]}>{label}</Text>
+      <Text style={[body(15, 'semi'), { color: danger ? colors.danger : colors.text }]}>{label}</Text>
       {sub ? <Text style={[body(12), { color: ramp.neutral[700] }]}>{sub}</Text> : null}
     </Pressable>
   );

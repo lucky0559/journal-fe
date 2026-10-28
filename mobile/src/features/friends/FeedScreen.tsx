@@ -100,7 +100,7 @@ export function FeedScreen() {
 
         {feed.hasMore ? (
           <View style={{ alignItems: 'flex-start', gap: 6 }}>
-            {feed.loadMoreFailed ? <Text style={[body(13), { color: ramp.accent[700] }]}>Couldn’t load more.</Text> : null}
+            {feed.loadMoreFailed ? <Text style={[body(13), { color: colors.danger }]}>Couldn’t load more.</Text> : null}
             <Button label="Load more" variant="outline" height={44} disabled={feed.loadingMore} onPress={() => void feed.loadMore()} />
           </View>
         ) : null}

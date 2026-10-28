@@ -63,7 +63,7 @@ export function PinPad({ mode, name, verify, onUnlocked, onSetComplete, onCancel
         <Icon name="lock" size={26} color={ramp.accent2[800]} />
       </View>
       <Text style={[heading(28), { textAlign: 'center' }]}>{copy.title}</Text>
-      <Text accessibilityLiveRegion="polite" style={[body(15), { minHeight: 22, textAlign: 'center', color: copy.isError ? ramp.accent[700] : ramp.neutral[700] }]}>
+      <Text accessibilityLiveRegion="polite" style={[body(15), { minHeight: 22, textAlign: 'center', color: copy.isError ? colors.danger : ramp.neutral[700] }]}>
         {copy.sub}
       </Text>
       <View style={{ flexDirection: 'row', gap: 16, marginTop: 10, marginBottom: 26 }}>

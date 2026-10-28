@@ -29,14 +29,14 @@ export function LoginScreen() {
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenFade style={{ paddingTop: top + 10, paddingHorizontal: 26, paddingBottom: bottom + 26, gap: 20 }}>
         <View style={{ height: 270, marginTop: 24 }}>
-          <View style={{ position: 'absolute', left: 0, top: 30 }}><Blob radii={CIRCLE} size={190} color={ramp.accent[300]} /></View>
-          <View style={{ position: 'absolute', right: 6, top: 0 }}><Blob radii={BLOB} size={150} color={ramp.accent2[300]} /></View>
-          <View style={{ position: 'absolute', left: 150, top: 170 }}><Blob radii={CIRCLE} size={92} color={ramp.accent[500]} /></View>
+          <View style={{ position: 'absolute', left: 0, top: 30 }}><Blob radii={CIRCLE} size={190} color={colors.moodLow} /></View>
+          <View style={{ position: 'absolute', right: 6, top: 0 }}><Blob radii={BLOB} size={150} color={ramp.accent2[500]} /></View>
+          <View style={{ position: 'absolute', left: 150, top: 170 }}><Blob radii={CIRCLE} size={92} color={colors.accent} /></View>
         </View>
         <View style={{ flex: 1, gap: 12 }}>
           <Text style={heading(36, 1.08)}>Welcome to your journal.</Text>
           <Text style={[body(16, 'body', 1.5), { color: ramp.neutral[800] }]}>Sign in with Google to get started. Your journal is saved to your account, so it follows you to any phone. Only pages you share are seen by others.</Text>
-          {error ? <Text accessibilityLiveRegion="polite" style={[body(15), { color: ramp.accent[700] }]}>{error}</Text> : null}
+          {error ? <Text accessibilityLiveRegion="polite" style={[body(15), { color: colors.danger }]}>{error}</Text> : null}
         </View>
         <Button label="Continue with Google" onPress={signIn} disabled={busy} />
       </ScreenFade>

@@ -3,9 +3,12 @@ import { View, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { moodColorAt } from '@/lib/mood';
+import { MOOD_COLORS, moodColorAt } from '@/lib/mood';
 import { createEchoFilter, positionFromX, shouldReport } from '@/lib/slider';
-import { ramp, shadows } from '@/theme/tokens';
+import { colors, shadows } from '@/theme/tokens';
+
+/** The track shows the whole mood scale, sampled in OKLCH so it matches the blob rather than blending straight in RGB. */
+const TRACK = [0, 25, 50, 75, 100].map((v) => MOOD_COLORS[v]) as [string, string, ...string[]];
 
 interface Props {
   value: number;
@@ -104,7 +107,7 @@ export function MoodSlider({ value, onChange, size = 'large', position, coarse =
         style={{ height: 44, justifyContent: 'center' }}
       >
         <LinearGradient
-          colors={[ramp.accent2[600], ramp.neutral[300], ramp.accent[500]]}
+          colors={TRACK}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ height: track, borderRadius: 999 }}
@@ -114,7 +117,7 @@ export function MoodSlider({ value, onChange, size = 'large', position, coarse =
           style={[
             {
               position: 'absolute', left: 0, width: thumb, height: thumb, borderRadius: thumb / 2,
-              backgroundColor: ramp.neutral[100], borderWidth: 3,
+              backgroundColor: colors.text, borderWidth: 3,
             },
             shadows.md,
             thumbStyle,

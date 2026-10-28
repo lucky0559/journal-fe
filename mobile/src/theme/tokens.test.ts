@@ -1,10 +1,10 @@
 import { colors, ramp, radii, layout } from './tokens';
 
 describe('tokens', () => {
-  it('has the base palette from the design system', () => {
+  it('has the Lamplight base palette', () => {
     expect(colors).toMatchObject({
-      bg: '#f5ead8', surface: '#ebddc5', text: '#201e1d',
-      accent: '#c67139', accent2: '#7a8a5e', divider: 'rgba(32,30,29,0.16)',
+      bg: '#081a1c', surface: '#112527', text: '#f1ebdc',
+      accent: '#eca338', accent2: '#5fb7a5', moodLow: '#7a77ba', moodHigh: '#f8ac3d',
     });
   });
 
@@ -12,9 +12,9 @@ describe('tokens', () => {
     for (const r of [ramp.accent, ramp.accent2, ramp.neutral]) {
       expect(Object.keys(r).map(Number)).toEqual([100, 200, 300, 400, 500, 600, 700, 800, 900]);
     }
-    expect(ramp.accent[500]).toBe('#d67f48');
-    expect(ramp.accent2[600]).toBe('#728157');
-    expect(ramp.neutral[300]).toBe('#dcd3c4');
+    expect(ramp.accent[500]).toBe('#da942c');
+    expect(ramp.accent2[600]).toBe('#5fb7a5');
+    expect(ramp.neutral[300]).toBe('#304446');
   });
 
   it('exposes radii and layout constants', () => {
