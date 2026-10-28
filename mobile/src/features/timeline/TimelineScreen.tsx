@@ -17,7 +17,7 @@ export function TimelineScreen() {
   const entries = useEntries((s) => s.entries);
   const { mode, year, month, selDay, setMode, select, shift } = useTimelineUi();
   const today = todayIso();
-  const open = (entryId: string) => router.push({ pathname: '/write', params: { entryId } });
+  const open = (id: string) => router.push({ pathname: '/page/[id]', params: { id } });
   const dayEntries = entries.filter((e) => e.date === selDay);
 
   return (

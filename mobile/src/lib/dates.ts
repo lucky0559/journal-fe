@@ -25,6 +25,12 @@ export function fmtLong(iso: string): string {
   return `${WEEKDAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`;
 }
 
+/** The pieces a journal page heading is built from: the weekday, the day and month, and the year. */
+export function fmtParts(iso: string): { weekday: string; day: number; month: string; year: number } {
+  const d = isoToDate(iso);
+  return { weekday: WEEKDAYS[d.getDay()], day: d.getDate(), month: MONTHS[d.getMonth()], year: d.getFullYear() };
+}
+
 export function fmtTime(d: Date): string {
   const h = d.getHours() % 12 || 12;
   return `${h}:${pad(d.getMinutes())} ${d.getHours() < 12 ? 'am' : 'pm'}`;

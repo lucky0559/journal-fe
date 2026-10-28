@@ -78,7 +78,9 @@ export function WriteScreen() {
     useTimelineUi.getState().reset(d.date);
     show(saveToast(d, todayIso()));
     disarm();
-    router.back();
+    // A new page opens to be read, like a finished page in a journal; an edited one goes back to the page you were reading.
+    if (original) router.back();
+    else router.replace({ pathname: '/page/[id]', params: { id: d.id } });
   };
 
   return (

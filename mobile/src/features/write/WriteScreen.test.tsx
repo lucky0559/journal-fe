@@ -6,13 +6,14 @@ import { useToast } from '@/state/toastStore';
 import { WriteScreen } from './WriteScreen';
 
 const mockBack = jest.fn();
+const mockReplace = jest.fn();
 let mockParams: Record<string, string> = {};
 const mockListeners: Record<string, (e: unknown) => void> = {};
 const mockDispatch = jest.fn();
 const mockSave = jest.fn(async (_e?: unknown) => {});
 
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ back: mockBack }),
+  useRouter: () => ({ back: mockBack, replace: mockReplace }),
   useLocalSearchParams: () => mockParams,
   useNavigation: () => ({ addListener: (t: string, h: (e: unknown) => void) => { mockListeners[t] = h; return () => {}; }, dispatch: mockDispatch }),
 }));
@@ -73,7 +74,8 @@ describe('new page', () => {
     await act(async () => { fireEvent.press(screen.getByText('Save')); });
     expect(saved()).toMatchObject({ id: 'new-1', stickers: ['calm'], text: '', vis: 'private', date: '2026-10-08', time: '9:41 pm' });
     expect(useToast.getState().message).toBe('Saved to today’s page');
-    expect(mockBack).toHaveBeenCalled();
+    expect(mockReplace).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: 'new-1' } }); // opens to be read
+    expect(mockBack).not.toHaveBeenCalled();
   });
 
   it('removes a sticker when tapped', () => {
@@ -133,6 +135,8 @@ describe('editing an existing page', () => {
     const original = demoEntries('2026-10-08')[0];
     expect(saved()).toMatchObject({ id: 'demo-1', time: '10:02 pm', createdAt: original.createdAt, text: 'Edited', vis: 'friends' });
     expect(useToast.getState().message).toBe('Saved · shared with friends');
+    expect(mockBack).toHaveBeenCalled(); // back to the page being read
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });
 

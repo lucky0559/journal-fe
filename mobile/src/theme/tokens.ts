@@ -18,6 +18,7 @@ export const ramp = {
 export const colors = {
   bg: '#f5ead8',
   surface: '#ebddc5',
+  paper: '#fffdf8', // the white of a photo's border
   text: '#201e1d',
   divider: 'rgba(32,30,29,0.16)',
   accent: '#c67139',

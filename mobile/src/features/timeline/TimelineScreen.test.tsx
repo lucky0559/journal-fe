@@ -40,7 +40,7 @@ describe('calendar', () => {
     expect(screen.getByText('Saturday, 3 October')).toBeTruthy();
     expect(screen.getByText('6:12 pm · Bright')).toBeTruthy();
     fireEvent.press(screen.getByRole('button', { name: /Found a bench/ }));
-    expect(mockPush).toHaveBeenCalledWith({ pathname: '/write', params: { entryId: 'demo-4' } });
+    expect(mockPush).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: 'demo-4' } }); // opens to be read, not edited
   });
 
   it('writes for a past day that has no page', () => {

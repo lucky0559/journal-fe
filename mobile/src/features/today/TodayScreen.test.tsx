@@ -58,8 +58,8 @@ it('"See all" opens the Timeline in list mode', () => {
   expect(mockNavigate).toHaveBeenCalledWith('/timeline');
 });
 
-it('opens a recent page for editing', () => {
+it('opens a recent page to be read, not edited', () => {
   wrap();
   fireEvent.press(screen.getAllByRole('button', { name: /Made pasta|Presentation/ })[0]);
-  expect(mockPush).toHaveBeenCalledWith({ pathname: '/write', params: { entryId: expect.any(String) } });
+  expect(mockPush).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: expect.any(String) } });
 });

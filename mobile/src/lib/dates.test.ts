@@ -1,10 +1,15 @@
-import { toIso, todayIso, addDays, fmtShort, fmtLong, fmtTime, secs, greeting, MONTHS } from './dates';
+import { toIso, todayIso, addDays, fmtShort, fmtLong, fmtParts, fmtTime, secs, greeting, MONTHS } from './dates';
 
 describe('dates', () => {
   it('formats iso dates', () => {
     expect(fmtShort('2026-10-08')).toBe('Thu, 8 Oct');
     expect(fmtLong('2026-10-08')).toBe('Thursday, 8 October');
     expect(fmtShort('2026-01-01')).toBe('Thu, 1 Jan');
+  });
+
+  it('splits a date into the pieces of a page heading', () => {
+    expect(fmtParts('2026-10-08')).toEqual({ weekday: 'Thursday', day: 8, month: 'October', year: 2026 });
+    expect(fmtParts('2027-01-31')).toEqual({ weekday: 'Sunday', day: 31, month: 'January', year: 2027 });
   });
 
   it('formats clock time as 12-hour lowercase', () => {

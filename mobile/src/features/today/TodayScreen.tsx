@@ -41,7 +41,7 @@ export function TodayScreen() {
           </Pressable>
         </View>
         {entries.slice(0, 2).map((e) => (
-          <EntryCard key={e.id} entry={e} onPress={() => router.push({ pathname: '/write', params: { entryId: e.id } })} />
+          <EntryCard key={e.id} entry={e} onPress={() => router.push({ pathname: '/page/[id]', params: { id: e.id } })} />
         ))}
         {entries.length === 0 ? (
           <Text style={[body(15), { color: ramp.neutral[700] }]}>Your first page is one tap away.</Text>

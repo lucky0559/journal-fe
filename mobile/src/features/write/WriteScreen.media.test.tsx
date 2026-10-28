@@ -14,7 +14,7 @@ const mockPick = jest.fn();
 const mockDelete = jest.fn();
 
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ back: mockBack }),
+  useRouter: () => ({ back: mockBack, replace: jest.fn() }),
   useLocalSearchParams: () => ({}),
   useNavigation: () => ({ addListener: (t: string, h: (e: unknown) => void) => { mockListeners[t] = h; return () => {}; }, dispatch: jest.fn() }),
 }));
