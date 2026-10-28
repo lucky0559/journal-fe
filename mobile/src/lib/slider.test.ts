@@ -1,4 +1,27 @@
-import { positionFromX, valueFromX } from './slider';
+import { createEchoFilter, positionFromX, valueFromX } from './slider';
+
+describe('createEchoFilter', () => {
+  it('treats the late echoes of a drag as echoes, so the thumb is not pulled back through old values', () => {
+    const f = createEchoFilter();
+    [40, 41, 42].forEach((v) => f.sent(v));
+    expect([40, 41, 42].map((v) => f.isEcho(v))).toEqual([true, true, true]);
+  });
+
+  it('lets a real outside change through, including a value we reported earlier', () => {
+    const f = createEchoFilter();
+    [40, 41, 42].forEach((v) => f.sent(v));
+    [40, 41, 42].forEach((v) => f.isEcho(v));
+    expect(f.isEcho(70)).toBe(false); // reset or screen-reader step
+    expect(f.isEcho(41)).toBe(false); // an old drag value, now a genuine outside change
+  });
+
+  it('skips echoes the app never delivered (batched renders)', () => {
+    const f = createEchoFilter();
+    [40, 41, 42].forEach((v) => f.sent(v));
+    expect(f.isEcho(42)).toBe(true); // only the final value arrives
+    expect(f.isEcho(40)).toBe(false);
+  });
+});
 
 describe('positionFromX', () => {
   it('keeps the fraction so the thumb can move smoothly', () => {

@@ -6,6 +6,26 @@ export const positionFromX = (x: number, width: number): number => {
   return width <= 0 ? 0 : Math.max(0, Math.min(100, (x / width) * 100));
 };
 
+/**
+ * Values the slider reports come back through its `value` prop a little late. `isEcho` recognises those, so only
+ * genuine outside changes (reset, screen-reader steps) move the thumb. Plain JS: it runs on the JS thread.
+ */
+export function createEchoFilter() {
+  const sent = new Set<number>();
+  let latest: number | null = null;
+  return {
+    sent(v: number) {
+      sent.add(v);
+      latest = v;
+    },
+    isEcho(value: number): boolean {
+      if (!sent.has(value)) return false;
+      if (value === latest) sent.clear(); // the final value is back, so no more echoes are on the way
+      return true;
+    },
+  };
+}
+
 export const valueFromX = (x: number, width: number): number => {
   'worklet';
   return Math.round(positionFromX(x, width));

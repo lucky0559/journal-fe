@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { moodColor } from '@/lib/mood';
-import { positionFromX } from '@/lib/slider';
+import { createEchoFilter, positionFromX } from '@/lib/slider';
 import { ramp, shadows } from '@/theme/tokens';
 
 interface Props { value: number; onChange: (v: number) => void; size?: 'large' | 'compact' }
@@ -24,14 +24,19 @@ export function MoodSlider({ value, onChange, size = 'large' }: Props) {
 
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const emit = useCallback((v: number) => onChangeRef.current(v), []);
+  // What we report comes back through `value` a little late; those echoes must not drag the thumb back.
+  const [echoes] = useState(createEchoFilter);
+  const emit = useCallback((v: number) => {
+    echoes.sent(v);
+    onChangeRef.current(v);
+  }, [echoes]);
 
-  // Follow outside changes (initial value, screen-reader steps, reset) but never fight a drag in progress.
+  // Follow outside changes (initial value, screen-reader steps, reset), not echoes of our own drag.
   useEffect(() => {
-    if (dragging.value) return;
+    if (echoes.isEcho(value) || dragging.value) return;
     pos.value = value;
     last.value = value;
-  }, [value, pos, last, dragging]);
+  }, [value, echoes, pos, last, dragging]);
 
   const pan = useMemo(() => {
     const move = (x: number) => {
