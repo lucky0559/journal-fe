@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COPY, saveToast } from '@/domain/copy';
@@ -84,7 +84,8 @@ export function WriteScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    // The window no longer resizes for the keyboard (edge-to-edge), so lift the content, toolbar included, above it.
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenFade style={{ paddingTop: top }}>
         <View style={{ height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14 }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => router.back()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
@@ -94,7 +95,6 @@ export function WriteScreen() {
           <Button label="Save" onPress={save} height={44} fontSize={15} />
         </View>
 
-        {/* Android resizes the window for the keyboard (softwareKeyboardLayoutMode: "resize"), so no KeyboardAvoidingView is needed. */}
         <View style={{ flex: 1 }}>
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: 6, paddingHorizontal: 22, paddingBottom: 20, gap: 18 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -151,6 +151,6 @@ export function WriteScreen() {
           if (v === 'public') show(COPY.publicHeadsUp);
         }}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
