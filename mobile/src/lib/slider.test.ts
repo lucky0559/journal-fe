@@ -1,4 +1,13 @@
-import { valueFromX } from './slider';
+import { positionFromX, valueFromX } from './slider';
+
+describe('positionFromX', () => {
+  it('keeps the fraction so the thumb can move smoothly', () => {
+    expect(positionFromX(67, 200)).toBeCloseTo(33.5);
+    expect(positionFromX(-5, 200)).toBe(0);
+    expect(positionFromX(500, 200)).toBe(100);
+    expect(positionFromX(10, 0)).toBe(0);
+  });
+});
 
 describe('valueFromX', () => {
   it('maps position to a rounded 0-100 value', () => {

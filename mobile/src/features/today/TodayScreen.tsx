@@ -17,7 +17,7 @@ export function TodayScreen() {
   const router = useRouter();
   const name = useSettings((s) => s.settings.name);
   const entries = useEntries((s) => s.entries);
-  const mood = useCheckin((s) => s.mood);
+  const moodIdx = useCheckin((s) => moodIndex(s.mood)); // the bucket, not the exact value, so dragging doesn't redraw the screen
   const today = todayIso();
 
   return (
@@ -28,7 +28,7 @@ export function TodayScreen() {
       </View>
       <Text style={heading(34, 1.08)}>{`${greeting(new Date().getHours())}, ${name || 'friend'}.`}</Text>
       <CheckInCard />
-      <PromptDeck moodIdx={moodIndex(mood)} onWrite={(prompt) => router.push({ pathname: '/write', params: { prompt } })} />
+      <PromptDeck moodIdx={moodIdx} onWrite={(prompt) => router.push({ pathname: '/write', params: { prompt } })} />
       <View style={{ gap: 12 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <Text style={body(15, 'semi')}>Recent pages</Text>
