@@ -52,7 +52,7 @@ function MoodControl({ position }: { position: SharedValue<number> }) {
   const setMood = useCheckin((s) => s.setMood);
   return (
     <>
-      <MoodSlider value={mood} onChange={setMood} position={position} />
+      <MoodSlider value={mood} onChange={setMood} position={position} coarse />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: -10 }}>
         <Text style={[body(12), { color: ramp.neutral[700] }]}>Heavy</Text>
         <Text style={[body(12), { color: ramp.neutral[700] }]}>Bright</Text>

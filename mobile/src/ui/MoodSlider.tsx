@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { moodColorAt } from '@/lib/mood';
-import { createEchoFilter, positionFromX } from '@/lib/slider';
+import { createEchoFilter, positionFromX, shouldReport } from '@/lib/slider';
 import { ramp, shadows } from '@/theme/tokens';
 
 interface Props {
@@ -13,20 +13,23 @@ interface Props {
   size?: 'large' | 'compact';
   /** Share the live UI-thread position (0-100) so other views, like the blob, can follow the drag without a React render. */
   position?: SharedValue<number>;
+  /** While dragging, report only when the mood bucket changes (plus the exact value on release), not every step. */
+  coarse?: boolean;
 }
 
 /**
  * The thumb follows the finger on the UI thread (no React render per touch event); `onChange` only fires when the
  * whole-number value actually changes.
  */
-export function MoodSlider({ value, onChange, size = 'large', position }: Props) {
+export function MoodSlider({ value, onChange, size = 'large', position, coarse = false }: Props) {
   const track = size === 'large' ? 12 : 8;
   const thumb = size === 'large' ? 30 : 24;
 
   const width = useSharedValue(0);
   const ownPos = useSharedValue(value);
   const pos = position ?? ownPos; // 0-100, fractional while dragging
-  const last = useSharedValue(value); // last whole value reported to JS
+  const last = useSharedValue(value); // whole value under the thumb
+  const reported = useSharedValue(value); // last whole value sent to JS
   const dragging = useSharedValue(false);
 
   const onChangeRef = useRef(onChange);
@@ -43,7 +46,8 @@ export function MoodSlider({ value, onChange, size = 'large', position }: Props)
     if (echoes.isEcho(value) || dragging.value) return;
     pos.value = value;
     last.value = value;
-  }, [value, echoes, pos, last, dragging]);
+    reported.value = value;
+  }, [value, echoes, pos, last, reported, dragging]);
 
   const pan = useMemo(() => {
     const move = (x: number) => {
@@ -51,8 +55,9 @@ export function MoodSlider({ value, onChange, size = 'large', position }: Props)
       const p = positionFromX(x, width.value);
       pos.value = p;
       const whole = Math.round(p);
-      if (whole !== last.value) {
-        last.value = whole;
+      last.value = whole;
+      if (shouldReport(whole, reported.value, coarse)) {
+        reported.value = whole;
         runOnJS(emit)(whole);
       }
     };
@@ -71,9 +76,13 @@ export function MoodSlider({ value, onChange, size = 'large', position }: Props)
       .onFinalize(() => {
         'worklet';
         dragging.value = false;
-        pos.value = last.value; // settle on the reported whole value
+        pos.value = last.value; // settle on the whole value
+        if (reported.value !== last.value) {
+          reported.value = last.value; // a coarse drag still hands over the exact value on release
+          runOnJS(emit)(last.value);
+        }
       });
-  }, [width, pos, last, dragging, emit]);
+  }, [width, pos, last, reported, dragging, emit, coarse]);
 
   const thumbStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: (width.value * pos.value) / 100 - thumb / 2 }],

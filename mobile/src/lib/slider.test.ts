@@ -1,4 +1,21 @@
-import { createEchoFilter, positionFromX, valueFromX } from './slider';
+import { createEchoFilter, positionFromX, shouldReport, valueFromX } from './slider';
+
+describe('shouldReport', () => {
+  it('reports every whole-number change when not coarse', () => {
+    expect(shouldReport(41, 40, false)).toBe(true);
+    expect(shouldReport(40, 40, false)).toBe(false);
+  });
+
+  it('when coarse, reports only a change of mood bucket', () => {
+    expect(shouldReport(45, 41, true)).toBe(false); // Okay -> Okay
+    expect(shouldReport(39, 40, true)).toBe(false); // Low -> Low (40 is still Low)
+    expect(shouldReport(41, 40, true)).toBe(true); // Low -> Okay
+    expect(shouldReport(20, 21, true)).toBe(true); // Low -> Heavy
+    expect(shouldReport(21, 20, true)).toBe(true); // Heavy -> Low
+    expect(shouldReport(100, 0, true)).toBe(true); // a fast flick across everything
+    expect(shouldReport(0, 0, true)).toBe(false);
+  });
+});
 
 describe('createEchoFilter', () => {
   it('treats the late echoes of a drag as echoes, so the thumb is not pulled back through old values', () => {
