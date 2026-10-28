@@ -1,24 +1,31 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { moodColor } from '@/lib/mood';
+import { moodColorAt } from '@/lib/mood';
 import { createEchoFilter, positionFromX } from '@/lib/slider';
 import { ramp, shadows } from '@/theme/tokens';
 
-interface Props { value: number; onChange: (v: number) => void; size?: 'large' | 'compact' }
+interface Props {
+  value: number;
+  onChange: (v: number) => void;
+  size?: 'large' | 'compact';
+  /** Share the live UI-thread position (0-100) so other views, like the blob, can follow the drag without a React render. */
+  position?: SharedValue<number>;
+}
 
 /**
  * The thumb follows the finger on the UI thread (no React render per touch event); `onChange` only fires when the
  * whole-number value actually changes.
  */
-export function MoodSlider({ value, onChange, size = 'large' }: Props) {
+export function MoodSlider({ value, onChange, size = 'large', position }: Props) {
   const track = size === 'large' ? 12 : 8;
   const thumb = size === 'large' ? 30 : 24;
 
   const width = useSharedValue(0);
-  const pos = useSharedValue(value); // 0-100, fractional while dragging
+  const ownPos = useSharedValue(value);
+  const pos = position ?? ownPos; // 0-100, fractional while dragging
   const last = useSharedValue(value); // last whole value reported to JS
   const dragging = useSharedValue(false);
 
@@ -68,7 +75,10 @@ export function MoodSlider({ value, onChange, size = 'large' }: Props) {
       });
   }, [width, pos, last, dragging, emit]);
 
-  const thumbStyle = useAnimatedStyle(() => ({ transform: [{ translateX: (width.value * pos.value) / 100 - thumb / 2 }] }));
+  const thumbStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: (width.value * pos.value) / 100 - thumb / 2 }],
+    borderColor: moodColorAt(pos.value),
+  }));
 
   const step = (d: number) => onChange(Math.max(0, Math.min(100, value + d)));
 
@@ -95,7 +105,7 @@ export function MoodSlider({ value, onChange, size = 'large' }: Props) {
           style={[
             {
               position: 'absolute', left: 0, width: thumb, height: thumb, borderRadius: thumb / 2,
-              backgroundColor: ramp.neutral[100], borderWidth: 3, borderColor: moodColor(value),
+              backgroundColor: ramp.neutral[100], borderWidth: 3,
             },
             shadows.md,
             thumbStyle,

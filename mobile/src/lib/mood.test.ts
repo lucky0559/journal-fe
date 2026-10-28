@@ -1,4 +1,4 @@
-import { MOODS, moodIndex, moodColor, moodRotation, moodRadii } from './mood';
+import { MOODS, MOOD_COLORS, moodColorAt, moodIndex, moodColor, moodRotation, moodRadii } from './mood';
 
 describe('mood', () => {
   it('buckets 0-100 into five labels', () => {
@@ -11,6 +11,14 @@ describe('mood', () => {
   it('maps mood 0 to sage-600 and 100 to accent-500', () => {
     expect(moodColor(0)).toBe('#728157');
     expect(moodColor(100)).toBe('#d67f48');
+  });
+
+  it('has a lookup colour for every whole mood, matching moodColor', () => {
+    expect(MOOD_COLORS).toHaveLength(101);
+    expect(MOOD_COLORS[37]).toBe(moodColor(37));
+    expect(moodColorAt(37.4)).toBe(moodColor(37));
+    expect(moodColorAt(-5)).toBe(moodColor(0));
+    expect(moodColorAt(250)).toBe(moodColor(100));
   });
 
   it('rotates from -12deg to +12deg', () => {

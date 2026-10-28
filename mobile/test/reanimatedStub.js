@@ -13,6 +13,8 @@ const interpolate = (x, input, output) => {
   return output[0] + (output[1] - output[0]) * t;
 };
 const interpolateColor = (x, input, output) => (x >= input[input.length - 1] ? output[output.length - 1] : output[0]);
+const useAnimatedProps = (fn) => fn();
+const useAnimatedReaction = () => {}; // the reaction only mirrors UI-thread values into React state
 const runOnJS = (fn) => fn;
 const createAnimatedComponent = (C) => C;
 const Animated = { View, Text, Image, ScrollView, createAnimatedComponent };
@@ -21,5 +23,5 @@ module.exports = {
   __esModule: true,
   default: Animated,
   ...Animated,
-  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, runOnJS,
+  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, useAnimatedProps, useAnimatedReaction, runOnJS,
 };

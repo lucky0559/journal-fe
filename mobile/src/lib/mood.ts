@@ -10,9 +10,20 @@ export const MOODS = [
   ['Bright', 'Let’s catch this one'],
 ] as const;
 
-export const moodIndex = (v: number): 0 | 1 | 2 | 3 | 4 => Math.min(4, Math.floor(v / 20.001)) as 0 | 1 | 2 | 3 | 4;
+export const moodIndex = (v: number): 0 | 1 | 2 | 3 | 4 => {
+  'worklet'; // also read on the UI thread while dragging
+  return Math.min(4, Math.floor(v / 20.001)) as 0 | 1 | 2 | 3 | 4;
+};
 
 export const moodColor = (v: number): string => mixOklch(ramp.accent2[600], ramp.accent[500], v / 100);
+
+/** The colour for every whole mood 0-100, so a drag can look colours up on the UI thread instead of mixing OKLCH per frame. */
+export const MOOD_COLORS: readonly string[] = Array.from({ length: 101 }, (_, i) => moodColor(i));
+
+export const moodColorAt = (v: number): string => {
+  'worklet';
+  return MOOD_COLORS[Math.round(Math.min(100, Math.max(0, v)))];
+};
 
 export const moodRotation = (v: number): number => Math.round(-12 + v * 0.24);
 
