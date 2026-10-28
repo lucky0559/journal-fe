@@ -31,9 +31,9 @@ describe('summarizeEntry', () => {
   });
   it('exposes the three visibility options with their copy', () => {
     expect(VIS_ORDER).toEqual(['private', 'friends', 'public']);
-    expect(VIS.private.desc).toBe('Stays on this phone, behind your lock.');
+    expect(VIS.private.desc).toBe('Only you can read it. Saved to your account, so it follows you to any phone.');
     expect(VIS.friends.desc).toBe('People you’ve added can read it in their feed.');
     expect(VIS.public.desc).toBe('Anyone with your profile link can read it, photos and voice notes included.');
-    expect(VIS_FOOTNOTE).toBe('Mood and feelings stay private either way. You can change this anytime.');
+    expect(VIS_FOOTNOTE).toBe('Mood and feelings are only ever visible to you, whoever reads the page. You can change this anytime.');
   });
 });

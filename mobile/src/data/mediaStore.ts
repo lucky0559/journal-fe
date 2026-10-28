@@ -11,6 +11,14 @@ export function persistMedia(srcUri: string, id: string, ext: string): string {
   return dest.uri;
 }
 
+/** Saves a file from the network (restored from the account) into app storage and returns its new uri. */
+export async function downloadMedia(url: string, id: string, ext: string): Promise<string> {
+  const dir = mediaDir();
+  if (!dir.exists) dir.create({ intermediates: true });
+  const file = await File.downloadFileAsync(url, new File(dir, `${id}.${ext}`), { idempotent: true });
+  return file.uri;
+}
+
 export function deleteMedia(uri: string): void {
   if (!uri) return;
   try {

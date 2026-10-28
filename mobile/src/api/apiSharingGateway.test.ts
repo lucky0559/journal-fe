@@ -41,13 +41,32 @@ beforeAll(() => { globalThis.FormData = FakeForm as never; });
 afterAll(() => { globalThis.FormData = realFormData; });
 
 describe('apiSharingGateway.publish', () => {
-  it('puts only shareable fields: no mood, no feelings, no local ids', async () => {
+  it('saves the whole page to the account: content, visibility, mood, feelings and when it was written', async () => {
     const { gw, calls } = setup();
     await gw.publish(entry());
     expect(calls).toEqual([{
       method: 'PUT', path: '/posts/11111111-1111-4111-8111-111111111111',
-      body: { date: '2026-10-08', time: '9:41 pm', vis: 'friends', prompt: 'Who?', text: 'Made pasta', stickers: ['cozy'], photos: [], voices: [] },
+      body: {
+        date: '2026-10-08', time: '9:41 pm', vis: 'friends', prompt: 'Who?', text: 'Made pasta', stickers: ['cozy'],
+        mood: 33, feelings: ['lonely'], createdAt: 1, photos: [], voices: [],
+      },
     }]);
+  });
+
+  it('saves an Only me page the same way', async () => {
+    const { gw, calls } = setup();
+    await gw.publish(entry({ vis: 'private' }));
+    expect(calls[0].body).toMatchObject({ vis: 'private', mood: 33, feelings: ['lonely'] });
+  });
+
+  it('takes publishedAt from the server’s clock when it answers with one', async () => {
+    const { gw } = setup({ 'PUT /posts/11111111-1111-4111-8111-111111111111': () => ({ updatedAt: '2026-10-08T21:41:00.000Z' }) });
+    expect((await gw.publish(entry())).publishedAt).toBe(Date.parse('2026-10-08T21:41:00.000Z'));
+  });
+
+  it('leaves publishedAt for the store to fill in when the server sends no time', async () => {
+    const { gw } = setup();
+    expect((await gw.publish(entry())).publishedAt).toBeNull();
   });
 
   it('uploads new photos and voice notes, then references their keys', async () => {
@@ -123,6 +142,71 @@ describe('apiSharingGateway.publish', () => {
   it('lets other API errors through', async () => {
     const { gw } = setup({ 'PUT /posts/11111111-1111-4111-8111-111111111111': new ApiError(500, {}) });
     await expect(gw.publish(entry())).rejects.toMatchObject({ status: 500 });
+  });
+});
+
+const own = (over: Record<string, unknown> = {}) => ({
+  id: '22222222-2222-4222-8222-222222222222', date: '2026-10-05', time: '10:05 pm', vis: 'private', prompt: 'Who?', text: 'Quiet night',
+  stickers: ['cozy'], mood: 20, feelings: ['tired'], photos: [{ key: 'u1/p.jpg', url: 'https://res/p' }], voices: [{ key: 'u1/v.m4a', url: 'https://res/v', seconds: 12 }],
+  createdAt: '2026-10-05T22:05:00.000Z', updatedAt: '2026-10-06T08:00:00.000Z', ...over,
+});
+
+describe('apiSharingGateway.restore', () => {
+  it('turns the account’s pages into entries, keeping mood, feelings, visibility and the uploaded files', async () => {
+    const { gw } = setup({ 'GET /me/posts?limit=50': { posts: [own()], nextBefore: null } });
+    const [e] = await gw.restore();
+    expect(e).toEqual({
+      id: '22222222-2222-4222-8222-222222222222', createdAt: Date.parse('2026-10-05T22:05:00.000Z'), date: '2026-10-05', time: '10:05 pm',
+      mood: 20, feelings: ['tired'], text: 'Quiet night', prompt: 'Who?', vis: 'private', stickers: ['cozy'],
+      photos: [{ id: 'u1/p.jpg', uri: 'https://res/p', remoteKey: 'u1/p.jpg' }],
+      voices: [{ id: 'u1/v.m4a', uri: 'https://res/v', seconds: 12, remoteKey: 'u1/v.m4a' }],
+      publishedAt: Date.parse('2026-10-06T08:00:00.000Z'),
+    });
+  });
+
+  it('follows the paging cursor until the journal is complete', async () => {
+    const { gw, calls } = setup({
+      'GET /me/posts?limit=50': { posts: [own({ id: 'a' })], nextBefore: '2026-10-05T22:05:00.000Z_aaaa' },
+      'GET /me/posts?limit=50&before=2026-10-05T22%3A05%3A00.000Z_aaaa': { posts: [own({ id: 'b' })], nextBefore: null },
+    });
+    expect((await gw.restore()).map((e) => e.id)).toEqual(['a', 'b']);
+    expect(calls.map((c) => c.path)).toHaveLength(2);
+  });
+
+  it('gives a page without a mood a neutral one, and lets a failed request through', async () => {
+    const { gw } = setup({ 'GET /me/posts?limit=50': { posts: [own({ mood: null })], nextBefore: null } });
+    expect((await gw.restore())[0].mood).toBe(50);
+    const offline = setup({ 'GET /me/posts?limit=50': new ApiError(0, {}) });
+    await expect(offline.gw.restore()).rejects.toMatchObject({ status: 0 });
+  });
+});
+
+describe('apiSharingGateway.localize', () => {
+  const restored = (): Entry => ({
+    ...entry({ vis: 'private' }),
+    photos: [{ id: 'u1/p.jpg', uri: 'https://res/p', remoteKey: 'u1/p.jpg' }],
+    voices: [{ id: 'u1/v.m4a', uri: 'https://res/v', seconds: 12, remoteKey: 'u1/v.m4a' }],
+  });
+
+  it('saves each photo and voice note onto the phone and points the page at the local files', async () => {
+    const download = jest.fn(async (_url: string, id: string, ext: string) => `file:///doc/media/${id}.${ext}`);
+    const gw = createApiSharingGateway({ api: {} as ApiClient, download });
+    const out = await gw.localize(restored());
+    expect(download).toHaveBeenCalledWith('https://res/p', 'u1_p', 'jpg');
+    expect(download).toHaveBeenCalledWith('https://res/v', 'u1_v', 'm4a');
+    expect(out.photos[0]).toEqual({ id: 'u1/p.jpg', uri: 'file:///doc/media/u1_p.jpg', remoteKey: 'u1/p.jpg' });
+    expect(out.voices[0].uri).toBe('file:///doc/media/u1_v.m4a');
+  });
+
+  it('keeps the remote link for a file that can’t be downloaded, and skips files already on the phone', async () => {
+    const download = jest.fn(async (url: string) => { if (url.endsWith('/p')) throw new Error('offline'); return 'file:///doc/media/v.m4a'; });
+    const gw = createApiSharingGateway({ api: {} as ApiClient, download });
+    const out = await gw.localize(restored());
+    expect(out.photos[0].uri).toBe('https://res/p');
+    expect(out.voices[0].uri).toBe('file:///doc/media/v.m4a');
+    download.mockClear();
+    await gw.localize({ ...restored(), photos: [{ id: 'x', uri: 'file:///doc/media/x.jpg', remoteKey: 'u1/x.jpg' }], voices: [] });
+    expect(download).not.toHaveBeenCalled();
   });
 });
 

@@ -35,7 +35,7 @@ export function LoginScreen() {
         </View>
         <View style={{ flex: 1, gap: 12 }}>
           <Text style={heading(36, 1.08)}>Welcome to your journal.</Text>
-          <Text style={[body(16, 'body', 1.5), { color: ramp.neutral[800] }]}>Sign in with Google to get started. Your pages stay on this phone unless you choose to share them.</Text>
+          <Text style={[body(16, 'body', 1.5), { color: ramp.neutral[800] }]}>Sign in with Google to get started. Your journal is saved to your account, so it follows you to any phone. Only pages you share are seen by others.</Text>
           {error ? <Text accessibilityLiveRegion="polite" style={[body(15), { color: ramp.accent[700] }]}>{error}</Text> : null}
         </View>
         <Button label="Continue with Google" onPress={signIn} disabled={busy} />

@@ -136,7 +136,7 @@ export function MeScreen() {
           <ListButton
             label="Delete my account" danger
             onPress={() =>
-              Alert.alert('Delete your account?', 'This removes your account and everything you shared from our servers. Pages on this phone stay.', [
+              Alert.alert('Delete your account?', 'This removes your account and your whole journal from our servers, including pages marked Only me. Pages on this phone stay.', [
                 { text: 'Cancel', style: 'cancel' },
                 {
                   text: 'Delete',
@@ -144,6 +144,9 @@ export function MeScreen() {
                   onPress: async () => {
                     try {
                       await social.deleteAccount();
+                      // The pages stay here, but they no longer have a server copy: a later sign-in saves them afresh.
+                      await useEntries.getState().detachFromAccount();
+                      await useSettings.getState().update({ syncOwner: '' });
                       await signOut();
                       router.replace('/login');
                     } catch {

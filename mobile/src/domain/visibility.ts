@@ -3,7 +3,7 @@ import type { Visibility } from './types';
 
 export const VIS = {
   private: {
-    label: 'Only me', desc: 'Stays on this phone, behind your lock.', icon: 'lock',
+    label: 'Only me', desc: 'Only you can read it. Saved to your account, so it follows you to any phone.', icon: 'lock',
     bg: ramp.neutral[100], fg: ramp.neutral[800], border: colors.divider, iconBg: ramp.neutral[200], iconFg: ramp.neutral[800],
   },
   friends: {
@@ -20,4 +20,4 @@ export const VIS = {
 }>;
 
 export const VIS_ORDER: Visibility[] = ['private', 'friends', 'public'];
-export const VIS_FOOTNOTE = 'Mood and feelings stay private either way. You can change this anytime.';
+export const VIS_FOOTNOTE = 'Mood and feelings are only ever visible to you, whoever reads the page. You can change this anytime.';

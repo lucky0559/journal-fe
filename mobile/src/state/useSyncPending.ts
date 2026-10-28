@@ -3,7 +3,12 @@ import { AppState } from 'react-native';
 import { useAuth } from '@/auth';
 import { useEntries, useSettings } from '@/state';
 
-/** Keeps shared pages and queued unpublishes in step with the server. */
+async function refresh(): Promise<void> {
+  await useEntries.getState().syncPending();
+  await useEntries.getState().restore();
+}
+
+/** Keeps this phone's journal and the account in step: pushes unsynced pages, then pulls what the account has. */
 export function useSyncPending(): void {
   const status = useAuth((s) => s.status);
   const userId = useAuth((s) => s.user?.id);
@@ -16,18 +21,19 @@ export function useSyncPending(): void {
     let alive = true;
     (async () => {
       if (owner !== userId) {
-        // First account on this phone adopts the pages; a different account must not inherit someone else's shared pages.
-        if (owner) await useEntries.getState().resetSharing();
+        // The first account on this phone adopts the pages already here; a different account must not inherit
+        // someone else's journal (it is saved in their account), so it starts from its own.
+        if (owner) await useEntries.getState().resetForNewAccount();
         await useSettings.getState().update({ syncOwner: userId });
       }
-      if (alive) await useEntries.getState().syncPending();
+      if (alive) await refresh();
     })().catch(() => {});
     return () => { alive = false; };
   }, [status, userId, entriesLoaded, settingsLoaded, owner]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (next) => {
-      if (next === 'active' && useAuth.getState().status === 'signedIn') void useEntries.getState().syncPending();
+      if (next === 'active' && useAuth.getState().status === 'signedIn') void refresh().catch(() => {});
     });
     return () => sub.remove();
   }, []);

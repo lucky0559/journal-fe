@@ -14,6 +14,7 @@ const mockDeleteAccount = jest.fn(async () => {});
 const mockClear = jest.fn(async () => {});
 const mockExport = jest.fn(async (..._a: unknown[]) => 'shared');
 const mockReplaceAll = jest.fn(async (..._a: unknown[]) => {});
+const mockDetach = jest.fn(async () => {});
 const mockUpdate = jest.fn(async (..._a: unknown[]) => {});
 let mockDemo = false;
 
@@ -31,7 +32,11 @@ jest.mock('@/state', () => {
       loaded: true,
       update: (...a: unknown[]) => mockUpdate(...a),
     })),
-    useEntries: create(() => ({ entries: demoEntries('2026-10-08'), replaceAll: (...a: unknown[]) => mockReplaceAll(...a) })),
+    useEntries: create(() => ({
+      entries: demoEntries('2026-10-08'),
+      replaceAll: (...a: unknown[]) => mockReplaceAll(...a),
+      detachFromAccount: () => mockDetach(),
+    })),
   };
 });
 
@@ -171,10 +176,13 @@ describe('sharing and deleting the account', () => {
     wrap();
     fireEvent.press(screen.getByText('Delete my account'));
     expect(Alert.alert).toHaveBeenCalledWith('Delete your account?', expect.stringContaining('Pages on this phone stay'), expect.any(Array));
+    expect((Alert.alert as jest.Mock).mock.calls[0][1]).toContain('Only me');
     expect(mockDeleteAccount).not.toHaveBeenCalled();
     const buttons = (Alert.alert as jest.Mock).mock.calls[0][2] as { text: string; onPress?: () => void }[];
     await act(async () => { buttons.find((b) => b.text === 'Delete')!.onPress!(); });
     expect(mockDeleteAccount).toHaveBeenCalled();
+    expect(mockDetach).toHaveBeenCalled(); // the pages stay here without a server copy
+    expect(mockUpdate).toHaveBeenCalledWith({ syncOwner: '' }); // so a later sign-in saves them to its account
     expect(mockSignOut).toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith('/login');
   });
@@ -186,6 +194,7 @@ describe('sharing and deleting the account', () => {
     const buttons = (Alert.alert as jest.Mock).mock.calls[0][2] as { text: string; onPress?: () => void }[];
     await act(async () => { buttons.find((b) => b.text === 'Delete')!.onPress!(); });
     expect(mockSignOut).not.toHaveBeenCalled();
+    expect(mockDetach).not.toHaveBeenCalled(); // nothing changes locally if the server refused
     expect(useToast.getState().message).toBe('Couldn’t delete your account. Try again.');
   });
 });
