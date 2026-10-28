@@ -13,6 +13,12 @@ describe('deckCards', () => {
     expect(cards[0]).toMatchObject({ n: 2, bg: ramp.neutral[200], ink: ramp.neutral[900] });
   });
 
+  it('can also build a hidden spare card behind the visible three', () => {
+    const cards = deckCards(2, 1, 4);
+    expect(cards.map((c) => c.depth)).toEqual([3, 2, 1, 0]);
+    expect(cards.map((c) => c.n)).toEqual([5, 4, 3, 2]); // the top card is n = deck index
+  });
+
   it('cycles colours and the counter as the deck advances', () => {
     expect(deckCards(3, 0)[2]).toMatchObject({ bg: ramp.accent[200], counter: '4 / 6' });
     expect(deckCards(6, 0)[2].counter).toBe('1 / 6');
