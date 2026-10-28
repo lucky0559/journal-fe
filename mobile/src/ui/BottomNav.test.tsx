@@ -28,6 +28,13 @@ it('shows the four destinations and marks the focused one', () => {
   expect(screen.getByRole('tab', { name: 'Today' })).not.toBeSelected();
 });
 
+it('shows the highlight pill only behind the focused tab', () => {
+  setup(2);
+  expect(screen.getByTestId('nav-pill-friends')).toHaveStyle({ opacity: 1 });
+  expect(screen.getByTestId('nav-pill-index')).toHaveStyle({ opacity: 0 });
+  expect(screen.getByTestId('nav-pill-me')).toHaveStyle({ opacity: 0 });
+});
+
 it('navigates on press', () => {
   const nav = setup(0);
   fireEvent.press(screen.getByRole('tab', { name: 'Me' }));
