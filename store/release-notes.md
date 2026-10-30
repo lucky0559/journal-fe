@@ -20,6 +20,19 @@ Welcome to Journ.al, a quiet place to put your day down.
 
 (About 430 characters.)
 
+## 1.0.1 (versionCode 2)
+
+```
+<en-US>
+A smoother first run and a few fixes.
+
+• New: a light theme. Choose Dark or Light in Me
+• The keyboard's check key now continues on the name screen, and a failed save no longer leaves you stuck
+• Pop-ups such as Add a friend sit above the keyboard, and the Back button closes them
+• Fewer permissions requested
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```

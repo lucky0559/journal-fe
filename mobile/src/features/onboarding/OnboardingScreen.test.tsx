@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuth } from '@/auth';
 import { useSettings } from '@/state';
+import { useToast } from '@/state/toastStore';
 import { OnboardingScreen } from './OnboardingScreen';
 
 const mockReplace = jest.fn();
@@ -49,6 +50,36 @@ it('walks through the steps and saves name and reminder time', async () => {
   expect(screen.getByText('Keep your pages private?')).toBeTruthy();
   fireEvent.press(screen.getByText('Set a PIN'));
   expect(mockPush).toHaveBeenCalledWith({ pathname: '/pin', params: { after: 'today' } });
+});
+
+it('the keyboard’s done key continues, like the Continue button', async () => {
+  wrap();
+  fireEvent.press(screen.getByText('Let’s begin'));
+  const input = screen.getByPlaceholderText('Your first name');
+  fireEvent.changeText(input, ' Maya ');
+  await act(async () => { fireEvent(input, 'submitEditing'); });
+  expect(update).toHaveBeenCalledWith({ name: 'Maya' });
+  expect(screen.getByText('When do you usually wind down?')).toBeTruthy();
+});
+
+it('the keyboard’s done key does nothing while the name is empty', async () => {
+  wrap();
+  fireEvent.press(screen.getByText('Let’s begin'));
+  const input = screen.getByPlaceholderText('Your first name');
+  await act(async () => { fireEvent(input, 'submitEditing'); });
+  expect(update).not.toHaveBeenCalled();
+  expect(screen.getByText('What should we call you?')).toBeTruthy();
+});
+
+it('carries on to the next step when saving the name fails, and says so', async () => {
+  useToast.setState({ message: '' });
+  update.mockRejectedValueOnce(new Error('database is locked'));
+  wrap();
+  fireEvent.press(screen.getByText('Let’s begin'));
+  fireEvent.changeText(screen.getByPlaceholderText('Your first name'), 'Maya');
+  await act(async () => { fireEvent.press(screen.getByText('Continue')); });
+  expect(screen.getByText('When do you usually wind down?')).toBeTruthy();
+  expect(useToast.getState().message).toBe('Couldn’t save that just now. We’ll try again.');
 });
 
 it('"No reminders" turns the reminder off', async () => {

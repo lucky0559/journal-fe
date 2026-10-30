@@ -6,6 +6,7 @@ import { parseRadii } from '@/lib/blob';
 import { TIMES } from '@/lib/time';
 import { useAuth } from '@/auth';
 import { useSettings } from '@/state';
+import { useToast } from '@/state/toastStore';
 import { themedStyles } from '@/theme/themedStyles';
 import { colors, radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
@@ -26,6 +27,7 @@ export function OnboardingScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const settings = useSettings((s) => s.settings);
   const update = useSettings((s) => s.update);
+  const show = useToast((s) => s.show);
   const [step, setStep] = useState(0);
   const googleName = useAuth((s) => s.user?.givenName);
   const [name, setName] = useState(settings.name || googleName || '');
@@ -39,8 +41,16 @@ export function OnboardingScreen() {
 
   const next = async () => {
     if (!canContinue(step, name)) return;
-    if (step === 1) await update({ name: name.trim() });
-    if (step === 2) await update({ remind: time !== null, remindTime: time ?? settings.remindTime });
+    // A failed save must never leave someone stuck on a step: the choice is already held in memory, so say so and go on.
+    const save = async (patch: Parameters<typeof update>[0]) => {
+      try {
+        await update(patch);
+      } catch {
+        show('Couldn’t save that just now. We’ll try again.');
+      }
+    };
+    if (step === 1) await save({ name: name.trim() });
+    if (step === 2) await save({ remind: time !== null, remindTime: time ?? settings.remindTime });
     if (step === 3) return router.push({ pathname: '/pin', params: { after: 'today' } });
     setStep(step + 1);
   };
@@ -86,6 +96,8 @@ export function OnboardingScreen() {
                 maxLength={40}
                 autoCapitalize="words"
                 autoCorrect={false}
+                returnKeyType="done"
+                onSubmitEditing={() => void next()} // the keyboard's check key continues too, so nobody depends on reaching the button
                 style={styles.input}
               />
             </>
