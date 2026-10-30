@@ -48,16 +48,19 @@ export function FeedScreen() {
   return (
     <Screen gap={18} bottomPad={30}>
       <View style={{ gap: 14 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <Text style={[heading(32), { flexShrink: 1 }]}>Others’ pages</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Add a friend"
-            onPress={() => setAdding(true)}
-            style={({ pressed }) => ({ height: 44, paddingHorizontal: 16, borderRadius: radii.pill, borderWidth: 1.5, borderColor: colors.divider, justifyContent: 'center', backgroundColor: pressed ? ramp.neutral[200] : 'transparent' })}
-          >
-            <Text style={body(14, 'semi')}>Add a friend</Text>
-          </Pressable>
+        <Text style={heading(32)}>Others’ pages</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+          {([['Your friends', () => router.push('/friends/list')], ['Add a friend', () => setAdding(true)]] as const).map(([label, onPress]) => (
+            <Pressable
+              key={label}
+              accessibilityRole="button"
+              accessibilityLabel={label}
+              onPress={onPress}
+              style={({ pressed }) => ({ height: 44, paddingHorizontal: 16, borderRadius: radii.pill, borderWidth: 1.5, borderColor: colors.divider, justifyContent: 'center', backgroundColor: pressed ? ramp.neutral[200] : 'transparent' })}
+            >
+              <Text style={body(14, 'semi')}>{label}</Text>
+            </Pressable>
+          ))}
         </View>
         <Segmented options={[{ key: 'friends', label: 'Friends' }, { key: 'public', label: 'Public' }]} value={tab} onChange={choose} />
       </View>

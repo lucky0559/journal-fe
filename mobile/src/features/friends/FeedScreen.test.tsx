@@ -159,6 +159,13 @@ describe('friend requests', () => {
   });
 });
 
+it('opens the friends list from the header', async () => {
+  wrap();
+  await screen.findByText('Jun Park');
+  fireEvent.press(screen.getByRole('button', { name: 'Your friends' }));
+  expect(mockPush).toHaveBeenCalledWith('/friends/list');
+});
+
 describe('add a friend', () => {
   const id = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 
