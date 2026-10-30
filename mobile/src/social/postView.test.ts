@@ -29,7 +29,7 @@ describe('parseProfileLink', () => {
   it('finds the id in a link, a message, or on its own', () => {
     expect(parseProfileLink(`journal:///friends/${id}`)).toBe(id);
     expect(parseProfileLink(`journal://friends/${id}`)).toBe(id);
-    expect(parseProfileLink(`Add me on Journal: journal:///friends/${id} thanks!`)).toBe(id);
+    expect(parseProfileLink(`Add me on Journ.al: journal:///friends/${id} thanks!`)).toBe(id);
     expect(parseProfileLink(`  ${id.toUpperCase()}  `)).toBe(id);
   });
   it('returns null when there is no id', () => {

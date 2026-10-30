@@ -115,7 +115,7 @@ export function ProfileScreen({ personId }: { personId: string }) {
             onPress={onMainPress}
             style={{ height: 44, paddingHorizontal: 20, borderRadius: radii.pill, borderWidth: 1.5, justifyContent: 'center', opacity: busy ? 0.6 : 1, borderColor: btn.filled ? colors.accent : colors.divider, backgroundColor: btn.filled ? colors.accent : 'transparent' }}
           >
-            <Text style={[heading(15, 1), { color: btn.filled ? colors.bg : colors.text }]}>{btn.label}</Text>
+            <Text style={[heading(15, 1), { color: btn.filled ? colors.onAccent : colors.text }]}>{btn.label}</Text>
           </Pressable>
           {state === 'incoming' ? (
             <Button label="Decline" variant="outline" height={44} disabled={busy} onPress={() => void act(async () => { await social.decline(person.id); return 'none'; })} />

@@ -2,7 +2,7 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { summarizeEntry } from '@/domain/entrySummary';
 import type { Entry } from '@/domain/types';
-import { VIS } from '@/domain/visibility';
+import { visMeta } from '@/domain/visibility';
 import { fmtLong } from '@/lib/dates';
 import { useLock } from '@/state/lockStore';
 import { colors, ramp } from '@/theme/tokens';
@@ -19,7 +19,7 @@ export function buildExportHtml(entries: Entry[], name: string): string {
       const s = summarizeEntry(e);
       return `<section>
   <h2>${esc(fmtLong(e.date))} · ${esc(e.time)}</h2>
-  <p class="meta">${esc(s.moodLabel)} · ${esc(VIS[e.vis].label)}</p>
+  <p class="meta">${esc(s.moodLabel)} · ${esc(visMeta()[e.vis].label)}</p>
   ${e.prompt ? `<p class="prompt">${esc(e.prompt)}</p>` : ''}
   <p>${esc(s.text).replace(/\n/g, '<br/>')}</p>
   ${s.meta ? `<p class="meta">${esc(s.meta)}</p>` : ''}

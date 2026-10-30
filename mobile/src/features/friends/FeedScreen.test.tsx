@@ -166,7 +166,7 @@ describe('add a friend', () => {
     wrap();
     await screen.findByText('Jun Park');
     fireEvent.press(screen.getByRole('button', { name: 'Add a friend' }));
-    fireEvent.changeText(screen.getByPlaceholderText('Paste a profile link'), `Add me on Journal: journal:///friends/${id}`);
+    fireEvent.changeText(screen.getByPlaceholderText('Paste a profile link'), `Add me on Journ.al: journal:///friends/${id}`);
     fireEvent.press(screen.getByRole('button', { name: 'Find' }));
     expect(mockPush).toHaveBeenCalledWith({ pathname: '/friends/[id]', params: { id } });
   });

@@ -5,10 +5,10 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, type SharedValue }
 import { LinearGradient } from 'expo-linear-gradient';
 import { MOOD_COLORS, moodColorAt } from '@/lib/mood';
 import { createEchoFilter, positionFromX, shouldReport } from '@/lib/slider';
-import { colors, shadows } from '@/theme/tokens';
+import { colors, getTheme, shadows } from '@/theme/tokens';
 
 /** The track shows the whole mood scale, sampled in OKLCH so it matches the blob rather than blending straight in RGB. */
-const TRACK = [0, 25, 50, 75, 100].map((v) => MOOD_COLORS[v]) as [string, string, ...string[]];
+const trackColors = () => [0, 25, 50, 75, 100].map((v) => MOOD_COLORS[v]) as [string, string, ...string[]];
 
 interface Props {
   value: number;
@@ -87,9 +87,12 @@ export function MoodSlider({ value, onChange, size = 'large', position, coarse =
       });
   }, [width, pos, last, reported, dragging, emit, coarse]);
 
+  // The UI thread keeps what a worklet captures, so hand it a copy of this theme's table rather than the shared array.
+  const theme = getTheme();
+  const table = useMemo(() => [...MOOD_COLORS], [theme]); // eslint-disable-line react-hooks/exhaustive-deps
   const thumbStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: (width.value * pos.value) / 100 - thumb / 2 }],
-    borderColor: moodColorAt(pos.value),
+    borderColor: moodColorAt(pos.value, table),
   }));
 
   const step = (d: number) => onChange(Math.max(0, Math.min(100, value + d)));
@@ -107,7 +110,7 @@ export function MoodSlider({ value, onChange, size = 'large', position, coarse =
         style={{ height: 44, justifyContent: 'center' }}
       >
         <LinearGradient
-          colors={TRACK}
+          colors={trackColors()}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ height: track, borderRadius: 999 }}

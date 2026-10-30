@@ -6,7 +6,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { blobFor, stickerStyle, tiltFor } from '@/domain/stickers';
 import type { Entry } from '@/domain/types';
-import { VIS } from '@/domain/visibility';
+import { visMeta } from '@/domain/visibility';
 import { fmtParts, fmtShort } from '@/lib/dates';
 import { MOODS, moodIndex } from '@/lib/mood';
 import { useEntries } from '@/state';
@@ -22,7 +22,6 @@ import { Polaroid } from './Polaroid';
 import { RuledText } from './RuledText';
 
 type Turn = 'older' | 'newer';
-const PAPER = ramp.neutral[100];
 
 /** A saved page, read the way you'd read a journal. Writing and editing live behind the Edit button. */
 export function PageScreen() {
@@ -133,12 +132,12 @@ function PageEnter({ dir, children }: { dir?: Turn; children: React.ReactNode })
 function Paper({ entry }: { entry: Entry }) {
   const date = fmtParts(entry.date);
   const [mood, hint] = MOODS[moodIndex(entry.mood)];
-  const vis = VIS[entry.vis];
+  const vis = visMeta()[entry.vis];
   const hasAttachments = entry.photos.length > 0 || entry.voices.length > 0 || entry.stickers.length > 0;
   return (
     <View
       style={[
-        { backgroundColor: PAPER, borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider },
+        { backgroundColor: ramp.neutral[100], borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider },
         shadows.md,
       ]}
     >

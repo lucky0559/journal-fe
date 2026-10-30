@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { VIS, VIS_FOOTNOTE, VIS_ORDER } from '@/domain/visibility';
+import { VIS_FOOTNOTE, VIS_ORDER, visMeta } from '@/domain/visibility';
 import type { Visibility } from '@/domain/types';
 import { colors, radii, ramp } from '@/theme/tokens';
 import { body } from '@/theme/type';
@@ -7,7 +7,7 @@ import { Icon } from '@/ui/Icon';
 import { Sheet } from '@/ui/Sheet';
 
 export function VisibilityPill({ value, onPress }: { value: Visibility; onPress: () => void }) {
-  const v = VIS[value];
+  const v = visMeta()[value];
   return (
     <Pressable
       accessibilityRole="button"
@@ -27,7 +27,7 @@ export function VisibilitySheet({ visible, value, onClose, onPick }: { visible: 
   return (
     <Sheet visible={visible} onClose={onClose} title="Who can read this page?">
       {VIS_ORDER.map((k) => {
-        const v = VIS[k];
+        const v = visMeta()[k];
         const on = k === value;
         return (
           <Pressable

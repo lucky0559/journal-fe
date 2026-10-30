@@ -1,4 +1,4 @@
-# Journal: product context
+# Journ.al: product context
 
 register: product
 

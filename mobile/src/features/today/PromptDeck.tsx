@@ -105,7 +105,7 @@ function Card({ card, current, tx, onWrite }: { card: DeckCard; current: SharedV
         onPress={onWrite}
         style={({ pressed }) => ({ alignSelf: 'flex-start', height: 44, paddingHorizontal: 20, borderRadius: radii.pill, justifyContent: 'center', backgroundColor: pressed ? ramp.accent[600] : colors.accent })}
       >
-        <Text style={[heading(15, 1), { color: colors.bg }]}>Write this</Text>
+        <Text style={[heading(15, 1), { color: colors.onAccent }]}>Write this</Text>
       </Pressable>
     </Animated.View>
   );

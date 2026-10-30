@@ -14,9 +14,10 @@ import { Button } from '@/ui/Button';
 import { Chip } from '@/ui/Chip';
 import { Icon } from '@/ui/Icon';
 import { Screen } from '@/ui/Screen';
+import { Segmented } from '@/ui/Segmented';
 import { Toggle } from '@/ui/Toggle';
 
-const card = { backgroundColor: colors.surface, borderRadius: radii.container, padding: 20, gap: 14 } as const;
+const card = () => ({ backgroundColor: colors.surface, borderRadius: radii.container, padding: 20, gap: 14 }) as const;
 
 function Row({ title, sub, right }: { title: string; sub: string; right: React.ReactNode }) {
   return (
@@ -83,7 +84,7 @@ export function MeScreen() {
         </View>
       </View>
 
-      <View style={card}>
+      <View style={card()}>
         <Row
           title="Nightly nudge" sub="One reminder, at a time you choose"
           right={<Toggle value={settings.remind} onChange={(v) => update({ remind: v })} accessibilityLabel="Nightly nudge" />}
@@ -97,7 +98,14 @@ export function MeScreen() {
         ) : null}
       </View>
 
-      <View style={card}>
+      <View style={card()}>
+        <Row
+          title="Appearance" sub="Dark for the evening, light for the day"
+          right={<Segmented options={[{ key: 'dark', label: 'Dark' }, { key: 'light', label: 'Light' }]} value={settings.theme} onChange={(theme) => update({ theme })} />}
+        />
+      </View>
+
+      <View style={card()}>
         <Row
           title="App lock" sub="Ask for your PIN when the app opens"
           right={<Toggle value={settings.lockOn} onChange={toggleLock} accessibilityLabel="App lock" />}
@@ -125,7 +133,7 @@ export function MeScreen() {
         {account ? (
           <ListButton
             label="Share my profile link"
-            onPress={() => void Share.share({ message: `Add me on Journal: journal:///friends/${account.id}` })}
+            onPress={() => void Share.share({ message: `Add me on Journ.al: journal:///friends/${account.id}` })}
           />
         ) : null}
         <ListButton label="Replay the welcome" onPress={() => router.push('/onboarding')} />

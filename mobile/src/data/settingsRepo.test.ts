@@ -12,7 +12,17 @@ describe('settingsRepo', () => {
 
   it('returns defaults on a fresh database', async () => {
     expect(await (await setup()).load()).toEqual(DEFAULT_SETTINGS);
-    expect(DEFAULT_SETTINGS).toEqual({ name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false, syncOwner: '' });
+    expect(DEFAULT_SETTINGS).toEqual({ name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false, syncOwner: '', theme: 'dark' });
+  });
+
+  it('remembers the chosen theme, and treats an unknown saved theme as dark', async () => {
+    const db = createTestDb();
+    await migrate(db);
+    const repo = createSettingsRepo(db);
+    await repo.save({ theme: 'light' });
+    expect((await repo.load()).theme).toBe('light');
+    await db.runAsync(`INSERT OR REPLACE INTO settings (key, value) VALUES ('theme', '"sepia"')`);
+    expect((await repo.load()).theme).toBe('dark');
   });
 
   it('persists partial updates and keeps other keys', async () => {

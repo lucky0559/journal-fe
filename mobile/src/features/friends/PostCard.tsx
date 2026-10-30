@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import type { ApiPost, ReactionKind } from '@/api/types';
-import { VIS } from '@/domain/visibility';
+import { visMeta } from '@/domain/visibility';
 import { todayIso } from '@/lib/dates';
 import { avatarColor, initialOf, whenLabel } from '@/social/postView';
 import { colors, radii, ramp, shadows } from '@/theme/tokens';
@@ -31,7 +31,7 @@ interface Props {
 }
 
 export function PostCard({ post, variant = 'feed', onOpenProfile, onReact }: Props) {
-  const v = VIS[post.vis];
+  const v = visMeta()[post.vis];
   const when = whenLabel(post, todayIso());
   const feed = variant === 'feed';
   const tag = (

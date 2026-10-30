@@ -7,7 +7,7 @@ export const FLY_DISTANCE = 460;
 export const SHIFT_DISTANCE = 120;
 export const FEELINGS = ['grateful', 'tired', 'anxious', 'proud', 'lonely', 'calm'];
 
-const COLORS = [
+const cardColors = () => [
   [ramp.accent[200], ramp.accent[900]],
   [ramp.accent2[200], ramp.accent2[900]],
   [ramp.neutral[200], ramp.neutral[900]],
@@ -20,10 +20,11 @@ const article = (w: string) => (/^[aeiou]/i.test(w) ? 'an' : 'a');
 /** Cards in paint order (deepest first, top card last). `count` > 3 also builds hidden spares behind the visible three. */
 export function deckCards(deckIdx: number, moodIdx: number, count = 3): DeckCard[] {
   const word = MOODS[moodIdx][0].toLowerCase();
+  const palette = cardColors();
   return Array.from({ length: count }, (_, i) => count - 1 - i).map((depth) => {
     const n = deckIdx + depth;
     return {
-      n, depth, bg: COLORS[n % 3][0], ink: COLORS[n % 3][1], text: promptFor(n, moodIdx),
+      n, depth, bg: palette[n % 3][0], ink: palette[n % 3][1], text: promptFor(n, moodIdx),
       kicker: `For ${article(word)} ${word} day`, counter: `${(n % 6) + 1} / 6`,
     };
   });

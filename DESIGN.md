@@ -1,9 +1,10 @@
-# Journal: design system
+# Journ.al: design system
 
 ## Theme: Lamplight
 Scene: someone in bed or on the sofa around 10pm, one lamp on, the phone dimmed, writing a few honest lines they won't
-show anyone. That calls for a dark, low-glare surface with warm light on it, not a bright cream page. The app is dark
-only for now (no system-driven light theme yet).
+show anyone. That calls for a dark, low-glare surface with warm light on it, not a bright cream page. So dark is the
+default. A second theme, **Daylight**, is the same app for the daytime: a warm peach page, cream cards and aubergine
+ink. The person picks one in Me, Appearance (Dark or Light); it does not follow the phone's setting.
 
 Colour strategy: **Restrained** for working screens (tinted neutral plus one action colour), **Committed** on the
 welcome and sign-in screens, where the three brand shapes carry the page. The mood scale is the one place the full
@@ -29,8 +30,29 @@ surface, 900 the loudest ink. `neutral[100]` is a raised card, `neutral[700]` is
 panel and `accent[900]` is the ink that sits on it. Use them as pairs; `src/theme/contrast.test.ts` holds every pair the
 app uses to at least 4.5:1.
 
+### Daylight (light theme)
+Same names, other values (`applyTheme('light')` in `tokens.ts`). Amber stays the one action colour and tide teal the calm one.
+
+| Role | Token | Value |
+|---|---|---|
+| Page | `colors.bg` | `#f8e7d0` (warm peach) |
+| Panel | `colors.surface` | `#fdf6ea` (cream) |
+| Words | `colors.text` | `#381e20` (aubergine ink) |
+| Text on amber, teal and mood colours | `colors.onAccent` | `#221012` (dark in both themes) |
+| Error | `colors.danger` | `#b02b27` |
+| Mood low / high | `colors.moodLow` / `moodHigh` | `#817dc7` / `#d46600` (deeper than Lamplight so they stand out on a light page) |
+
+The ramps keep the same meaning (100 quietest surface, 900 loudest ink), so a pair like `accent[200]` with `accent[900]`
+holds its contrast in both themes. `contrast.test.ts` checks every pair, and the whole mood scale, in both themes.
+
 Rules
 - Never write a hex or `rgba(...)` colour outside `src/theme` (a test enforces hex).
+- Text or an icon on amber, teal or a mood colour uses `colors.onAccent`, never `colors.bg` (that is peach in Daylight).
+- Colours are read while rendering, never when a file loads (`noModuleLevelTokens.test.ts` guards this). Use
+  `themedStyles()` for a StyleSheet. The app remounts when the theme changes, so a constant built from the tokens at
+  import time would keep the first theme's colours.
+- An animation (`useAnimatedStyle`) must not read `colors`/`ramp` itself: read the values into locals while rendering and
+  use those inside it, or the UI thread keeps the first theme's colours.
 - Never leave a `Text` without a colour: `heading()` and `body()` carry `colors.text` so nothing falls back to black.
 - Amber means "go". Don't use it for errors; use `colors.danger`.
 - Mood colours always come from `moodColor()` / `MOOD_COLORS`, which mix in OKLCH.

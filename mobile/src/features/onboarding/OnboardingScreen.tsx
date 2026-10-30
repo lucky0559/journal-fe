@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { BackHandler, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BackHandler, KeyboardAvoidingView, Pressable, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { parseRadii } from '@/lib/blob';
 import { TIMES } from '@/lib/time';
 import { useAuth } from '@/auth';
 import { useSettings } from '@/state';
+import { themedStyles } from '@/theme/themedStyles';
 import { colors, radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Blob } from '@/ui/Blob';
@@ -21,6 +22,7 @@ const CIRCLE = parseRadii('50%');
 
 export function OnboardingScreen() {
   const router = useRouter();
+  const styles = getStyles();
   const { top, bottom } = useSafeAreaInsets();
   const settings = useSettings((s) => s.settings);
   const update = useSettings((s) => s.update);
@@ -48,7 +50,8 @@ export function OnboardingScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    // The window no longer resizes for the keyboard (edge-to-edge), so lift the content, Continue button included, above it.
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenFade style={{ paddingTop: top + 10, paddingHorizontal: 26, paddingBottom: bottom + 26, gap: 20 }}>
         <View style={{ height: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           {step > 0 ? (
@@ -119,7 +122,7 @@ export function OnboardingScreen() {
           {step === 3 && <Button label="Not now" variant="ghost" onPress={skipPin} />}
         </View>
       </ScreenFade>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -128,11 +131,11 @@ function WideChip({ label, selected, onPress }: { label: string; selected: boole
   return <Chip label={label} selected={selected} onPress={onPress} height={56} fill />;
 }
 
-const styles = StyleSheet.create({
+const getStyles = themedStyles(() => ({
   back: { width: 44, height: 44, marginLeft: -10, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   input: {
     height: 56, borderRadius: radii.pill, borderWidth: 1.5, borderColor: colors.divider, backgroundColor: ramp.neutral[100],
     paddingHorizontal: 22, fontFamily: 'Figtree_400Regular', fontSize: 18, color: colors.text, marginTop: 8,
   },
   lockCircle: { width: 120, height: 120, borderRadius: 60, backgroundColor: ramp.accent2[200], alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-});
+}));

@@ -17,7 +17,7 @@ export function Chip({ label, selected, onPress, height = 36, fill = false }: { 
         borderColor: selected ? ramp.accent2[600] : colors.divider,
       }}
     >
-      <Text style={[body(height >= 56 ? 15 : 13, 'semi'), { color: selected ? ramp.neutral[100] : ramp.neutral[800] }]}>{label}</Text>
+      <Text style={[body(height >= 56 ? 15 : 13, 'semi'), { color: selected ? colors.onAccent : ramp.neutral[800] }]}>{label}</Text>
     </Pressable>
   );
 }

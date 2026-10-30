@@ -1,3 +1,4 @@
+import { applyTheme } from '@/theme/tokens';
 import { MOODS, MOOD_COLORS, moodColorAt, moodIndex, moodColor, moodRotation, moodRadii } from './mood';
 
 describe('mood', () => {
@@ -22,9 +23,21 @@ describe('mood', () => {
   it('has a lookup colour for every whole mood, matching moodColor', () => {
     expect(MOOD_COLORS).toHaveLength(101);
     expect(MOOD_COLORS[37]).toBe(moodColor(37));
-    expect(moodColorAt(37.4)).toBe(moodColor(37));
-    expect(moodColorAt(-5)).toBe(moodColor(0));
-    expect(moodColorAt(250)).toBe(moodColor(100));
+    expect(moodColorAt(37.4, MOOD_COLORS)).toBe(moodColor(37));
+    expect(moodColorAt(-5, MOOD_COLORS)).toBe(moodColor(0));
+    expect(moodColorAt(250, MOOD_COLORS)).toBe(moodColor(100));
+    expect(moodColorAt(50, ['a', 'b'])).toBeUndefined(); // it reads the table it is given, not a global
+  });
+
+  it('refills the lookup colours in place when the theme changes, and again when it changes back', () => {
+    const same = MOOD_COLORS;
+    const dark = [MOOD_COLORS[0], MOOD_COLORS[100]];
+    applyTheme('light');
+    expect(MOOD_COLORS).toBe(same);
+    expect(MOOD_COLORS[0]).toBe(moodColor(0));
+    expect([MOOD_COLORS[0], MOOD_COLORS[100]]).not.toEqual(dark);
+    applyTheme('dark');
+    expect([MOOD_COLORS[0], MOOD_COLORS[100]]).toEqual(dark);
   });
 
   it('rotates from -12deg to +12deg', () => {

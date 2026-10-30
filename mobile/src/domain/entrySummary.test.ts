@@ -1,6 +1,6 @@
 import type { Entry } from './types';
 import { summarizeEntry } from './entrySummary';
-import { VIS, VIS_ORDER, VIS_FOOTNOTE } from './visibility';
+import { visMeta, VIS_ORDER, VIS_FOOTNOTE } from './visibility';
 
 const e = (over: Partial<Entry>): Entry => ({
   id: 'a', createdAt: 1, date: '2026-10-03', time: '6:12 pm', mood: 84, feelings: [], text: 'Found a bench.',
@@ -31,9 +31,9 @@ describe('summarizeEntry', () => {
   });
   it('exposes the three visibility options with their copy', () => {
     expect(VIS_ORDER).toEqual(['private', 'friends', 'public']);
-    expect(VIS.private.desc).toBe('Only you can read it. Saved to your account, so it follows you to any phone.');
-    expect(VIS.friends.desc).toBe('People you’ve added can read it in their feed.');
-    expect(VIS.public.desc).toBe('Anyone with your profile link can read it, photos and voice notes included.');
+    expect(visMeta().private.desc).toBe('Only you can read it. Saved to your account, so it follows you to any phone.');
+    expect(visMeta().friends.desc).toBe('People you’ve added can read it in their feed.');
+    expect(visMeta().public.desc).toBe('Anyone with your profile link can read it, photos and voice notes included.');
     expect(VIS_FOOTNOTE).toBe('Mood and feelings are only ever visible to you, whoever reads the page. You can change this anytime.');
   });
 });

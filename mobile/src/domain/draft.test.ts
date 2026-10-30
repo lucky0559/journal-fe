@@ -3,7 +3,7 @@ import {
   newDraft, editDraft, draftReducer, hasContent, isDirty, defaultDateForNewPage, addedUris, orphanedUris,
 } from './draft';
 import { saveToast, COPY } from './copy';
-import { STICKERS, blobFor, tiltFor } from './stickers';
+import { blobFor, stickers, tiltFor } from './stickers';
 import { PROMPTS, promptFor } from './prompts';
 
 const now = new Date(2026, 9, 8, 21, 41);
@@ -148,7 +148,7 @@ describe('saveToast', () => {
 
 describe('stickers and prompts', () => {
   it('has the eight stickers in order', () => {
-    expect(STICKERS.map((s) => s.name)).toEqual(['calm', 'cozy', 'proud', 'tired', 'grateful', 'rainy', 'brave', 'meh']);
+    expect(stickers().map((s) => s.name)).toEqual(['calm', 'cozy', 'proud', 'tired', 'grateful', 'rainy', 'brave', 'meh']);
   });
   it('gives each sticker a stable blob and tilt', () => {
     expect(blobFor('calm')).toEqual(blobFor('calm'));

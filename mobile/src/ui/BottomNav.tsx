@@ -37,7 +37,10 @@ function NavItem({ name, label, focused, onPress }: { name: string; label: strin
   const pill = useAnimatedStyle(() => ({ opacity: p.value, transform: [{ scaleX: 0.4 + 0.6 * p.value }] }));
   const iconOn = useAnimatedStyle(() => ({ opacity: p.value, transform: [{ translateY: (1 - p.value) * 3 }] }));
   const iconOff = useAnimatedStyle(() => ({ opacity: 1 - p.value }));
-  const text = useAnimatedStyle(() => ({ color: interpolateColor(p.value, [0, 1], [ramp.neutral[700], ramp.accent[900]]) }));
+  // Colours are read here, while rendering: a worklet that read `ramp` itself would keep the first theme's values.
+  const inkOff = ramp.neutral[700];
+  const inkOn = ramp.accent[900];
+  const text = useAnimatedStyle(() => ({ color: interpolateColor(p.value, [0, 1], [inkOff, inkOn]) }));
   const icon = ICONS[name] ?? 'house';
 
   return (

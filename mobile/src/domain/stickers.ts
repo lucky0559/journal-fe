@@ -1,7 +1,8 @@
 import { ramp } from '@/theme/tokens';
 import { parseRadii, type Radii } from '@/lib/blob';
 
-export const STICKERS = [
+/** The stickers in the colours of the current theme (read while rendering, not at load). */
+export const stickers = () => [
   { name: 'calm', bg: ramp.accent2[300], ink: ramp.accent2[900] },
   { name: 'cozy', bg: ramp.accent[200], ink: ramp.accent[900] },
   { name: 'proud', bg: ramp.accent[400], ink: ramp.accent[900] },
@@ -23,4 +24,7 @@ const hash = (s: string) => [...s].reduce((a, c) => a + c.charCodeAt(0), 0);
 
 export const blobFor = (name: string): Radii => BLOBS[hash(name) % 4];
 export const tiltFor = (name: string): number => ((hash(name) % 3) - 1) * 6;
-export const stickerStyle = (name: string) => STICKERS.find((s) => s.name === name) ?? STICKERS[0];
+export const stickerStyle = (name: string) => {
+  const all = stickers();
+  return all.find((s) => s.name === name) ?? all[0];
+};

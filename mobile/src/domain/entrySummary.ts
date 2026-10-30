@@ -2,7 +2,7 @@ import { fmtShort, secs } from '@/lib/dates';
 import { MOODS, moodColor, moodIndex } from '@/lib/mood';
 import { COPY } from './copy';
 import type { Entry } from './types';
-import { VIS } from './visibility';
+import { visMeta } from './visibility';
 
 export function summarizeEntry(e: Entry) {
   const parts: string[] = [];
@@ -16,8 +16,8 @@ export function summarizeEntry(e: Entry) {
     moodLabel: MOODS[moodIndex(e.mood)][0],
     text: e.text.trim() ? e.text : COPY.emptyBody,
     meta: parts.join(' · '),
-    visLabel: e.vis === 'private' ? '' : VIS[e.vis].label,
-    visBg: VIS[e.vis].iconBg,
-    visFg: VIS[e.vis].fg,
+    visLabel: e.vis === 'private' ? '' : visMeta()[e.vis].label,
+    visBg: visMeta()[e.vis].iconBg,
+    visFg: visMeta()[e.vis].fg,
   };
 }

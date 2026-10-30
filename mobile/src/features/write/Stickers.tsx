@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { STICKERS, blobFor, stickerStyle, tiltFor } from '@/domain/stickers';
+import { blobFor, stickerStyle, stickers, tiltFor } from '@/domain/stickers';
 import { heading } from '@/theme/type';
 import { Blob } from '@/ui/Blob';
 import { Sheet } from '@/ui/Sheet';
@@ -21,7 +21,7 @@ export function StickerSheet({ visible, onClose, onPick }: { visible: boolean; o
   return (
     <Sheet visible={visible} onClose={onClose} title="Add a sticker">
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: 12 }}>
-        {STICKERS.map((s) => (
+        {stickers().map((s) => (
           <View key={s.name} style={{ width: '25%', alignItems: 'center' }}>
             <StickerBlob name={s.name} size={70} fontSize={14} label={`Add ${s.name} sticker`} onPress={() => onPick(s.name)} />
           </View>

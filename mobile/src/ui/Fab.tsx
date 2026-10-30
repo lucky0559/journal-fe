@@ -25,8 +25,8 @@ export function Fab() {
         shadows.lg,
       ]}
     >
-      <Icon name="pencil" size={20} color={colors.bg} />
-      <Text style={[heading(16, 1), { color: colors.bg }]}>New page</Text>
+      <Icon name="pencil" size={20} color={colors.onAccent} />
+      <Text style={[heading(16, 1), { color: colors.onAccent }]}>New page</Text>
     </Pressable>
   );
 }

@@ -1,7 +1,7 @@
 import type { Settings } from '@/domain/types';
 import type { Db } from './db';
 
-export const DEFAULT_SETTINGS: Settings = { name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false, syncOwner: '' };
+export const DEFAULT_SETTINGS: Settings = { name: '', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: false, syncOwner: '', theme: 'dark' };
 
 export interface SettingsRepo {
   load(): Promise<Settings>;
@@ -22,6 +22,7 @@ export function createSettingsRepo(db: Db): SettingsRepo {
           /* keep default */
         }
       }
+      if (out.theme !== 'light') out.theme = 'dark'; // anything else that was saved is treated as the default
       return out as unknown as Settings;
     },
     async save(patch) {

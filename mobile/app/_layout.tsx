@@ -1,14 +1,15 @@
 import 'react-native-gesture-handler';
 import { useCallback, useEffect, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Appearance, Text, TextInput, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { bootstrapState } from '@/state';
+import { bootstrapState, useSettings } from '@/state';
 import { useAppFonts } from '@/theme/fonts';
-import { colors } from '@/theme/tokens';
+import { applyTheme, colors, statusBarStyle } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Button } from '@/ui/Button';
 import { ToastHost } from '@/ui/Toast';
@@ -39,6 +40,13 @@ export default function RootLayout() {
   useSignedOutRedirect();
   useSyncPending();
   const fontsReady = useAppFonts();
+  const theme = useSettings((s) => s.settings.theme);
+  // Swap the palette before anything below draws; `key={theme}` on the root view then rebuilds every screen with it.
+  applyTheme(theme);
+  useEffect(() => {
+    Appearance.setColorScheme(theme); // so native dialogs and the keyboard match
+    SystemUI.setBackgroundColorAsync(colors.bg).catch(() => {});
+  }, [theme]);
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
 
   const boot = useCallback(() => {
@@ -64,9 +72,9 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }}>
+    <GestureHandlerRootView key={theme} style={{ flex: 1, backgroundColor: colors.bg }}>
       <SafeAreaProvider>
-        <StatusBar style="light" />
+        <StatusBar style={statusBarStyle()} />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }}>
           <Stack.Screen name="write" options={{ animation: 'slide_from_bottom' }} />
         </Stack>

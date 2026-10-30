@@ -30,9 +30,12 @@ function Dot({ current, reached }: { current: boolean; reached: boolean }) {
     width.value = withTiming(current ? CURRENT : DOT, TIMING);
     fill.value = withTiming(reached ? 1 : 0, TIMING);
   }, [current, reached, width, fill]);
+  // Colours are read here, while rendering: a worklet that read the tokens itself would keep the first theme's values.
+  const dotOff = ramp.neutral[300];
+  const dotOn = colors.accent;
   const style = useAnimatedStyle(() => ({
     width: width.value,
-    backgroundColor: interpolateColor(fill.value, [0, 1], [ramp.neutral[300], colors.accent]),
+    backgroundColor: interpolateColor(fill.value, [0, 1], [dotOff, dotOn]),
   }));
   return <Animated.View style={[{ height: DOT, borderRadius: DOT / 2 }, style]} />;
 }

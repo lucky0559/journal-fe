@@ -37,7 +37,7 @@ export function Button({ label, onPress, variant = 'primary', height, fontSize, 
       <Text
         style={
           variant === 'primary'
-            ? [heading(fontSize ?? 18, 1), { color: colors.bg }]
+            ? [heading(fontSize ?? 18, 1), { color: colors.onAccent }]
             : [body(fontSize ?? 15, 'semi'), { color: variant === 'ghost' ? ramp.accent[700] : colors.text }]
         }
       >

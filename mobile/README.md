@@ -1,4 +1,4 @@
-# Journal (React Native)
+# Journ.al (React Native)
 
 Android-first interactive journaling app. Expo + TypeScript + Expo Router.
 

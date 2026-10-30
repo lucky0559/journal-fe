@@ -61,7 +61,10 @@ function Option({ label, on, onPress, onMeasure }: { label: string; on: boolean;
   useEffect(() => {
     p.value = withTiming(on ? 1 : 0, TIMING);
   }, [on, p]);
-  const text = useAnimatedStyle(() => ({ color: interpolateColor(p.value, [0, 1], [colors.text, colors.bg]) }));
+  // Colours are read here, while rendering: a worklet that read `colors` itself would keep the first theme's values.
+  const inkOff = colors.text;
+  const inkOn = colors.onAccent;
+  const text = useAnimatedStyle(() => ({ color: interpolateColor(p.value, [0, 1], [inkOff, inkOn]) }));
   return (
     <Pressable
       accessibilityRole="button"

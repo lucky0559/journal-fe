@@ -29,7 +29,7 @@ export function VoicePill({ voice, onRemove }: { voice: Voice; onRemove?: () => 
         hitSlop={3}
         style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}
       >
-        <Icon name={playing ? 'pause' : 'play'} size={16} color={colors.bg} />
+        <Icon name={playing ? 'pause' : 'play'} size={16} color={colors.onAccent} />
       </Pressable>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, height: 24, width: 70 }}>
         {BARS.map((h, i) => <View key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 2, backgroundColor: ramp.accent[600] }} />)}

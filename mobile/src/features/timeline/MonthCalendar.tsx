@@ -8,7 +8,7 @@ import { colors, radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Icon } from '@/ui/Icon';
 
-const LEGEND = [0, 50, 100].map((v) => MOOD_COLORS[v]) as [string, string, ...string[]];
+const legend = () => [0, 50, 100].map((v) => MOOD_COLORS[v]) as [string, string, ...string[]];
 
 interface Props {
   year: number; month: number; today: string; selDay: string; entries: Entry[];
@@ -39,7 +39,7 @@ export function MonthCalendar({ year, month, today, selDay, entries, onSelect, o
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 6 }}>
         <Text style={[body(11), { color: ramp.neutral[700] }]}>Heavy</Text>
-        <LinearGradient colors={LEGEND} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ width: 72, height: 8, borderRadius: 4 }} />
+        <LinearGradient colors={legend()} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ width: 72, height: 8, borderRadius: 4 }} />
         <Text style={[body(11), { color: ramp.neutral[700] }]}>Bright</Text>
       </View>
     </View>
@@ -61,7 +61,7 @@ function NavButton({ label, icon, onPress }: { label: string; icon: 'chevron-lef
 
 function Day({ d, selected, onPress }: { d: DayCell; selected: boolean; onPress: () => void }) {
   const has = d.count > 0;
-  const fg = has ? colors.bg : d.future ? ramp.neutral[500] : colors.text; // dark numerals on the mood colours
+  const fg = has ? colors.onAccent : d.future ? ramp.neutral[500] : colors.text; // dark numerals on the mood colours
   const label = `${fmtLong(d.iso)}${has ? `, ${d.count} ${d.count === 1 ? 'page' : 'pages'}` : ''}`;
   return (
     <Pressable

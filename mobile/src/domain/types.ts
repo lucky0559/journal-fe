@@ -8,7 +8,7 @@ export interface Entry {
   /** When this page's current content was saved to the account (the server's clock). null/undefined = not synced yet. */
   publishedAt?: number | null;
 }
-export interface Settings { name: string; remind: boolean; remindTime: string /* '9:00 pm' */; lockOn: boolean; onboarded: boolean; /** server id of the account whose journal this phone syncs */ syncOwner: string }
+export interface Settings { name: string; remind: boolean; remindTime: string /* '9:00 pm' */; lockOn: boolean; onboarded: boolean; /** server id of the account whose journal this phone syncs */ syncOwner: string; /** which palette the app uses; Dark is the default */ theme: 'dark' | 'light' }
 /** How the signed-in user relates to someone: incoming = they asked you, self = it is you. */
 export type FriendState = 'self' | 'none' | 'requested' | 'incoming' | 'friends';
 export interface Person { id: string; name: string; initial: string; color: string; bio: string; friendState: FriendState }

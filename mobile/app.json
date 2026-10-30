@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Journal",
+    "name": "Journ.al",
     "slug": "journ-al",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
     },
@@ -18,6 +18,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.luckyangelo.journal",
+      "versionCode": 1,
       "softwareKeyboardLayoutMode": "resize",
       "allowBackup": false,
       "permissions": [
@@ -31,6 +32,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "./plugins/withReleaseSigning",
       "expo-status-bar",
       "expo-sqlite",
       "expo-image",
@@ -55,14 +57,14 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Journal lets you attach photos to your pages.",
-          "cameraPermission": "Journal lets you take a photo for a page."
+          "photosPermission": "Journ.al lets you attach photos to your pages.",
+          "cameraPermission": "Journ.al lets you take a photo for a page."
         }
       ],
       [
         "expo-audio",
         {
-          "microphonePermission": "Journal records voice notes for your pages."
+          "microphonePermission": "Journ.al records voice notes for your pages."
         }
       ],
       "expo-asset",

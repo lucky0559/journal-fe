@@ -36,7 +36,7 @@ jest.mock('@/state', () => {
   };
 });
 
-const DEFAULTS = { name: 'Maya', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: true, syncOwner: '' };
+const DEFAULTS = { name: 'Maya', remind: true, remindTime: '9:00 pm', lockOn: false, onboarded: true, syncOwner: '', theme: 'dark' as 'dark' | 'light' };
 const withSettings = (patch: Partial<typeof DEFAULTS>) => useSettings.setState({ settings: { ...DEFAULTS, ...patch } });
 
 const wrap = () =>
@@ -66,6 +66,21 @@ it('nightly nudge: choosing a time turns it on, the switch turns it off', async 
   expect(mockUpdate).toHaveBeenCalledWith({ remindTime: '11:00 pm', remind: true });
   await act(async () => { fireEvent.press(screen.getByRole('switch', { name: 'Nightly nudge' })); });
   expect(mockUpdate).toHaveBeenCalledWith({ remind: false });
+});
+
+it('appearance: shows the current theme and saves the other one when chosen', async () => {
+  wrap();
+  expect(screen.getByText('Appearance')).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Dark' })).toBeSelected();
+  expect(screen.getByRole('button', { name: 'Light' })).not.toBeSelected();
+  await act(async () => { fireEvent.press(screen.getByRole('button', { name: 'Light' })); });
+  expect(mockUpdate).toHaveBeenCalledWith({ theme: 'light' });
+});
+
+it('appearance: marks Light as chosen when the theme is light', () => {
+  withSettings({ theme: 'light' });
+  wrap();
+  expect(screen.getByRole('button', { name: 'Light' })).toBeSelected();
 });
 
 it('hides the time chips when reminders are off', () => {
@@ -156,7 +171,7 @@ describe('sharing and deleting the account', () => {
   it('shares a profile link friends can open', async () => {
     wrap();
     await act(async () => { fireEvent.press(screen.getByText('Share my profile link')); });
-    expect(Share.share).toHaveBeenCalledWith({ message: `Add me on Journal: journal:///friends/${user.id}` });
+    expect(Share.share).toHaveBeenCalledWith({ message: `Add me on Journ.al: journal:///friends/${user.id}` });
   });
 
   it('asks before deleting the account, then deletes it, signs out and goes to login', async () => {
