@@ -52,6 +52,15 @@ it('starts on Friends with the explanatory note and the friends’ pages', async
   expect(mockSocial.feed).toHaveBeenCalledWith('friends', undefined);
 });
 
+it('tapping a page opens it, but pressing a reaction does not', async () => {
+  wrap();
+  await screen.findByText('Jun Park');
+  await act(async () => { fireEvent.press(screen.getAllByRole('button', { name: /Sending a hug/ })[0]); });
+  expect(mockPush).not.toHaveBeenCalled();
+  fireEvent.press(screen.getByText('text of p1'));
+  expect(mockPush).toHaveBeenCalledWith({ pathname: '/post/[id]', params: { id: 'p1' } });
+});
+
 it('Public loads the public feed', async () => {
   wrap();
   await screen.findByText('Jun Park');

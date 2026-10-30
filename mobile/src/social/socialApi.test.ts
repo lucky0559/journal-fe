@@ -16,6 +16,12 @@ describe('socialApi', () => {
     expect(request).toHaveBeenNthCalledWith(2, 'GET', '/feed', { query: { tab: 'public', limit: 20, before: 'cursor_1' } });
   });
 
+  it('loads one page by id', async () => {
+    const { social, request } = setup({ id: 'p1' });
+    expect(await social.post('p1')).toEqual({ id: 'p1' });
+    expect(request).toHaveBeenCalledWith('GET', '/posts/p1');
+  });
+
   it('loads a profile and its pages', async () => {
     const { social, request } = setup({});
     await social.user('u1');

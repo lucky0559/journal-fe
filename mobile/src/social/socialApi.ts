@@ -1,5 +1,5 @@
 import type { ApiClient } from '@/api/client';
-import type { ApiProfile, ApiUser, PostPage, ReactionKind } from '@/api/types';
+import type { ApiPost, ApiProfile, ApiUser, PostPage, ReactionKind } from '@/api/types';
 import type { FriendState } from '@/domain/types';
 
 const PAGE = 20;
@@ -7,6 +7,7 @@ const PAGE = 20;
 export function createSocialApi(api: ApiClient) {
   return {
     feed: (tab: 'friends' | 'public', before?: string) => api.request<PostPage>('GET', '/feed', { query: { tab, limit: PAGE, before } }),
+    post: (id: string) => api.request<ApiPost>('GET', `/posts/${id}`),
     user: (id: string) => api.request<ApiProfile>('GET', `/users/${id}`),
     userPosts: (id: string, before?: string) => api.request<PostPage>('GET', `/users/${id}/posts`, { query: { limit: PAGE, before } }),
     friends: () => api.request<ApiUser[]>('GET', '/friends'),

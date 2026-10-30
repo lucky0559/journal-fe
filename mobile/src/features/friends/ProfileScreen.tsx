@@ -130,7 +130,7 @@ export function ProfileScreen({ personId }: { personId: string }) {
           <Button label="Try again" variant="outline" height={44} onPress={() => void posts.refresh()} />
         </View>
       ) : null}
-      {posts.posts.map((p) => <PostCard key={p.id} post={p} variant="profile" />)}
+      {posts.posts.map((p) => <PostCard key={p.id} post={p} variant="profile" onOpen={() => router.push({ pathname: '/post/[id]', params: { id: p.id } })} />)}
       {posts.hasMore ? <Button label="Load more" variant="outline" height={44} disabled={posts.loadingMore} onPress={() => void posts.loadMore()} /> : null}
       {note ? (
         <View style={{ borderWidth: 2, borderStyle: 'dashed', borderColor: ramp.neutral[400], borderRadius: 28, padding: 18 }}>

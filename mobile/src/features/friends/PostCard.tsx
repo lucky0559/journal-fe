@@ -9,7 +9,7 @@ import { Avatar } from '@/ui/Avatar';
 import { PhotoTile } from '@/ui/PhotoTile';
 import { VoicePill } from '@/features/write/VoicePill';
 
-function Reaction({ label, count, on, onPress }: { label: string; count: number; on: boolean; onPress: () => void }) {
+export function Reaction({ label, count, on, onPress }: { label: string; count: number; on: boolean; onPress: () => void }) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -27,10 +27,12 @@ interface Props {
   post: ApiPost;
   variant?: 'feed' | 'profile';
   onOpenProfile?: () => void;
+  /** Open the whole page. The body of the card is the target; the reactions and the author keep their own taps. */
+  onOpen?: () => void;
   onReact?: (kind: ReactionKind) => void;
 }
 
-export function PostCard({ post, variant = 'feed', onOpenProfile, onReact }: Props) {
+export function PostCard({ post, variant = 'feed', onOpenProfile, onOpen, onReact }: Props) {
   const v = visMeta()[post.vis];
   const when = whenLabel(post, todayIso());
   const feed = variant === 'feed';
@@ -56,15 +58,17 @@ export function PostCard({ post, variant = 'feed', onOpenProfile, onReact }: Pro
           {tag}
         </View>
       )}
-      {post.prompt ? <Text style={[heading(16, 1.3), { color: ramp.accent[800] }]}>{post.prompt}</Text> : null}
-      {post.text ? <Text style={body(16, 'body', 1.5)}>{post.text}</Text> : null}
-      {post.photos.map((p) => <PhotoTile key={p.key} height={feed ? 170 : 150} radius={22} uri={p.url} />)}
-      {post.voices.length ? (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {post.voices.map((vn) => <VoicePill key={vn.key} voice={{ id: vn.key, uri: vn.url, seconds: vn.seconds }} />)}
-        </View>
-      ) : null}
-      {post.stickers.length ? <Text style={[body(12, 'semi'), { color: ramp.accent2[700] }]}>{post.stickers.join(', ')}</Text> : null}
+      <Pressable disabled={!onOpen} accessibilityRole={onOpen ? 'button' : undefined} accessibilityHint={onOpen ? 'Opens the whole page' : undefined} onPress={onOpen} style={{ gap: feed ? 12 : 10 }}>
+        {post.prompt ? <Text style={[heading(16, 1.3), { color: ramp.accent[800] }]}>{post.prompt}</Text> : null}
+        {post.text ? <Text style={body(16, 'body', 1.5)}>{post.text}</Text> : null}
+        {post.photos.map((p) => <PhotoTile key={p.key} height={feed ? 170 : 150} radius={22} uri={p.url} />)}
+        {post.voices.length ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {post.voices.map((vn) => <VoicePill key={vn.key} voice={{ id: vn.key, uri: vn.url, seconds: vn.seconds }} />)}
+          </View>
+        ) : null}
+        {post.stickers.length ? <Text style={[body(12, 'semi'), { color: ramp.accent2[700] }]}>{post.stickers.join(', ')}</Text> : null}
+      </Pressable>
       {feed && onReact ? (
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <Reaction label="Sending a hug" count={post.hug} on={post.mine.hug} onPress={() => onReact('hug')} />

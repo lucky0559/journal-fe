@@ -29,6 +29,7 @@ export function FeedScreen() {
   const feed = usePagedPosts({ key: tab, fetchPage: (before) => social.feed(tab, before), social });
   const requests = useIncomingRequests(social, () => void feed.refresh());
   const openProfile = (id: string) => router.push({ pathname: '/friends/[id]', params: { id } });
+  const openPost = (id: string) => router.push({ pathname: '/post/[id]', params: { id } });
 
   // Come back to fresh data when returning to this tab (the first focus is already covered by the initial load).
   const firstFocus = useRef(true);
@@ -98,7 +99,7 @@ export function FeedScreen() {
         ) : null}
 
         {feed.posts.map((p) => (
-          <PostCard key={p.id} post={p} onOpenProfile={() => openProfile(p.author.id)} onReact={(kind) => void react(p.id, kind)} />
+          <PostCard key={p.id} post={p} onOpenProfile={() => openProfile(p.author.id)} onOpen={() => openPost(p.id)} onReact={(kind) => void react(p.id, kind)} />
         ))}
 
         {feed.hasMore ? (

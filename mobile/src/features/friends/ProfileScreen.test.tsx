@@ -11,7 +11,8 @@ const mockSocial = {
   user: jest.fn(), userPosts: jest.fn(), requestFriend: jest.fn(), cancelRequest: jest.fn(),
   accept: jest.fn(), decline: jest.fn(), unfriend: jest.fn(), react: jest.fn(), unreact: jest.fn(),
 };
-jest.mock('expo-router', () => ({ useRouter: () => ({ back: mockBack, push: jest.fn() }) }));
+const mockPush = jest.fn();
+jest.mock('expo-router', () => ({ useRouter: () => ({ back: mockBack, push: mockPush }) }));
 jest.mock('@/social', () => ({ social: new Proxy({}, { get: (_t, k: string) => (...a: unknown[]) => (mockSocial as Record<string, (...x: unknown[]) => unknown>)[k](...a) }) }));
 
 const wrap = () =>
@@ -39,6 +40,12 @@ it('shows the person, their bio and the pages you can read', async () => {
   expect(await screen.findByText('2 pages you can read')).toBeTruthy();
   expect(screen.queryByText(/for friends only/)).toBeNull();
   expect(mockSocial.user).toHaveBeenCalledWith(sol.id);
+});
+
+it('opens a page when you tap it', async () => {
+  wrap();
+  fireEvent.press(await screen.findByText('text of p1'));
+  expect(mockPush).toHaveBeenCalledWith({ pathname: '/post/[id]', params: { id: 'p1' } });
 });
 
 it('tells strangers how many friends-only pages are hidden', async () => {
