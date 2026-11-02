@@ -33,6 +33,17 @@ A smoother first run and a few fixes.
 </en-US>
 ```
 
+## 1.0.2 (versionCode 3)
+
+```
+<en-US>
+Open your friends' pages.
+
+• Tap a friend's page, in the feed or on their profile, to read it in full, with photos, voice notes and reactions
+• A new Your friends list in the Friends tab
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```
