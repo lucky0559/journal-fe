@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { Easing, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, layout, radii, ramp } from '@/theme/tokens';
+import { colors, layout, radii, ramp, shadows } from '@/theme/tokens';
 import { body } from '@/theme/type';
 import { Icon, type IconName } from './Icon';
 
@@ -13,7 +13,8 @@ const TIMING = { duration: 240, easing: Easing.out(Easing.ease) };
 export function BottomNav({ state, descriptors, navigation }: BottomTabBarProps) {
   const { bottom } = useSafeAreaInsets();
   return (
-    <View style={{ height: layout.navHeight + bottom, paddingBottom: bottom, backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center' }}>
+    <View style={{ height: layout.navHeight + bottom, paddingBottom: bottom, paddingHorizontal: 14, backgroundColor: colors.bg }}>
+      <View style={[{ flex: 1, marginTop: 4, marginBottom: 10, borderRadius: radii.pill, backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center' }, shadows.lg]}>
       {state.routes.map((route: { key: string; name: string; params?: object }, i: number) => {
         const focused = state.index === i;
         const label = descriptors[route.key].options.title ?? route.name;
@@ -23,6 +24,7 @@ export function BottomNav({ state, descriptors, navigation }: BottomTabBarProps)
         };
         return <NavItem key={route.key} name={route.name} label={label} focused={focused} onPress={onPress} />;
       })}
+      </View>
     </View>
   );
 }

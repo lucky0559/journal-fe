@@ -63,3 +63,11 @@ it('opens a recent page to be read, not edited', () => {
   fireEvent.press(screen.getAllByRole('button', { name: /Made pasta|Presentation/ })[0]);
   expect(mockPush).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: expect.any(String) } });
 });
+
+it('opens the newest page from the Latest tile and the calendar from the month tile', () => {
+  wrap();
+  fireEvent.press(screen.getByText('Latest page'));
+  expect(mockPush).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: 'sample-1' } });
+  fireEvent.press(screen.getByRole('button', { name: /^This month, \d+ pages?\./ }));
+  expect(mockNavigate).toHaveBeenCalledWith('/timeline');
+});

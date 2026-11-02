@@ -10,6 +10,7 @@ import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
 import { EntryCard } from '@/ui/EntryCard';
 import { Screen } from '@/ui/Screen';
+import { LatestTile, MonthTile } from './BentoTiles';
 import { CheckInCard } from './CheckInCard';
 import { PromptDeck } from './PromptDeck';
 
@@ -19,6 +20,7 @@ export function TodayScreen() {
   const entries = useEntries((s) => s.entries);
   const moodIdx = useCheckin((s) => moodIndex(s.mood)); // the bucket, not the exact value, so dragging doesn't redraw the screen
   const today = todayIso();
+  const openPage = (id: string) => router.push({ pathname: '/page/[id]', params: { id } });
 
   return (
     <Screen>
@@ -40,8 +42,18 @@ export function TodayScreen() {
             <Text style={[body(13, 'semi'), { color: ramp.accent[700] }]}>See all</Text>
           </Pressable>
         </View>
-        {entries.slice(0, 2).map((e) => (
-          <EntryCard key={e.id} entry={e} onPress={() => router.push({ pathname: '/page/[id]', params: { id: e.id } })} />
+        {entries.length > 0 ? (
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <LatestTile entry={entries[0]} onPress={() => openPage(entries[0].id)} />
+            <MonthTile
+              entries={entries}
+              today={today}
+              onPress={() => { useTimelineUi.getState().setMode('cal'); router.navigate('/timeline'); }}
+            />
+          </View>
+        ) : null}
+        {entries.slice(1, 2).map((e) => (
+          <EntryCard key={e.id} entry={e} onPress={() => openPage(e.id)} />
         ))}
         {entries.length === 0 ? (
           <Text style={[body(15), { color: ramp.neutral[700] }]}>Your first page is one tap away.</Text>
