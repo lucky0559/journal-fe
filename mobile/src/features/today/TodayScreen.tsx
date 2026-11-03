@@ -8,6 +8,7 @@ import { useTimelineUi } from '@/state/timelineStore';
 import { ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
+import { Rise } from '@/ui/Rise';
 import { EntryCard } from '@/ui/EntryCard';
 import { Screen } from '@/ui/Screen';
 import { LatestTile, MonthTile } from './BentoTiles';
@@ -24,14 +25,16 @@ export function TodayScreen() {
 
   return (
     <Screen>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={[body(13, 'semi'), { color: ramp.neutral[700] }]}>{fmtLong(today)}</Text>
-        <Avatar initial={(name || 'M').trim().charAt(0).toUpperCase()} onPress={() => router.navigate('/me')} />
-      </View>
-      <Text style={heading(34, 1.08)}>{`${greeting(new Date().getHours())}, ${name || 'friend'}.`}</Text>
-      <CheckInCard />
-      <PromptDeck moodIdx={moodIdx} onWrite={(prompt) => router.push({ pathname: '/write', params: { prompt } })} />
-      <View style={{ gap: 12 }}>
+      <Rise style={{ gap: 24 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={[body(13, 'semi'), { color: ramp.neutral[700] }]}>{fmtLong(today)}</Text>
+          <Avatar initial={(name || 'M').trim().charAt(0).toUpperCase()} onPress={() => router.navigate('/me')} />
+        </View>
+        <Text style={heading(34, 1.08)}>{`${greeting(new Date().getHours())}, ${name || 'friend'}.`}</Text>
+      </Rise>
+      <Rise index={1}><CheckInCard /></Rise>
+      <Rise index={2}><PromptDeck moodIdx={moodIdx} onWrite={(prompt) => router.push({ pathname: '/write', params: { prompt } })} /></Rise>
+      <Rise index={3} style={{ gap: 12 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <Text style={body(15, 'semi')}>Recent pages</Text>
           <Pressable
@@ -58,7 +61,7 @@ export function TodayScreen() {
         {entries.length === 0 ? (
           <Text style={[body(15), { color: ramp.neutral[700] }]}>Your first page is one tap away.</Text>
         ) : null}
-      </View>
+      </Rise>
     </Screen>
   );
 }

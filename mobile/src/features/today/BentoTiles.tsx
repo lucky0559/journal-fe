@@ -5,6 +5,7 @@ import { moodColor } from '@/lib/mood';
 import { pagesInMonth, recentDays } from '@/lib/recentDays';
 import { colors, radii, ramp, shadows } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
+import { CountUp } from '@/ui/CountUp';
 
 const COLUMNS = 7;
 
@@ -23,7 +24,7 @@ export function MonthTile({ entries, today, onPress }: { entries: Entry[]; today
       style={tile()}
     >
       <Text style={[body(11, 'bold'), { color: ramp.neutral[600], letterSpacing: 1, textTransform: 'uppercase' }]}>This month</Text>
-      <Text style={heading(34, 1)}>{count}</Text>
+      <CountUp value={count} style={heading(34, 1)} />
       <View style={{ gap: 5, marginTop: 'auto' }}>
         {rows.map((row, r) => (
           <View key={r} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

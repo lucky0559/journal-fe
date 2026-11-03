@@ -34,6 +34,15 @@ describe('calendar', () => {
     expect(screen.getByText('Nothing written this day.')).toBeTruthy();
   });
 
+  it('summarises the month shown in two tiles: pages and average mood', () => {
+    wrap();
+    expect(screen.getByLabelText('Pages: 5, on 5 days')).toBeTruthy();
+    expect(screen.getByLabelText('Mood: Okay, on average')).toBeTruthy();
+    fireEvent.press(screen.getByLabelText(/Previous month/i));
+    fireEvent.press(screen.getByLabelText(/Previous month/i)); // August has none
+    expect(screen.getByLabelText('Pages: 0, none this month')).toBeTruthy();
+  });
+
   it('selecting a day with a page lists it with its time, and opens it for editing', () => {
     wrap();
     fireEvent.press(screen.getByLabelText('Saturday, 3 October, 1 page'));

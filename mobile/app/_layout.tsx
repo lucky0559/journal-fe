@@ -77,6 +77,8 @@ export default function RootLayout() {
         <StatusBar style={statusBarStyle()} />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }}>
           <Stack.Screen name="write" options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="page/[id]" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="post/[id]" options={{ animation: 'slide_from_right' }} />
         </Stack>
         <LockOverlay />
         <ToastHost />

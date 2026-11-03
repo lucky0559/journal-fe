@@ -2,6 +2,8 @@ import { Alert, Pressable, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/auth';
 import { pinVault } from '@/data/pinVaultInstance';
+import { todayIso } from '@/lib/dates';
+import { pagesInMonth } from '@/lib/recentDays';
 import { TIMES } from '@/lib/time';
 import { exportPages } from '@/services/exporter';
 import { social } from '@/social';
@@ -14,7 +16,9 @@ import { Button } from '@/ui/Button';
 import { Chip } from '@/ui/Chip';
 import { Icon } from '@/ui/Icon';
 import { Screen } from '@/ui/Screen';
+import { Rise } from '@/ui/Rise';
 import { Segmented } from '@/ui/Segmented';
+import { StatTile } from '@/ui/StatTile';
 import { Toggle } from '@/ui/Toggle';
 
 const card = () => ({ backgroundColor: colors.surface, borderRadius: radii.container, padding: 20, gap: 14 }) as const;
@@ -83,6 +87,11 @@ export function MeScreen() {
           <Text style={[body(14), { color: ramp.neutral[700] }]}>{`${entries.length} ${entries.length === 1 ? 'page' : 'pages'} so far`}</Text>
         </View>
       </View>
+
+      <Rise style={{ flexDirection: 'row', gap: 12 }}>
+        <StatTile label="Pages" value={entries.length} sub="all time" />
+        <StatTile label="This month" value={pagesInMonth(entries, todayIso())} sub={`${new Set(entries.map((e) => e.date)).size} days written`} />
+      </Rise>
 
       <View style={card()}>
         <Row

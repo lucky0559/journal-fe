@@ -1,6 +1,8 @@
 import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { fmtLong, todayIso } from '@/lib/dates';
+import { MOODS, moodColor, moodIndex } from '@/lib/mood';
+import { monthStats } from '@/lib/monthStats';
 import { useEntries } from '@/state';
 import { useTimelineUi } from '@/state/timelineStore';
 import { ramp } from '@/theme/tokens';
@@ -9,6 +11,8 @@ import { Button } from '@/ui/Button';
 import { EntryCard } from '@/ui/EntryCard';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
+import { Rise } from '@/ui/Rise';
+import { StatTile } from '@/ui/StatTile';
 import { MonthCalendar } from './MonthCalendar';
 import { groupByMonth } from './groupByMonth';
 
@@ -19,6 +23,7 @@ export function TimelineScreen() {
   const today = todayIso();
   const open = (id: string) => router.push({ pathname: '/page/[id]', params: { id } });
   const dayEntries = entries.filter((e) => e.date === selDay);
+  const stats = monthStats(entries, year, month);
 
   return (
     <Screen gap={20}>
@@ -29,6 +34,15 @@ export function TimelineScreen() {
 
       {mode === 'cal' ? (
         <>
+          <Rise style={{ flexDirection: 'row', gap: 12 }}>
+            <StatTile label="Pages" value={stats.pages} sub={stats.pages ? `on ${stats.days} ${stats.days === 1 ? 'day' : 'days'}` : 'none this month'} />
+            <StatTile
+              label="Mood"
+              value={stats.mood === null ? '·' : MOODS[moodIndex(stats.mood)][0]}
+              sub={stats.mood === null ? 'nothing to average' : 'on average'}
+              dot={stats.mood === null ? undefined : moodColor(stats.mood)}
+            />
+          </Rise>
           <MonthCalendar
             year={year} month={month} today={today} selDay={selDay} entries={entries}
             onSelect={select} onPrev={() => shift(-1)} onNext={() => shift(1)}

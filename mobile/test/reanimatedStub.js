@@ -6,8 +6,10 @@ const useSharedValue = (v) => React.useRef({ value: v }).current;
 const useAnimatedStyle = (fn) => fn();
 const withTiming = (to, _cfg, cb) => { if (cb) cb(true); return to; };
 const withRepeat = (v) => v;
+const withDelay = (_ms, v) => v;
+const useReducedMotion = () => true; // tests see the final state at once
 const bezier = () => (t) => t;
-const Easing = { bezier, out: (f) => f, in: (f) => f, inOut: (f) => f, ease: (t) => t, linear: (t) => t };
+const Easing = { bezier, out: (f) => f, in: (f) => f, inOut: (f) => f, ease: (t) => t, linear: (t) => t, cubic: (t) => t };
 const interpolate = (x, input, output) => {
   const t = Math.min(1, Math.max(0, (x - input[0]) / (input[1] - input[0])));
   return output[0] + (output[1] - output[0]) * t;
@@ -23,5 +25,5 @@ module.exports = {
   __esModule: true,
   default: Animated,
   ...Animated,
-  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, useAnimatedProps, useAnimatedReaction, runOnJS,
+  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, useAnimatedProps, useAnimatedReaction, runOnJS, withDelay, useReducedMotion,
 };
