@@ -44,6 +44,19 @@ Open your friends' pages.
 </en-US>
 ```
 
+## 1.0.3 (versionCode 4)
+
+```
+<en-US>
+A fresh look.
+
+• Meet Lumi, your journal's little companion
+• Today, Timeline and Me are now soft tiles, with a floating tab bar
+• Pages and numbers ease into place (and stay still if you prefer less motion)
+• This month at a glance: your days as a grid of mood colours
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```

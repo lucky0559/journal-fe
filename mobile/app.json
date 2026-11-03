@@ -2,7 +2,7 @@
   "expo": {
     "name": "Journ.al",
     "slug": "journ-al",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -18,7 +18,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.luckyangelo.journal",
-      "versionCode": 3,
+      "versionCode": 4,
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.WRITE_EXTERNAL_STORAGE"
