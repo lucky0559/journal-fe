@@ -54,6 +54,8 @@ A fresh look.
 • Today, Timeline and Me are now soft tiles, with a floating tab bar
 • Pages and numbers ease into place (and stay still if you prefer less motion)
 • This month at a glance: your days as a grid of mood colours
+• Notifications for friend requests and reactions, with a bell on Today
+• Report or block anyone from their page; manage blocks in Me
 </en-US>
 ```
 
