@@ -19,6 +19,7 @@ import { Avatar } from '@/ui/Avatar';
 import { Blob } from '@/ui/Blob';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
+import { openModerationMenu } from './moderation';
 import { Reaction } from './PostCard';
 import { UPDATE_FAILED } from './useIncomingRequests';
 
@@ -67,6 +68,16 @@ export function PostScreen() {
         <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={close} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="arrow-left" size={22} />
         </Pressable>
+        {state.status === 'ready' ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Report or block"
+            onPress={() => openModerationMenu({ person: state.post.author, postId: state.post.id, onBlocked: close })}
+            style={{ marginLeft: 'auto', width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Icon name="more" size={22} />
+          </Pressable>
+        ) : null}
       </View>
 
       {state.status === 'ready' ? (

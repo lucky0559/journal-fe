@@ -145,6 +145,7 @@ export function MeScreen() {
             onPress={() => void Share.share({ message: `Add me on Journ.al: journal:///friends/${account.id}` })}
           />
         ) : null}
+        {account ? <ListButton label="Blocked people" onPress={() => router.push('/blocked')} /> : null}
         <ListButton label="Replay the welcome" onPress={() => router.push('/onboarding')} />
         {account ? (
           <ListButton

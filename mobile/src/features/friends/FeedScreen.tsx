@@ -12,6 +12,7 @@ import { Button } from '@/ui/Button';
 import { EmptyNote } from '@/ui/EmptyNote';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
+import { openModerationMenu } from './moderation';
 import { PUBLIC_FEED_ENABLED } from './publicFeed';
 import { SlideIn } from '@/ui/SlideIn';
 import { AddFriendSheet } from './AddFriendSheet';
@@ -103,7 +104,7 @@ export function FeedScreen() {
         ) : null}
 
         {feed.posts.map((p) => (
-          <PostCard key={p.id} post={p} onOpenProfile={() => openProfile(p.author.id)} onOpen={() => openPost(p.id)} onReact={(kind) => void react(p.id, kind)} />
+          <PostCard key={p.id} post={p} onOpenProfile={() => openProfile(p.author.id)} onOpen={() => openPost(p.id)} onMore={() => openModerationMenu({ person: p.author, postId: p.id, onBlocked: () => void feed.refresh() })} onReact={(kind) => void react(p.id, kind)} />
         ))}
 
         {feed.hasMore ? (

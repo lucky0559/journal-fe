@@ -6,6 +6,7 @@ import { avatarColor, initialOf, whenLabel } from '@/social/postView';
 import { colors, radii, ramp, shadows } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
+import { Icon } from '@/ui/Icon';
 import { PhotoTile } from '@/ui/PhotoTile';
 import { VoicePill } from '@/features/write/VoicePill';
 
@@ -30,9 +31,11 @@ interface Props {
   /** Open the whole page. The body of the card is the target; the reactions and the author keep their own taps. */
   onOpen?: () => void;
   onReact?: (kind: ReactionKind) => void;
+  /** Report or block the author; shows a "more" button in the feed header. */
+  onMore?: () => void;
 }
 
-export function PostCard({ post, variant = 'feed', onOpenProfile, onOpen, onReact }: Props) {
+export function PostCard({ post, variant = 'feed', onOpenProfile, onOpen, onReact, onMore }: Props) {
   const v = visMeta()[post.vis];
   const when = whenLabel(post, todayIso());
   const feed = variant === 'feed';
@@ -51,6 +54,11 @@ export function PostCard({ post, variant = 'feed', onOpenProfile, onOpen, onReac
             <Text style={[body(12), { color: ramp.neutral[700] }]}>{when}</Text>
           </Pressable>
           {tag}
+          {onMore ? (
+            <Pressable accessibilityRole="button" accessibilityLabel={`More about ${post.author.name}'s page`} onPress={onMore} hitSlop={6} style={{ width: 36, height: 36, marginRight: -8, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="more" size={20} color={ramp.neutral[700]} />
+            </Pressable>
+          ) : null}
         </View>
       ) : (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

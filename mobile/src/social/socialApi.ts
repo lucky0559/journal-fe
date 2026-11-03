@@ -1,5 +1,5 @@
 import type { ApiClient } from '@/api/client';
-import type { ApiPost, ApiProfile, ApiUser, NotificationList, PostPage, ReactionKind } from '@/api/types';
+import type { ApiPost, ApiProfile, ApiUser, NotificationList, PostPage, ReactionKind, ReportCategory } from '@/api/types';
 import type { FriendState } from '@/domain/types';
 
 const PAGE = 20;
@@ -23,6 +23,11 @@ export function createSocialApi(api: ApiClient) {
     unfriend: (id: string) => api.request<void>('DELETE', `/friends/${id}`),
     react: (postId: string, kind: ReactionKind) => api.request<void>('PUT', `/posts/${postId}/reactions/${kind}`),
     unreact: (postId: string, kind: ReactionKind) => api.request<void>('DELETE', `/posts/${postId}/reactions/${kind}`),
+    reportPost: (postId: string, category: ReportCategory) => api.request<void>('POST', `/posts/${postId}/report`, { body: { category } }),
+    reportUser: (userId: string, category: ReportCategory) => api.request<void>('POST', `/users/${userId}/report`, { body: { category } }),
+    block: (userId: string) => api.request<void>('PUT', `/blocks/${userId}`),
+    unblock: (userId: string) => api.request<void>('DELETE', `/blocks/${userId}`),
+    blocked: () => api.request<ApiUser[]>('GET', '/blocks'),
     notifications: () => api.request<NotificationList>('GET', '/notifications'),
     async unreadNotifications(): Promise<number> {
       return (await api.request<{ unread: number }>('GET', '/notifications/unread-count')).unread;

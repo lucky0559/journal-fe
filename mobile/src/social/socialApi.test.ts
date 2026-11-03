@@ -57,6 +57,22 @@ describe('socialApi', () => {
     expect(request.mock.calls).toEqual([['PUT', '/posts/p1/reactions/hug'], ['DELETE', '/posts/p1/reactions/same']]);
   });
 
+  it('reports, blocks, unblocks and lists the people you blocked', async () => {
+    const { social, request } = setup([]);
+    await social.reportPost('p1', 'spam');
+    await social.reportUser('u1', 'harassment');
+    await social.block('u1');
+    await social.unblock('u1');
+    await social.blocked();
+    expect(request.mock.calls).toEqual([
+      ['POST', '/posts/p1/report', { body: { category: 'spam' } }],
+      ['POST', '/users/u1/report', { body: { category: 'harassment' } }],
+      ['PUT', '/blocks/u1'],
+      ['DELETE', '/blocks/u1'],
+      ['GET', '/blocks'],
+    ]);
+  });
+
   it('loads notifications, the unread count, and marks them read', async () => {
     const { social, request } = setup({ items: [], unread: 3 });
     expect(await social.notifications()).toEqual({ items: [], unread: 3 });

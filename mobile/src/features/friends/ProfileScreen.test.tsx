@@ -9,7 +9,7 @@ import { ProfileScreen } from './ProfileScreen';
 const mockBack = jest.fn();
 const mockSocial = {
   user: jest.fn(), userPosts: jest.fn(), requestFriend: jest.fn(), cancelRequest: jest.fn(),
-  accept: jest.fn(), decline: jest.fn(), unfriend: jest.fn(), react: jest.fn(), unreact: jest.fn(),
+  accept: jest.fn(), decline: jest.fn(), unfriend: jest.fn(), react: jest.fn(), unreact: jest.fn(), block: jest.fn(),
 };
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ back: mockBack, push: mockPush }) }));
@@ -40,6 +40,25 @@ it('shows the person, their bio and the pages you can read', async () => {
   expect(await screen.findByText('2 pages you can read')).toBeTruthy();
   expect(screen.queryByText(/for friends only/)).toBeNull();
   expect(mockSocial.user).toHaveBeenCalledWith(sol.id);
+});
+
+it('lets you report or block them, and goes back once they are blocked', async () => {
+  mockSocial.block.mockResolvedValue(undefined);
+  wrap();
+  fireEvent.press(await screen.findByRole('button', { name: 'Report or block Sol Rivera' }));
+  const alert = Alert.alert as jest.Mock;
+  expect(alert.mock.calls[0][0]).toBe('Sol Rivera');
+  alert.mock.calls[0][2].find((b: { text: string }) => b.text === 'Block').onPress();
+  await act(async () => { alert.mock.calls[1][2].find((b: { text: string }) => b.text === 'Block').onPress(); });
+  expect(mockSocial.block).toHaveBeenCalledWith(sol.id);
+  expect(mockBack).toHaveBeenCalled();
+});
+
+it('has no report or block on your own profile', async () => {
+  mockSocial.user.mockResolvedValue(profile('self'));
+  wrap();
+  await screen.findByText('Sol Rivera');
+  expect(screen.queryByRole('button', { name: /Report or block/ })).toBeNull();
 });
 
 it('opens a page when you tap it', async () => {

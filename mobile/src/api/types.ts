@@ -23,6 +23,8 @@ export interface ApiPost {
 export interface PostPage { posts: ApiPost[]; nextBefore: string | null; hidden?: number }
 export type ReactionKind = 'hug' | 'same';
 
+export type ReportCategory = 'spam' | 'harassment' | 'inappropriate' | 'other';
+
 export interface ApiNotification {
   id: string;
   kind: 'friend_request' | 'friend_accepted' | 'reaction';

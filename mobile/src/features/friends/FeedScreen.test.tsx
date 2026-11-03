@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { apiPost, ana, jun, sol } from '../../../test/fixtures';
@@ -51,6 +52,15 @@ it('starts on Friends with the explanatory note and the friends’ pages', async
   expect(screen.getByText('text of p1')).toBeTruthy();
   expect(screen.getAllByText('Today · 8:50 pm').length).toBe(2);
   expect(mockSocial.feed).toHaveBeenCalledWith('friends', undefined);
+});
+
+it('has a more button on each page that opens the report and block menu for its author', async () => {
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  wrap();
+  await screen.findByText('Jun Park');
+  fireEvent.press(screen.getByRole('button', { name: 'More about Jun Park\'s page' }));
+  expect(alert).toHaveBeenCalledWith('Jun Park', undefined, expect.arrayContaining([expect.objectContaining({ text: 'Report' }), expect.objectContaining({ text: 'Block' })]), expect.anything());
+  alert.mockRestore();
 });
 
 it('tapping a page opens it, but pressing a reaction does not', async () => {

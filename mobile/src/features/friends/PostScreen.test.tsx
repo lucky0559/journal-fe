@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ApiError } from '@/api/client';
@@ -9,7 +10,7 @@ import { UPDATE_FAILED } from './useIncomingRequests';
 const mockBack = jest.fn();
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
-const mockSocial = { post: jest.fn(), react: jest.fn(), unreact: jest.fn() };
+const mockSocial: Record<string, jest.Mock> = { post: jest.fn(), react: jest.fn(), unreact: jest.fn(), block: jest.fn() };
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: mockBack, push: mockPush, replace: mockReplace, canGoBack: () => true }),
   useLocalSearchParams: () => ({ id: 'p1' }),
@@ -56,6 +57,23 @@ it('goes to the author’s profile from their name', async () => {
   wrap();
   fireEvent.press(await screen.findByRole('button', { name: /Jun Park/ }));
   expect(mockPush).toHaveBeenCalledWith({ pathname: '/friends/[id]', params: { id: jun.id } });
+});
+
+it('offers to report or block the author, and leaves the page once they are blocked', async () => {
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  const block = jest.fn().mockResolvedValue(undefined);
+  mockSocial.block = block;
+  wrap();
+  await screen.findByText('text of p1');
+  fireEvent.press(screen.getByRole('button', { name: 'Report or block' }));
+  expect(alert.mock.calls[0][0]).toBe('Jun Park');
+  const menu = alert.mock.calls[0][2] as { text: string; onPress?: () => void }[];
+  menu.find((b) => b.text === 'Block')!.onPress!();
+  const confirm = alert.mock.calls[1][2] as { text: string; onPress?: () => void }[];
+  await act(async () => { confirm.find((b) => b.text === 'Block')!.onPress!(); });
+  expect(block).toHaveBeenCalledWith(jun.id);
+  expect(mockBack).toHaveBeenCalled();
+  alert.mockRestore();
 });
 
 it('goes back', async () => {

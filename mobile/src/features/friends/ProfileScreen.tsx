@@ -14,6 +14,7 @@ import { body, heading } from '@/theme/type';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { Screen } from '@/ui/Screen';
+import { openModerationMenu } from './moderation';
 import { PostCard } from './PostCard';
 import { UPDATE_FAILED } from './useIncomingRequests';
 
@@ -122,6 +123,18 @@ export function ProfileScreen({ personId }: { personId: string }) {
           ) : null}
         </View>
       )}
+
+      {state !== 'self' ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Report or block ${person.name}`}
+          hitSlop={8}
+          onPress={() => openModerationMenu({ person, onBlocked: () => router.back() })}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          <Text style={[body(13, 'semi'), { color: ramp.neutral[700], textDecorationLine: 'underline' }]}>Report or block</Text>
+        </Pressable>
+      ) : null}
 
       {posts.status === 'ready' ? <Text style={body(15, 'semi')}>{countLabel(posts.posts.length)}</Text> : null}
       {posts.status === 'error' ? (
