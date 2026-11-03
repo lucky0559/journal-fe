@@ -7,6 +7,7 @@ const useAnimatedStyle = (fn) => fn();
 const withTiming = (to, _cfg, cb) => { if (cb) cb(true); return to; };
 const withRepeat = (v) => v;
 const withDelay = (_ms, v) => v;
+const withSequence = (...steps) => steps[steps.length - 1];
 const useReducedMotion = () => true; // tests see the final state at once
 const bezier = () => (t) => t;
 const Easing = { bezier, out: (f) => f, in: (f) => f, inOut: (f) => f, ease: (t) => t, linear: (t) => t, cubic: (t) => t };
@@ -25,5 +26,5 @@ module.exports = {
   __esModule: true,
   default: Animated,
   ...Animated,
-  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, useAnimatedProps, useAnimatedReaction, runOnJS, withDelay, useReducedMotion,
+  createAnimatedComponent, useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing, interpolate, interpolateColor, useAnimatedProps, useAnimatedReaction, runOnJS, withDelay, withSequence, useReducedMotion,
 };

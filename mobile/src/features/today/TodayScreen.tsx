@@ -8,6 +8,7 @@ import { useTimelineUi } from '@/state/timelineStore';
 import { ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
+import { Lumi } from '@/ui/Lumi';
 import { Rise } from '@/ui/Rise';
 import { EntryCard } from '@/ui/EntryCard';
 import { Screen } from '@/ui/Screen';
@@ -30,7 +31,10 @@ export function TodayScreen() {
           <Text style={[body(13, 'semi'), { color: ramp.neutral[700] }]}>{fmtLong(today)}</Text>
           <Avatar initial={(name || 'M').trim().charAt(0).toUpperCase()} onPress={() => router.navigate('/me')} />
         </View>
-        <Text style={heading(34, 1.08)}>{`${greeting(new Date().getHours())}, ${name || 'friend'}.`}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={[heading(34, 1.08), { flex: 1 }]}>{`${greeting(new Date().getHours())}, ${name || 'friend'}.`}</Text>
+          <Lumi size={78} />
+        </View>
       </Rise>
       <Rise index={1}><CheckInCard /></Rise>
       <Rise index={2}><PromptDeck moodIdx={moodIdx} onWrite={(prompt) => router.push({ pathname: '/write', params: { prompt } })} /></Rise>
@@ -59,7 +63,10 @@ export function TodayScreen() {
           <EntryCard key={e.id} entry={e} onPress={() => openPage(e.id)} />
         ))}
         {entries.length === 0 ? (
-          <Text style={[body(15), { color: ramp.neutral[700] }]}>Your first page is one tap away.</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+            <Lumi size={64} />
+            <Text style={[body(15), { color: ramp.neutral[700], flex: 1 }]}>Your first page is one tap away.</Text>
+          </View>
         ) : null}
       </Rise>
     </Screen>

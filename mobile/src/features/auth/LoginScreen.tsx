@@ -8,6 +8,7 @@ import { colors, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Blob } from '@/ui/Blob';
 import { Button } from '@/ui/Button';
+import { Floaty, Lumi, Sparkle } from '@/ui/Lumi';
 import { ScreenFade } from '@/ui/ScreenFade';
 
 const BLOB = parseRadii('58% 42% 38% 62% / 64% 46% 54% 36%');
@@ -31,7 +32,8 @@ export function LoginScreen() {
         <View style={{ height: 270, marginTop: 24 }}>
           <View style={{ position: 'absolute', left: 0, top: 30 }}><Blob radii={CIRCLE} size={190} color={colors.moodLow} /></View>
           <View style={{ position: 'absolute', right: 6, top: 0 }}><Blob radii={BLOB} size={150} color={ramp.accent2[500]} /></View>
-          <View style={{ position: 'absolute', left: 150, top: 170 }}><Blob radii={CIRCLE} size={92} color={colors.accent} /></View>
+          <View style={{ position: 'absolute', left: 140, top: 150 }}><Lumi size={120} /></View>
+          <View style={{ position: 'absolute', right: 40, top: 190 }}><Floaty distance={5} duration={2000}><Sparkle size={22} /></Floaty></View>
         </View>
         <View style={{ flex: 1, gap: 12 }}>
           <Text style={heading(36, 1.08)}>Welcome to your journal.</Text>
