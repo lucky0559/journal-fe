@@ -40,7 +40,7 @@ export function LoginScreen() {
           <Text style={[body(16, 'body', 1.5), { color: ramp.neutral[800] }]}>Sign in with Google to get started. Your journal is saved to your account, so it follows you to any phone. Only pages you share are seen by others.</Text>
           {error ? <Text accessibilityLiveRegion="polite" style={[body(15), { color: colors.danger }]}>{error}</Text> : null}
         </View>
-        <Button label="Continue with Google" onPress={signIn} disabled={busy} />
+        <Button label="Continue with Google" onPress={signIn} loading={busy} />
       </ScreenFade>
     </View>
   );

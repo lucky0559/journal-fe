@@ -22,13 +22,13 @@ export function Floaty({ children, distance = 6, duration = 2400, delay = 0 }: {
 }
 
 /** Lumi: a small amber blob with a face, the journal's companion. It drifts gently unless `still`. */
-export function Lumi({ size = 96, still = false }: { size?: number; still?: boolean }) {
+export function Lumi({ size = 96, still = false, color, ink: inkColor }: { size?: number; still?: boolean; color?: string; ink?: string }) {
   const w = size;
   const h = size * 0.92;
-  const ink = colors.onAccent;
+  const ink = inkColor ?? colors.onAccent;
   const face = (
     <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Path d={blobPath(BODY, w, h)} fill={colors.accent} />
+      <Path d={blobPath(BODY, w, h)} fill={color ?? colors.accent} />
       <Circle cx={w * 0.36} cy={h * 0.46} r={w * 0.055} fill={ink} />
       <Circle cx={w * 0.64} cy={h * 0.46} r={w * 0.055} fill={ink} />
       <Circle cx={w * 0.27} cy={h * 0.6} r={w * 0.06} fill={colors.danger} opacity={0.22} />

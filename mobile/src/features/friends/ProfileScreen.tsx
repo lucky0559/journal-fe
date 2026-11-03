@@ -13,6 +13,7 @@ import { colors, radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
+import { Loading } from '@/ui/Loading';
 import { Screen } from '@/ui/Screen';
 import { openModerationMenu } from './moderation';
 import { PostCard } from './PostCard';
@@ -42,7 +43,7 @@ export function ProfileScreen({ personId }: { personId: string }) {
     </Pressable>
   );
 
-  if (load.status === 'loading') return <Screen topPad={6} bottomPad={30} gap={18}>{back}<Text style={[body(15), { color: ramp.neutral[700] }]}>Loading…</Text></Screen>;
+  if (load.status === 'loading') return <Screen topPad={6} bottomPad={30} gap={18}>{back}<Loading label="Loading profile" style={{ paddingTop: 40 }} /></Screen>;
   if (load.status === 'notfound') return <Screen topPad={6} bottomPad={30} gap={18}>{back}<Text style={body(16)}>We couldn’t find that profile.</Text></Screen>;
   if (load.status === 'error') {
     return (
@@ -144,7 +145,7 @@ export function ProfileScreen({ personId }: { personId: string }) {
         </View>
       ) : null}
       {posts.posts.map((p) => <PostCard key={p.id} post={p} variant="profile" onOpen={() => router.push({ pathname: '/post/[id]', params: { id: p.id } })} />)}
-      {posts.hasMore ? <Button label="Load more" variant="outline" height={44} disabled={posts.loadingMore} onPress={() => void posts.loadMore()} /> : null}
+      {posts.hasMore ? <Button label="Load more" variant="outline" height={44} loading={posts.loadingMore} onPress={() => void posts.loadMore()} /> : null}
       {note ? (
         <View style={{ borderWidth: 2, borderStyle: 'dashed', borderColor: ramp.neutral[400], borderRadius: 28, padding: 18 }}>
           <Text style={[body(14, 'body', 1.45), { color: ramp.neutral[700] }]}>{note}</Text>

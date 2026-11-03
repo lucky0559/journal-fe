@@ -19,6 +19,7 @@ import { Avatar } from '@/ui/Avatar';
 import { Blob } from '@/ui/Blob';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
+import { Loading } from '@/ui/Loading';
 import { openModerationMenu } from './moderation';
 import { Reaction } from './PostCard';
 import { UPDATE_FAILED } from './useIncomingRequests';
@@ -89,9 +90,7 @@ export function PostScreen() {
           />
         </ScrollView>
       ) : state.status === 'loading' ? (
-        <View style={{ paddingHorizontal: 22 }}>
-          <Text style={[body(15), { color: ramp.neutral[700] }]}>Opening the page…</Text>
-        </View>
+        <Loading label="Opening the page" style={{ paddingTop: 60 }} />
       ) : (
         <View style={{ paddingHorizontal: 22, gap: 16, alignItems: 'flex-start' }}>
           <Text style={heading(28)}>{state.status === 'gone' ? 'This page isn’t available.' : 'Couldn’t load this page.'}</Text>

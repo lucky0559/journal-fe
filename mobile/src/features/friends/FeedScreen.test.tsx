@@ -54,6 +54,13 @@ it('starts on Friends with the explanatory note and the friends’ pages', async
   expect(mockSocial.feed).toHaveBeenCalledWith('friends', undefined);
 });
 
+it('shows Lumi hopping while the pages load, then the pages', async () => {
+  wrap();
+  expect(screen.getByRole('progressbar', { name: 'Loading pages' })).toBeTruthy();
+  expect(await screen.findByText('Jun Park')).toBeTruthy();
+  expect(screen.queryByRole('progressbar')).toBeNull();
+});
+
 it('has a more button on each page that opens the report and block menu for its author', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   wrap();

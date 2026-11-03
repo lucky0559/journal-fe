@@ -10,6 +10,7 @@ import { ramp } from '@/theme/tokens';
 import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
+import { Loading } from '@/ui/Loading';
 import { Screen } from '@/ui/Screen';
 
 type Load = { status: 'loading' } | { status: 'error' } | { status: 'ready'; people: ApiUser[] };
@@ -47,7 +48,7 @@ export function BlockedScreen() {
       <Text style={heading(32)}>Blocked people</Text>
       <Text style={[body(14, 'body', 1.45), { color: ramp.neutral[700] }]}>You don’t see their pages and they don’t see yours. They aren’t told.</Text>
 
-      {state.status === 'loading' ? <Text style={[body(15), { color: ramp.neutral[700] }]}>Loading…</Text> : null}
+      {state.status === 'loading' ? <Loading label="Loading blocked people" /> : null}
       {state.status === 'error' ? (
         <View style={{ gap: 10, alignItems: 'flex-start' }}>
           <Text style={body(15)}>Couldn’t load this list.</Text>

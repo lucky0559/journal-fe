@@ -12,6 +12,7 @@ import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
 import { EmptyNote } from '@/ui/EmptyNote';
 import { Icon } from '@/ui/Icon';
+import { Loading } from '@/ui/Loading';
 import { notificationText, timeAgo } from './notificationView';
 
 type Load = { status: 'loading' } | { status: 'error' } | { status: 'ready'; items: ApiNotification[] };
@@ -55,7 +56,7 @@ export function NotificationsScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 22, paddingBottom: bottom + 24, gap: 12 }}>
         <Text style={heading(32)}>Notifications</Text>
 
-        {state.status === 'loading' ? <Text style={[body(15), { color: ramp.neutral[700] }]}>Looking for news…</Text> : null}
+        {state.status === 'loading' ? <Loading label="Looking for news" /> : null}
         {state.status === 'error' ? (
           <View style={{ gap: 10, alignItems: 'flex-start' }}>
             <Text style={body(15)}>Couldn’t load your notifications.</Text>

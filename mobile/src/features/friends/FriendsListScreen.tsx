@@ -9,6 +9,7 @@ import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
 import { EmptyNote } from '@/ui/EmptyNote';
+import { Loading } from '@/ui/Loading';
 import { Icon } from '@/ui/Icon';
 import { Screen } from '@/ui/Screen';
 
@@ -45,7 +46,7 @@ export function FriendsListScreen() {
       </Pressable>
       <Text style={heading(32)}>Your friends</Text>
 
-      {load.status === 'loading' ? <Text style={[body(15), { color: ramp.neutral[700] }]}>Loading…</Text> : null}
+      {load.status === 'loading' ? <Loading label="Loading your friends" /> : null}
       {load.status === 'error' ? (
         <View style={{ gap: 10, alignItems: 'flex-start' }}>
           <Text style={body(15)}>Couldn’t load your friends.</Text>

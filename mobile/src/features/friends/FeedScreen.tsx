@@ -10,6 +10,7 @@ import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
 import { EmptyNote } from '@/ui/EmptyNote';
+import { Loading } from '@/ui/Loading';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
 import { openModerationMenu } from './moderation';
@@ -92,7 +93,7 @@ export function FeedScreen() {
           </View>
         ) : null}
 
-        {feed.status === 'loading' ? <Text style={[body(15), { color: ramp.neutral[700] }]}>Loading…</Text> : null}
+        {feed.status === 'loading' ? <Loading label="Loading pages" /> : null}
         {feed.status === 'error' ? (
           <View style={{ gap: 10, alignItems: 'flex-start' }}>
             <Text style={body(15)}>Couldn’t load pages.</Text>
@@ -110,7 +111,7 @@ export function FeedScreen() {
         {feed.hasMore ? (
           <View style={{ alignItems: 'flex-start', gap: 6 }}>
             {feed.loadMoreFailed ? <Text style={[body(13), { color: colors.danger }]}>Couldn’t load more.</Text> : null}
-            <Button label="Load more" variant="outline" height={44} disabled={feed.loadingMore} onPress={() => void feed.loadMore()} />
+            <Button label="Load more" variant="outline" height={44} loading={feed.loadingMore} onPress={() => void feed.loadMore()} />
           </View>
         ) : null}
       </SlideIn>
