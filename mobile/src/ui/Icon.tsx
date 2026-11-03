@@ -1,13 +1,13 @@
 import {
   House, Calendar, Users, User, Plus, X, ArrowLeft, ChevronLeft, ChevronRight, ChevronDown, Image, Mic, Smile,
-  Lock, Globe, Pencil, Delete, Play, Pause,
+  Lock, Globe, Pencil, Delete, Play, Pause, Bell,
 } from 'lucide-react-native';
 import { colors } from '@/theme/tokens';
 
 const icons = {
   house: House, calendar: Calendar, users: Users, user: User, plus: Plus, x: X, 'arrow-left': ArrowLeft,
   'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, 'chevron-down': ChevronDown, image: Image, mic: Mic,
-  smile: Smile, lock: Lock, globe: Globe, pencil: Pencil, delete: Delete, play: Play, pause: Pause,
+  smile: Smile, lock: Lock, globe: Globe, pencil: Pencil, delete: Delete, play: Play, pause: Pause, bell: Bell,
 } as const;
 
 export type IconName = keyof typeof icons;

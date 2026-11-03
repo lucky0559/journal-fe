@@ -79,6 +79,7 @@ export default function RootLayout() {
           <Stack.Screen name="write" options={{ animation: 'slide_from_bottom' }} />
           <Stack.Screen name="page/[id]" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="post/[id]" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
         </Stack>
         <LockOverlay />
         <ToastHost />

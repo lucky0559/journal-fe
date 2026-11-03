@@ -4,6 +4,7 @@ import { sampleEntries } from '../../../test/sampleEntries';
 import { useCheckin } from '@/state/checkinStore';
 import { TodayScreen } from './TodayScreen';
 
+jest.mock('@/social', () => ({ social: { unreadNotifications: jest.fn().mockResolvedValue(2) } }));
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush, navigate: mockNavigate }), usePathname: () => '/' }));
@@ -50,6 +51,12 @@ it('starts a page from the top prompt card', () => {
   const buttons = screen.getAllByText('Write this');
   fireEvent.press(buttons[buttons.length - 1]); // cards are painted back to front, so the top card is last
   expect(mockPush).toHaveBeenCalledWith({ pathname: '/write', params: { prompt: expect.any(String) } });
+});
+
+it('shows a bell with the number of new notifications and opens them', async () => {
+  wrap();
+  fireEvent.press(await screen.findByRole('button', { name: 'Notifications, 2 new' }));
+  expect(mockPush).toHaveBeenCalledWith('/notifications');
 });
 
 it('"See all" opens the Timeline in list mode', () => {

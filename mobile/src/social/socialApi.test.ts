@@ -57,6 +57,14 @@ describe('socialApi', () => {
     expect(request.mock.calls).toEqual([['PUT', '/posts/p1/reactions/hug'], ['DELETE', '/posts/p1/reactions/same']]);
   });
 
+  it('loads notifications, the unread count, and marks them read', async () => {
+    const { social, request } = setup({ items: [], unread: 3 });
+    expect(await social.notifications()).toEqual({ items: [], unread: 3 });
+    expect(await social.unreadNotifications()).toBe(3);
+    await social.markNotificationsRead();
+    expect(request.mock.calls).toEqual([['GET', '/notifications'], ['GET', '/notifications/unread-count'], ['POST', '/notifications/read']]);
+  });
+
   it('deletes the account', async () => {
     const { social, request } = setup();
     await social.deleteAccount();

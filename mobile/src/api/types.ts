@@ -22,3 +22,15 @@ export interface ApiPost {
 
 export interface PostPage { posts: ApiPost[]; nextBefore: string | null; hidden?: number }
 export type ReactionKind = 'hug' | 'same';
+
+export interface ApiNotification {
+  id: string;
+  kind: 'friend_request' | 'friend_accepted' | 'reaction';
+  actor: { id: string; name: string; givenName: string; photo: string | null };
+  /** The page that was reacted to (reactions only). */
+  postId: string | null;
+  reaction: ReactionKind | null;
+  read: boolean;
+  createdAt: string;
+}
+export interface NotificationList { items: ApiNotification[]; unread: number }

@@ -12,6 +12,7 @@ import { Lumi } from '@/ui/Lumi';
 import { Rise } from '@/ui/Rise';
 import { EntryCard } from '@/ui/EntryCard';
 import { Screen } from '@/ui/Screen';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { LatestTile, MonthTile } from './BentoTiles';
 import { CheckInCard } from './CheckInCard';
 import { PromptDeck } from './PromptDeck';
@@ -29,7 +30,10 @@ export function TodayScreen() {
       <Rise style={{ gap: 24 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={[body(13, 'semi'), { color: ramp.neutral[700] }]}>{fmtLong(today)}</Text>
-          <Avatar initial={(name || 'M').trim().charAt(0).toUpperCase()} onPress={() => router.navigate('/me')} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <NotificationBell />
+            <Avatar initial={(name || 'M').trim().charAt(0).toUpperCase()} onPress={() => router.navigate('/me')} />
+          </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Text style={[heading(34, 1.08), { flex: 1 }]}>{`${greeting(new Date().getHours())}, ${name || 'friend'}.`}</Text>
