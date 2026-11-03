@@ -12,6 +12,7 @@ import { Button } from '@/ui/Button';
 import { EmptyNote } from '@/ui/EmptyNote';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
+import { PUBLIC_FEED_ENABLED } from './publicFeed';
 import { SlideIn } from '@/ui/SlideIn';
 import { AddFriendSheet } from './AddFriendSheet';
 import { PostCard } from './PostCard';
@@ -64,7 +65,9 @@ export function FeedScreen() {
             </Pressable>
           ))}
         </View>
-        <Segmented options={[{ key: 'friends', label: 'Friends' }, { key: 'public', label: 'Public' }]} value={tab} onChange={choose} />
+        {PUBLIC_FEED_ENABLED ? (
+          <Segmented options={[{ key: 'friends', label: 'Friends' }, { key: 'public', label: 'Public' }]} value={tab} onChange={choose} />
+        ) : null}
       </View>
 
       <SlideIn key={tab} from={from} style={{ gap: 18, marginTop: -4 }}>

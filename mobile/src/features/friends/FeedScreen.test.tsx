@@ -4,6 +4,7 @@ import { apiPost, ana, jun, sol } from '../../../test/fixtures';
 import { useToast } from '@/state/toastStore';
 import { FeedScreen } from './FeedScreen';
 
+jest.mock('./publicFeed', () => ({ PUBLIC_FEED_ENABLED: true })); // the Public tab is off in the app; its code is still tested
 const mockPush = jest.fn();
 const mockSocial = {
   feed: jest.fn(),
