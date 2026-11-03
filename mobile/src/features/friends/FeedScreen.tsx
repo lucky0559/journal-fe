@@ -9,6 +9,7 @@ import { colors, radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
+import { EmptyNote } from '@/ui/EmptyNote';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
 import { SlideIn } from '@/ui/SlideIn';
@@ -95,7 +96,7 @@ export function FeedScreen() {
           </View>
         ) : null}
         {feed.status === 'ready' && feed.posts.length === 0 ? (
-          <Text style={[body(15, 'body', 1.45), { color: ramp.neutral[700] }]}>{tab === 'friends' ? 'No pages from friends yet.' : 'No public pages yet.'}</Text>
+          <EmptyNote text={tab === 'friends' ? 'No pages from friends yet.' : 'No public pages yet.'} />
         ) : null}
 
         {feed.posts.map((p) => (

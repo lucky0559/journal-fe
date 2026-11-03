@@ -11,6 +11,7 @@ import { Button } from '@/ui/Button';
 import { EntryCard } from '@/ui/EntryCard';
 import { Screen } from '@/ui/Screen';
 import { Segmented } from '@/ui/Segmented';
+import { EmptyNote } from '@/ui/EmptyNote';
 import { Rise } from '@/ui/Rise';
 import { StatTile } from '@/ui/StatTile';
 import { MonthCalendar } from './MonthCalendar';
@@ -73,7 +74,7 @@ export function TimelineScreen() {
               {g.entries.map((e) => <EntryCard key={e.id} entry={e} onPress={() => open(e.id)} />)}
             </View>
           ))}
-          {entries.length === 0 ? <Text style={[body(15), { color: ramp.neutral[700] }]}>No pages yet. Your first one is a tap away.</Text> : null}
+          {entries.length === 0 ? <EmptyNote text="No pages yet. Your first one is a tap away." /> : null}
         </View>
       )}
     </Screen>

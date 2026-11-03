@@ -8,6 +8,7 @@ import { radii, ramp } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
+import { EmptyNote } from '@/ui/EmptyNote';
 import { Icon } from '@/ui/Icon';
 import { Screen } from '@/ui/Screen';
 
@@ -52,7 +53,7 @@ export function FriendsListScreen() {
         </View>
       ) : null}
       {load.status === 'ready' && load.friends.length === 0 ? (
-        <Text style={[body(15, 'body', 1.45), { color: ramp.neutral[700] }]}>No friends yet. Use “Add a friend” with their profile link.</Text>
+        <EmptyNote text="No friends yet. Use “Add a friend” with their profile link." />
       ) : null}
       {load.status === 'ready' && load.friends.length > 0 ? (
         <>

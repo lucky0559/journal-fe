@@ -14,6 +14,7 @@ import { Blob } from '@/ui/Blob';
 import { Button } from '@/ui/Button';
 import { Chip } from '@/ui/Chip';
 import { Icon } from '@/ui/Icon';
+import { Floaty, Lumi, Moon, Sparkle } from '@/ui/Lumi';
 import { ScreenFade } from '@/ui/ScreenFade';
 import { ONBOARDING_CTA, canContinue } from './onboardingLogic';
 import { StepDots } from './StepDots';
@@ -78,7 +79,9 @@ export function OnboardingScreen() {
               <View style={{ height: 270 }}>
                 <View style={{ position: 'absolute', left: 0, top: 30 }}><Blob radii={CIRCLE} size={190} color={colors.moodLow} /></View>
                 <View style={{ position: 'absolute', right: 6, top: 0 }}><Blob radii={BLOB} size={150} color={ramp.accent2[500]} /></View>
-                <View style={{ position: 'absolute', left: 150, top: 170 }}><Blob radii={CIRCLE} size={92} color={colors.accent} /></View>
+                <View style={{ position: 'absolute', left: 140, top: 150 }}><Lumi size={120} /></View>
+                <View style={{ position: 'absolute', right: 40, top: 190 }}><Floaty distance={5} duration={2000}><Sparkle size={22} /></Floaty></View>
+                <View style={{ position: 'absolute', left: 8, top: 4 }}><Floaty distance={4} duration={2800} delay={400}><Moon size={38} /></Floaty></View>
               </View>
               <Text style={heading(36, 1.08)}>A softer place to put your day.</Text>
               <Text style={[body(16, 'body', 1.5), { color: ramp.neutral[800] }]}>A mood, a few words, maybe a photo. Two minutes is plenty.</Text>

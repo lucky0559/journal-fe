@@ -39,6 +39,19 @@ export function Lumi({ size = 96, still = false }: { size?: number; still?: bool
   return still ? face : <Floaty distance={size * 0.07}>{face}</Floaty>;
 }
 
+/** A small crescent moon, for the evening side of the journal. */
+export function Moon({ size = 40, color }: { size?: number; color?: string }) {
+  const s = size;
+  return (
+    <Svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <Path
+        d={`M${s * 0.62},${s * 0.06} A${s * 0.46},${s * 0.46} 0 1 0 ${s * 0.94},${s * 0.66} A${s * 0.36},${s * 0.36} 0 0 1 ${s * 0.62},${s * 0.06} Z`}
+        fill={color ?? colors.moodLow}
+      />
+    </Svg>
+  );
+}
+
 /** A four-point sparkle, for a little glimmer beside Lumi. */
 export function Sparkle({ size = 18, color }: { size?: number; color?: string }) {
   const c = size / 2;
