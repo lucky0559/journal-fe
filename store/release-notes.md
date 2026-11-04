@@ -44,13 +44,15 @@ Open your friends' pages.
 </en-US>
 ```
 
-## 1.0.3 (versionCode 4)
+## 1.0.4 (versionCode 5)
+
+(1.0.3, versionCode 4, was uploaded to Play first, without notifications, report/block or the Lumi loader; this release includes everything below.)
 
 ```
 <en-US>
 A fresh look.
 
-• Meet Lumi, your journal's little companion
+• Meet Lumi, your journal's little companion, now also your loading spinner
 • Today, Timeline and Me are now soft tiles, with a floating tab bar
 • Pages and numbers ease into place (and stay still if you prefer less motion)
 • This month at a glance: your days as a grid of mood colours
