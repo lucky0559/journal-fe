@@ -8,7 +8,7 @@ export function summarizeEntry(e: Entry) {
   const parts: string[] = [];
   if (e.photos.length) parts.push(`${e.photos.length} ${e.photos.length > 1 ? 'photos' : 'photo'}`);
   e.voices.forEach((v) => parts.push(`voice ${secs(v.seconds)}`));
-  if (e.stickers.length) parts.push(e.stickers.join(', '));
+  if (e.stickers.length) parts.push(`${e.stickers.length} ${e.stickers.length > 1 ? 'stickers' : 'sticker'}`);
   return {
     color: moodColor(e.mood),
     dateLabel: fmtShort(e.date),

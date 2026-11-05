@@ -41,7 +41,8 @@ it('opens the page like a journal page: who wrote it, when, what they wrote and 
   expect(screen.getByText('Jun Park')).toBeTruthy();
   expect(screen.getByText('8 October')).toBeTruthy();
   expect(screen.getByText(/Who did you feel close to today\?/)).toBeTruthy();
-  expect(screen.getByText('calm')).toBeTruthy();
+  fireEvent(screen.getByTestId('paper-stickers'), 'layout', { nativeEvent: { layout: { width: 300, height: 700 } } });
+  expect(screen.getByLabelText('calm Lumi sticker')).toBeTruthy();
   expect(screen.getByText('Friends')).toBeTruthy();
 });
 

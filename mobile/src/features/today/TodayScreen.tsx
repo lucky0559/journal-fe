@@ -49,7 +49,7 @@ export function TodayScreen() {
           <Pressable
             accessibilityRole="button"
             hitSlop={12}
-            onPress={() => { useTimelineUi.getState().setMode('list'); router.navigate('/timeline'); }}
+            onPress={() => router.push('/all-pages')}
           >
             <Text style={[body(13, 'semi'), { color: ramp.accent[700] }]}>See all</Text>
           </Pressable>

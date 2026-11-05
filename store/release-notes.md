@@ -72,6 +72,19 @@ Photos and refreshing.
 </en-US>
 ```
 
+## 1.0.6 (versionCode 7)
+
+```
+<en-US>
+Stickers and all your pages in one place.
+
+• 36 new chibi stickers, plus Lumi and friends, with no words on them
+• Hold a sticker on your page and drag it anywhere you like
+• All your pages: search them and filter by mood (tap Pages in Me, or See all on Today)
+• Smaller fixes, like the Write button on tonight's prompts
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```

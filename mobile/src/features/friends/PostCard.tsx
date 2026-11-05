@@ -7,7 +7,9 @@ import { colors, radii, ramp, shadows } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { Avatar } from '@/ui/Avatar';
 import { Icon } from '@/ui/Icon';
+import { parseSticker } from '@/domain/stickers';
 import { PhotoTile } from '@/ui/PhotoTile';
+import { StickerArt } from '@/ui/StickerArt';
 import { VoicePill } from '@/features/write/VoicePill';
 
 export function Reaction({ label, count, on, onPress }: { label: string; count: number; on: boolean; onPress: () => void }) {
@@ -75,7 +77,11 @@ export function PostCard({ post, variant = 'feed', onOpenProfile, onOpen, onReac
             {post.voices.map((vn) => <VoicePill key={vn.key} voice={{ id: vn.key, uri: vn.url, seconds: vn.seconds }} />)}
           </View>
         ) : null}
-        {post.stickers.length ? <Text style={[body(12, 'semi'), { color: ramp.accent2[700] }]}>{post.stickers.join(', ')}</Text> : null}
+        {post.stickers.length ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+            {post.stickers.map((raw, i) => <StickerArt key={`${raw}-${i}`} id={parseSticker(raw).id} size={52} />)}
+          </View>
+        ) : null}
       </Pressable>
       {feed && onReact ? (
         <View style={{ flexDirection: 'row', gap: 8 }}>

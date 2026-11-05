@@ -4,7 +4,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { blobFor, stickerStyle, tiltFor } from '@/domain/stickers';
 import type { Entry } from '@/domain/types';
 import { visMeta } from '@/domain/visibility';
 import { fmtParts, fmtShort } from '@/lib/dates';
@@ -13,11 +12,11 @@ import { useEntries } from '@/state';
 import { colors, ramp, shadows } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
 import { VoicePill } from '@/features/write/VoicePill';
-import { Blob } from '@/ui/Blob';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { MoodBlob } from '@/ui/MoodBlob';
 import { pagePosition } from './pageNav';
+import { PaperStickers } from './PaperStickers';
 import { Polaroid } from './Polaroid';
 import { RuledText } from './RuledText';
 
@@ -68,7 +67,7 @@ export function PageScreen() {
         <View style={{ flex: 1 }}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 24 }}>
             <PageEnter key={entry.id} dir={dir as Turn | undefined}>
-              <Paper entry={entry} />
+              <Paper entry={entry} onStickers={(stickers) => void useEntries.getState().save({ ...entry, stickers })} />
             </PageEnter>
           </ScrollView>
         </View>
@@ -129,15 +128,15 @@ function PageEnter({ dir, children }: { dir?: Turn; children: React.ReactNode })
   return <Animated.View style={style}>{children}</Animated.View>;
 }
 
-function Paper({ entry }: { entry: Entry }) {
+function Paper({ entry, onStickers }: { entry: Entry; onStickers: (stickers: string[]) => void }) {
   const date = fmtParts(entry.date);
   const [mood, hint] = MOODS[moodIndex(entry.mood)];
   const vis = visMeta()[entry.vis];
-  const hasAttachments = entry.photos.length > 0 || entry.voices.length > 0 || entry.stickers.length > 0;
+  const hasAttachments = entry.photos.length > 0 || entry.voices.length > 0;
   return (
     <View
       style={[
-        { backgroundColor: ramp.neutral[100], borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider },
+        { backgroundColor: ramp.neutral[100], borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider, minHeight: entry.stickers.length ? 480 : undefined },
         shadows.md,
       ]}
     >
@@ -185,18 +184,6 @@ function Paper({ entry }: { entry: Entry }) {
               {entry.voices.map((v) => <VoicePill key={v.id} voice={v} />)}
             </View>
           ) : null}
-          {entry.stickers.length ? (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-              {entry.stickers.map((name, i) => {
-                const st = stickerStyle(name);
-                return (
-                  <Blob key={`${name}-${i}`} radii={blobFor(name)} size={66} color={st.bg} rotate={tiltFor(name)}>
-                    <Text style={[heading(13, 1), { color: st.ink }]}>{name}</Text>
-                  </Blob>
-                );
-              })}
-            </View>
-          ) : null}
         </View>
       ) : null}
 
@@ -208,6 +195,8 @@ function Paper({ entry }: { entry: Entry }) {
         <Icon name={vis.icon} size={14} color={vis.fg} />
         <Text style={[body(12, 'semi'), { color: vis.fg }]}>{vis.label}</Text>
       </View>
+
+      <PaperStickers stickers={entry.stickers} onChange={onStickers} />
     </View>
   );
 }

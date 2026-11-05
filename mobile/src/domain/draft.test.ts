@@ -3,7 +3,7 @@ import {
   newDraft, editDraft, draftReducer, hasContent, isDirty, defaultDateForNewPage, addedUris, orphanedUris,
 } from './draft';
 import { saveToast, COPY } from './copy';
-import { blobFor, stickers, tiltFor } from './stickers';
+import { encodeSticker, parseSticker, placeAll, STICKER_IDS, stickerLabel } from './stickers';
 import { PROMPTS, promptFor } from './prompts';
 
 const now = new Date(2026, 9, 8, 21, 41);
@@ -147,13 +147,28 @@ describe('saveToast', () => {
 });
 
 describe('stickers and prompts', () => {
-  it('has the eight stickers in order', () => {
-    expect(stickers().map((s) => s.name)).toEqual(['calm', 'cozy', 'proud', 'tired', 'grateful', 'rainy', 'brave', 'meh']);
+  it('has the 36 illustrated chibis first, then eight Lumi stickers and eight people', () => {
+    expect(STICKER_IDS).toHaveLength(52);
+    expect(STICKER_IDS.slice(0, 2)).toEqual(['s-01', 's-02']);
+    expect(STICKER_IDS[35]).toBe('s-36');
+    expect(STICKER_IDS.slice(36, 39)).toEqual(['l-calm', 'l-cozy', 'l-proud']);
+    expect(STICKER_IDS.slice(44, 46)).toEqual(['p-calm', 'p-cozy']);
+    expect(stickerLabel('s-12~100~200')).toBe('astronaut riding a rocket');
+    expect(parseSticker('s-11~10~20')).toEqual({ id: 's-11', x: 10, y: 20 });
   });
-  it('gives each sticker a stable blob and tilt', () => {
-    expect(blobFor('calm')).toEqual(blobFor('calm'));
-    expect([-6, 0, 6]).toContain(tiltFor('calm'));
-    expect(tiltFor('calm')).toBe(tiltFor('calm'));
+  it('reads a sticker with or without a place, and a bare name from before the pictures', () => {
+    expect(parseSticker('p-brave~420~810')).toEqual({ id: 'p-brave', x: 420, y: 810 });
+    expect(parseSticker('l-calm')).toEqual({ id: 'l-calm', x: null, y: null });
+    expect(parseSticker('cozy')).toEqual({ id: 'l-cozy', x: null, y: null });
+    expect(parseSticker('nonsense~x~y').id).toBe('l-calm');
+  });
+  it('keeps a sticker on the page and gives unplaced ones a spot along the bottom', () => {
+    expect(encodeSticker({ id: 'l-calm', x: -50, y: 5000 })).toBe('l-calm~0~1000');
+    expect(placeAll(['l-calm', 'p-meh~500~300'])).toEqual([{ id: 'l-calm', x: 170, y: 820 }, { id: 'p-meh', x: 500, y: 300 }]);
+  });
+  it('says a sticker in words for screen readers', () => {
+    expect(stickerLabel('l-calm')).toBe('calm Lumi');
+    expect(stickerLabel('p-proud~10~10')).toBe('proud person');
   });
   it('offsets the prompt order by mood bucket and wraps', () => {
     expect(PROMPTS).toHaveLength(6);

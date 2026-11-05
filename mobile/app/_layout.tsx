@@ -81,6 +81,7 @@ export default function RootLayout() {
           <Stack.Screen name="post/[id]" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="blocked" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="all-pages" options={{ animation: 'slide_from_right' }} />
         </Stack>
         <LockOverlay />
         <ToastHost />

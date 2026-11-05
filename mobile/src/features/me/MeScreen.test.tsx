@@ -129,6 +129,12 @@ it('export reports when sharing is unavailable or fails', async () => {
   expect(useToast.getState().message).toBe('Couldn’t export your pages. Try again.');
 });
 
+it('the Pages tile opens all your pages', () => {
+  wrap();
+  fireEvent.press(screen.getByRole('button', { name: /^Pages: / }));
+  expect(mockPush).toHaveBeenCalledWith('/all-pages');
+});
+
 it('replay pushes the welcome flow', () => {
   wrap();
   fireEvent.press(screen.getByText('Replay the welcome'));

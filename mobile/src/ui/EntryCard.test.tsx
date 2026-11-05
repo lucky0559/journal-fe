@@ -24,7 +24,7 @@ it('shows the clock time instead of the date in the day variant, and no tag for 
 it('says "No words, just moments." for a page with only a sticker', () => {
   render(<EntryCard entry={entry({ text: '', photos: [], stickers: ['calm'], vis: 'private' })} onPress={() => {}} />);
   expect(screen.getByText('No words, just moments.')).toBeTruthy();
-  expect(screen.getByText('calm')).toBeTruthy();
+  expect(screen.getByText('1 sticker')).toBeTruthy();
 });
 
 it('opens on press and clamps long text to three lines by default', () => {

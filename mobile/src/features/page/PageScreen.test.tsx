@@ -54,7 +54,8 @@ describe('reading a page', () => {
   it('shows the photos, stickers and who can read the page', () => {
     wrap();
     expect(screen.getByText('photo · dinner')).toBeTruthy(); // the sample photo has no file, so its label shows
-    expect(screen.getByText('cozy')).toBeTruthy();
+    fireEvent(screen.getByTestId('paper-stickers'), 'layout', { nativeEvent: { layout: { width: 300, height: 700 } } });
+    expect(screen.getByLabelText('cozy Lumi sticker')).toBeTruthy();
     expect(screen.getByLabelText(/^Friends\./)).toBeTruthy();
   });
 

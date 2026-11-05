@@ -103,9 +103,9 @@ function Card({ card, current, tx, onWrite }: { card: DeckCard; current: SharedV
         importantForAccessibility={top ? 'yes' : 'no-hide-descendants'}
         pointerEvents={top ? 'auto' : 'none'}
         onPress={onWrite}
-        style={({ pressed }) => ({ alignSelf: 'flex-start', height: 44, paddingHorizontal: 20, borderRadius: radii.pill, justifyContent: 'center', backgroundColor: pressed ? ramp.accent[600] : colors.accent })}
+        style={({ pressed }) => ({ alignSelf: 'flex-start', height: 44, paddingHorizontal: 20, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? ramp.accent[600] : colors.accent })}
       >
-        <Text style={[heading(15, 1), { color: colors.onAccent }]}>Write this</Text>
+        <Text numberOfLines={1} style={[heading(15, 1.25), { color: colors.onAccent, textAlign: 'center' }]}>Write this</Text>
       </Pressable>
     </Animated.View>
   );

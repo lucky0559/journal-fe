@@ -4,7 +4,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApiError } from '@/api/client';
 import type { ApiPost, ReactionKind } from '@/api/types';
-import { blobFor, stickerStyle, tiltFor } from '@/domain/stickers';
 import { visMeta } from '@/domain/visibility';
 import { fmtParts } from '@/lib/dates';
 import { social } from '@/social';
@@ -12,11 +11,11 @@ import { avatarColor, initialOf } from '@/social/postView';
 import { useToast } from '@/state/toastStore';
 import { colors, radii, ramp, shadows } from '@/theme/tokens';
 import { body, heading } from '@/theme/type';
+import { PaperStickers } from '@/features/page/PaperStickers';
 import { Polaroid } from '@/features/page/Polaroid';
 import { RuledText } from '@/features/page/RuledText';
 import { VoicePill } from '@/features/write/VoicePill';
 import { Avatar } from '@/ui/Avatar';
-import { Blob } from '@/ui/Blob';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { Loading } from '@/ui/Loading';
@@ -111,11 +110,11 @@ export function PostScreen() {
 function Paper({ post, onOpenProfile, onReact }: { post: ApiPost; onOpenProfile: () => void; onReact: (kind: ReactionKind) => void }) {
   const date = fmtParts(post.date);
   const vis = visMeta()[post.vis];
-  const hasAttachments = post.photos.length > 0 || post.voices.length > 0 || post.stickers.length > 0;
+  const hasAttachments = post.photos.length > 0 || post.voices.length > 0;
   return (
     <View
       style={[
-        { backgroundColor: ramp.neutral[100], borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider },
+        { backgroundColor: ramp.neutral[100], borderRadius: 10, paddingTop: 26, paddingBottom: 28, paddingLeft: 54, paddingRight: 22, gap: 22, overflow: 'hidden', borderWidth: 1, borderColor: colors.divider, minHeight: post.stickers.length ? 480 : undefined },
         shadows.md,
       ]}
     >
@@ -155,18 +154,6 @@ function Paper({ post, onOpenProfile, onReact }: { post: ApiPost; onOpenProfile:
               {post.voices.map((v) => <VoicePill key={v.key} voice={{ id: v.key, uri: v.url, seconds: v.seconds }} />)}
             </View>
           ) : null}
-          {post.stickers.length ? (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-              {post.stickers.map((name, i) => {
-                const st = stickerStyle(name);
-                return (
-                  <Blob key={`${name}-${i}`} radii={blobFor(name)} size={66} color={st.bg} rotate={tiltFor(name)}>
-                    <Text style={[heading(13, 1), { color: st.ink }]}>{name}</Text>
-                  </Blob>
-                );
-              })}
-            </View>
-          ) : null}
         </View>
       ) : null}
 
@@ -183,6 +170,8 @@ function Paper({ post, onOpenProfile, onReact }: { post: ApiPost; onOpenProfile:
         <Icon name={vis.icon} size={14} color={vis.fg} />
         <Text style={[body(12, 'semi'), { color: vis.fg }]}>{vis.label}</Text>
       </View>
+
+      <PaperStickers stickers={post.stickers} />
     </View>
   );
 }

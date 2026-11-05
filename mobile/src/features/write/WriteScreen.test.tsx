@@ -69,10 +69,10 @@ describe('new page', () => {
     wrap();
     fireEvent.press(screen.getByText('Sticker'));
     expect(screen.getByText('Add a sticker')).toBeTruthy();
-    fireEvent.press(screen.getByRole('button', { name: 'Add calm sticker' }));
-    expect(screen.getByRole('button', { name: 'Remove calm sticker' })).toBeTruthy();
+    fireEvent.press(screen.getByRole('button', { name: 'Add calm Lumi sticker' }));
+    expect(screen.getByRole('button', { name: 'Remove calm Lumi sticker' })).toBeTruthy();
     await act(async () => { fireEvent.press(screen.getByText('Save')); });
-    expect(saved()).toMatchObject({ id: 'new-1', stickers: ['calm'], text: '', vis: 'private', date: '2026-10-08', time: '9:41 pm' });
+    expect(saved()).toMatchObject({ id: 'new-1', stickers: ['l-calm'], text: '', vis: 'private', date: '2026-10-08', time: '9:41 pm' });
     expect(useToast.getState().message).toBe('Saved to today’s page');
     expect(mockReplace).toHaveBeenCalledWith({ pathname: '/page/[id]', params: { id: 'new-1' } }); // opens to be read
     expect(mockBack).not.toHaveBeenCalled();
@@ -81,9 +81,9 @@ describe('new page', () => {
   it('removes a sticker when tapped', () => {
     wrap();
     fireEvent.press(screen.getByText('Sticker'));
-    fireEvent.press(screen.getByRole('button', { name: 'Add cozy sticker' }));
-    fireEvent.press(screen.getByRole('button', { name: 'Remove cozy sticker' }));
-    expect(screen.queryByRole('button', { name: 'Remove cozy sticker' })).toBeNull();
+    fireEvent.press(screen.getByRole('button', { name: 'Add cozy Lumi sticker' }));
+    fireEvent.press(screen.getByRole('button', { name: 'Remove cozy Lumi sticker' }));
+    expect(screen.queryByRole('button', { name: 'Remove cozy Lumi sticker' })).toBeNull();
   });
 
   it('saves words with the chosen audience and says so', async () => {

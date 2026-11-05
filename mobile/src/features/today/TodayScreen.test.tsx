@@ -59,10 +59,10 @@ it('shows a bell with the number of new notifications and opens them', async () 
   expect(mockPush).toHaveBeenCalledWith('/notifications');
 });
 
-it('"See all" opens the Timeline in list mode', () => {
+it('"See all" opens the all-pages screen', () => {
   wrap();
   fireEvent.press(screen.getByText('See all'));
-  expect(mockNavigate).toHaveBeenCalledWith('/timeline');
+  expect(mockPush).toHaveBeenCalledWith('/all-pages');
 });
 
 it('opens a recent page to be read, not edited', () => {

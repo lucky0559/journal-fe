@@ -90,7 +90,7 @@ export function MeScreen() {
       </View>
 
       <Rise style={{ flexDirection: 'row', gap: 12 }}>
-        <StatTile label="Pages" value={entries.length} sub="all time" />
+        <StatTile label="Pages" value={entries.length} sub="all time" hint="Opens all your pages" onPress={() => router.push('/all-pages')} />
         <StatTile label="This month" value={pagesInMonth(entries, todayIso())} sub={`${new Set(entries.map((e) => e.date)).size} days written`} />
       </Rise>
 

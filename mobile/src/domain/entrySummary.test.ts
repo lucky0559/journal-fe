@@ -13,11 +13,11 @@ describe('summarizeEntry', () => {
       photos: [{ id: '1', uri: '' }, { id: '2', uri: '' }],
       voices: [{ id: 'v', uri: '', seconds: 38 }], stickers: ['cozy'],
     }));
-    expect(s.meta).toBe('2 photos · voice 0:38 · cozy');
+    expect(s.meta).toBe('2 photos · voice 0:38 · 1 sticker');
   });
   it('singularises one photo and joins several stickers', () => {
     expect(summarizeEntry(e({ photos: [{ id: '1', uri: '' }] })).meta).toBe('1 photo');
-    expect(summarizeEntry(e({ stickers: ['calm', 'proud'] })).meta).toBe('calm, proud');
+    expect(summarizeEntry(e({ stickers: ['calm', 'proud'] })).meta).toBe('2 stickers');
   });
   it('shows "No words, just moments." for a page without text', () => {
     expect(summarizeEntry(e({ text: '', stickers: ['calm'] })).text).toBe('No words, just moments.');
