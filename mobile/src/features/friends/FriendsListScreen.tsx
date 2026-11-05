@@ -40,7 +40,7 @@ export function FriendsListScreen() {
   const openProfile = (id: string) => router.push({ pathname: '/friends/[id]', params: { id } });
 
   return (
-    <Screen topPad={6} bottomPad={30} gap={18}>
+    <Screen topPad={6} bottomPad={30} gap={18} onRefresh={fetchFriends}>
       <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => router.back()} style={{ width: 44, height: 44, marginLeft: -10, alignItems: 'center', justifyContent: 'center' }}>
         <Icon name="arrow-left" size={22} />
       </Pressable>

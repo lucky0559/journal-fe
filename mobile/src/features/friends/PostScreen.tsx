@@ -22,6 +22,7 @@ import { Icon } from '@/ui/Icon';
 import { Loading } from '@/ui/Loading';
 import { openModerationMenu } from './moderation';
 import { Reaction } from './PostCard';
+import { usePullRefresh } from '@/ui/pullRefresh';
 import { UPDATE_FAILED } from './useIncomingRequests';
 
 type Load = { status: 'loading' } | { status: 'gone' } | { status: 'error' } | { status: 'ready'; post: ApiPost };
@@ -48,6 +49,9 @@ export function PostScreen() {
     }
   }, [id]);
   useEffect(() => { void load(); }, [load]);
+  const pull = usePullRefresh(async () => {
+    if (id) setState({ status: 'ready', post: await social.post(id) });
+  });
 
   const react = async (kind: ReactionKind) => {
     if (state.status !== 'ready') return;
@@ -82,7 +86,7 @@ export function PostScreen() {
       </View>
 
       {state.status === 'ready' ? (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: bottom + 24 }}>
+        <ScrollView refreshControl={pull} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: bottom + 24 }}>
           <Paper
             post={state.post}
             onOpenProfile={() => router.push({ pathname: '/friends/[id]', params: { id: state.post.author.id } })}

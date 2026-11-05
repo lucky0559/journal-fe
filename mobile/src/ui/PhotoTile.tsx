@@ -1,18 +1,23 @@
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import Svg, { Defs, Pattern, Rect } from 'react-native-svg';
 import { ramp } from '@/theme/tokens';
 import { Icon } from './Icon';
+import { PhotoViewer } from './PhotoViewer';
 
 interface Props { size?: number; height?: number; radius: number; label?: string; uri?: string; rotate?: number; onRemove?: () => void }
 
 export function PhotoTile({ size, height, radius, label = '', uri, rotate = 0, onRemove }: Props) {
   const w = size ?? '100%';
   const h = size ?? height;
+  const [open, setOpen] = useState(false);
   return (
     <View style={{ width: w, height: h, borderRadius: radius, overflow: 'hidden', transform: [{ rotate: `${rotate}deg` }], justifyContent: 'flex-end' }}>
       {uri ? (
-        <Image accessibilityLabel="Photo" source={{ uri }} contentFit="cover" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+        <Pressable accessibilityRole="imagebutton" accessibilityLabel="Open photo" onPress={() => setOpen(true)} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <Image accessibilityLabel="Photo" source={{ uri }} contentFit="cover" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+        </Pressable>
       ) : (
         <>
           <Svg width="100%" height="100%" style={{ position: 'absolute' }}>
@@ -38,6 +43,7 @@ export function PhotoTile({ size, height, radius, label = '', uri, rotate = 0, o
           <Icon name="x" size={13} />
         </Pressable>
       ) : null}
+      {uri && open ? <PhotoViewer uri={uri} onClose={() => setOpen(false)} /> : null}
     </View>
   );
 }

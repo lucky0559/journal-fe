@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
+import { refreshEntries } from '@/state/refreshEntries';
 import { useRouter } from 'expo-router';
 import { moodIndex } from '@/lib/mood';
 import { fmtLong, greeting, todayIso } from '@/lib/dates';
@@ -26,7 +27,7 @@ export function TodayScreen() {
   const openPage = (id: string) => router.push({ pathname: '/page/[id]', params: { id } });
 
   return (
-    <Screen>
+    <Screen onRefresh={refreshEntries}>
       <Rise style={{ gap: 24 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={[body(13, 'semi'), { color: ramp.neutral[700] }]}>{fmtLong(today)}</Text>

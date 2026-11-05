@@ -1,4 +1,5 @@
 import { Alert, Pressable, Share, Text, View } from 'react-native';
+import { refreshEntries } from '@/state/refreshEntries';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/auth';
 import { pinVault } from '@/data/pinVaultInstance';
@@ -77,7 +78,7 @@ export function MeScreen() {
   };
 
   return (
-    <Screen gap={18} bottomPad={30} topPad={18}>
+    <Screen gap={18} bottomPad={30} topPad={18} onRefresh={refreshEntries}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
         <View style={{ width: 68, height: 68, borderRadius: 34, backgroundColor: ramp.accent2[300], alignItems: 'center', justifyContent: 'center' }}>
           <Text style={[heading(28, 1), { color: ramp.accent2[900] }]}>{(settings.name || 'M').trim().charAt(0).toUpperCase()}</Text>

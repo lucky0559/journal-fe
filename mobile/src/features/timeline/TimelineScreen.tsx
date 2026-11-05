@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import { refreshEntries } from '@/state/refreshEntries';
 import { useRouter } from 'expo-router';
 import { fmtLong, todayIso } from '@/lib/dates';
 import { MOODS, moodColor, moodIndex } from '@/lib/mood';
@@ -27,7 +28,7 @@ export function TimelineScreen() {
   const stats = monthStats(entries, year, month);
 
   return (
-    <Screen gap={20}>
+    <Screen gap={20} onRefresh={refreshEntries}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={heading(32)}>Your pages</Text>
         <Segmented options={[{ key: 'cal', label: 'Calendar' }, { key: 'list', label: 'List' }]} value={mode} onChange={setMode} />

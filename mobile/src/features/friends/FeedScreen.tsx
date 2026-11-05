@@ -51,7 +51,7 @@ export function FeedScreen() {
   };
 
   return (
-    <Screen gap={18} bottomPad={30}>
+    <Screen gap={18} bottomPad={30} onRefresh={() => Promise.all([feed.refresh(), requests.reload()])}>
       <View style={{ gap: 14 }}>
         <Text style={heading(32)}>Others’ pages</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>

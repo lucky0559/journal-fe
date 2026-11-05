@@ -13,6 +13,7 @@ import { Button } from '@/ui/Button';
 import { EmptyNote } from '@/ui/EmptyNote';
 import { Icon } from '@/ui/Icon';
 import { Loading } from '@/ui/Loading';
+import { usePullRefresh } from '@/ui/pullRefresh';
 import { notificationText, timeAgo } from './notificationView';
 
 type Load = { status: 'loading' } | { status: 'error' } | { status: 'ready'; items: ApiNotification[] };
@@ -23,8 +24,8 @@ export function NotificationsScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const [state, setState] = useState<Load>({ status: 'loading' });
 
-  const load = useCallback(async () => {
-    setState({ status: 'loading' });
+  const load = useCallback(async (quiet = false) => {
+    if (!quiet) setState({ status: 'loading' });
     try {
       const { items } = await social.notifications();
       setState({ status: 'ready', items });
@@ -38,6 +39,7 @@ export function NotificationsScreen() {
     }
   }, []);
   useEffect(() => { void load(); }, [load]);
+  const pull = usePullRefresh(() => load(true));
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)'));
 
@@ -53,7 +55,7 @@ export function NotificationsScreen() {
           <Icon name="arrow-left" size={22} />
         </Pressable>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 22, paddingBottom: bottom + 24, gap: 12 }}>
+      <ScrollView refreshControl={pull} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 22, paddingBottom: bottom + 24, gap: 12 }}>
         <Text style={heading(32)}>Notifications</Text>
 
         {state.status === 'loading' ? <Loading label="Looking for news" /> : null}

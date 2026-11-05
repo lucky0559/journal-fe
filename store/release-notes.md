@@ -61,6 +61,17 @@ A fresh look.
 </en-US>
 ```
 
+## 1.0.5 (versionCode 6)
+
+```
+<en-US>
+Photos and refreshing.
+
+• Tap any photo to see it full screen, on a soft blur of its own colours
+• Pull down to refresh Today, Timeline, Me, your friends' pages, profiles and Notifications
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```

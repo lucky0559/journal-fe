@@ -37,6 +37,12 @@ export function ProfileScreen({ personId }: { personId: string }) {
   }, [personId]);
   useEffect(() => { void fetchProfile(); }, [fetchProfile]);
 
+  // Pull-down refresh keeps the page on screen and swaps the data in when it arrives.
+  const refreshAll = async () => {
+    const [profile] = await Promise.all([social.user(personId), posts.refresh()]);
+    setLoad({ status: 'ready', profile });
+  };
+
   const back = (
     <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => router.back()} style={{ width: 44, height: 44, marginLeft: -10, alignItems: 'center', justifyContent: 'center' }}>
       <Icon name="arrow-left" size={22} />
@@ -94,7 +100,7 @@ export function ProfileScreen({ personId }: { personId: string }) {
   };
 
   return (
-    <Screen topPad={6} bottomPad={30} gap={18}>
+    <Screen topPad={6} bottomPad={30} gap={18} onRefresh={refreshAll}>
       {back}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
         <View style={{ width: 76, height: 76, borderRadius: 38, backgroundColor: avatarColor(person.id), alignItems: 'center', justifyContent: 'center' }}>
