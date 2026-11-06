@@ -13,8 +13,8 @@ Scenes (`src/scenes/`): Hook, Mood, Write, Month, Private, Outro, joined with sl
 
 ## v2 (37.7 seconds)
 
-`JournalPromoV2` (vertical) and `JournalPromoV2Wide` (16:9) in `src/PromoV2.tsx` add what shipped after v1: Lumi opens
-the video (`HookLumi`), chibi stickers fly from the tray and one is dragged across the page (`Stickers`, using a few of
+`JournalPromoV2` (vertical) and `JournalPromoV2Wide` (16:9) in `src/PromoV2.tsx` add what shipped after v1: the Journ.al
+name opens the video with Lumi, the app's companion, hopping above it (`HookLumi`), chibi stickers fly from the tray and one is dragged across the page (`Stickers`, using a few of
 the app's own sticker images copied into `public/stickers/`), and a page is shared with friends, gets hugs back and rings
 the bell (`Friends`; the card shows no mood, because friends never see it). Mood, Write and Month are v1's scenes, and
 the outro adds Lumi on the icon (`<Outro lumi />`). It has its own music (`music-v2.wav`, outro on bar 12 = frame 960)

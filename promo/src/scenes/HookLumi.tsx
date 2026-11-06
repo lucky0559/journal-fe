@@ -5,7 +5,7 @@ import { C, display, easeInOut, easeOut, sans, useWide } from "../theme";
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 export const HOPS = [34, 64]; // frames where a hop takes off; each lasts 30 frames and lands with a squash
 
-/** Opening (v2): Lumi pops up under the moon, hops twice with a sparkle circling, then the promise. */
+/** Opening (v2): Lumi pops up under the moon and hops twice with a sparkle circling, then the Journ.al name and the promise. */
 export const HookLumi: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -118,15 +118,15 @@ export const HookLumi: React.FC = () => {
         at={16}
         style={{
           position: "absolute",
-          top: wide ? 470 : 940,
-          fontFamily: sans,
-          fontSize: wide ? 40 : 46,
-          fontWeight: 700,
-          letterSpacing: "0.18em",
-          color: C.accent,
+          top: wide ? 450 : 920,
+          fontFamily: display,
+          fontSize: wide ? 64 : 80,
+          letterSpacing: "-0.01em",
+          color: C.text,
         }}
       >
-        MEET LUMI
+        {/* the app's name leads; Lumi is its companion, not the brand */}
+        Journ<span style={{ color: C.accent }}>.</span>al
       </Rise>
       <Words
         text="Put the day down."

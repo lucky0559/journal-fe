@@ -3,7 +3,7 @@
 // Run: node --env-file=.env scripts/make-voiceover.mjs           (needs ELEVENLABS_API_KEY in promo/.env)
 //      node --env-file=.env scripts/make-voiceover.mjs --level   (only re-levels the existing mp3s, no API calls)
 //      node --env-file=.env scripts/make-voiceover.mjs --list    (prints the voices, if the key may read them)
-//      add --v2 to any of these for the v2 promo's lines (public/voiceover-v2/)
+//      add --v2 to any of these for the v2 promo's lines (public/voiceover-v2/); --only=<id> makes just one clip
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -27,7 +27,7 @@ const LINES_V1 = [
 ];
 // v2 adds Lumi, stickers and friends. "Journal" is how the name is said.
 const LINES_V2 = [
-  ["01-hook", "This is Lumi. At the end of the day, let's put it down."],
+  ["01-hook", "This is Journal. At the end of the day, let's put it down."],
   ["02-mood", "Pick a colour for how you feel. No numbers. No scores."],
   ["03-write", "Write a few words."],
   ["04-photo", "Add a photo, or just say it out loud."],
@@ -47,8 +47,11 @@ if (process.argv.includes("--list")) {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
+// --only=01-hook regenerates just that clip (the others are kept as they are, then everything is re-levelled).
+const ONLY = process.argv.find((a) => a.startsWith("--only="))?.slice(7);
 for (const [i, [id, text]] of LINES.entries()) {
   if (process.argv.includes("--level")) break;
+  if (ONLY && id !== ONLY) continue;
   const res = await fetch(`${API}/text-to-speech/${VOICE_ID}?output_format=mp3_44100_128`, {
     method: "POST",
     headers: { "xi-api-key": KEY, "Content-Type": "application/json", Accept: "audio/mpeg" },

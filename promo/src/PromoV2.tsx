@@ -63,7 +63,7 @@ const sfx = (name: string) => staticFile(`audio/${name}.wav`);
 // Voiceover (scripts/make-voiceover.mjs --v2): [file, first frame, length in frames]. Each line starts just after its
 // scene settles; "Add a photo" lands with the photo tap, "send a hug back" with the first hug.
 const VOICEOVER = [
-  ["01-hook", AT.hook + 14, 109],
+  ["01-hook", AT.hook + 14, 110],
   ["02-mood", AT.mood + 16, 107],
   ["03-write", AT.write + 20, 35],
   ["04-photo", AT.write + 82, 84],
