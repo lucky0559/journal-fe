@@ -3,6 +3,7 @@
 // Run: node --env-file=.env scripts/make-voiceover.mjs           (needs ELEVENLABS_API_KEY in promo/.env)
 //      node --env-file=.env scripts/make-voiceover.mjs --level   (only re-levels the existing mp3s, no API calls)
 //      node --env-file=.env scripts/make-voiceover.mjs --list    (prints the voices, if the key may read them)
+//      add --v2 to any of these for the v2 promo's lines (public/voiceover-v2/)
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -11,10 +12,11 @@ import path from "node:path";
 const KEY = process.env.ELEVENLABS_API_KEY;
 if (!KEY && !process.argv.includes("--level")) throw new Error("Set ELEVENLABS_API_KEY in promo/.env");
 const API = "https://api.elevenlabs.io/v1";
-const OUT = new URL("../public/voiceover/", import.meta.url);
+const V2 = process.argv.includes("--v2");
+const OUT = new URL(V2 ? "../public/voiceover-v2/" : "../public/voiceover/", import.meta.url);
 
 const VOICE_ID = process.env.VOICE_ID ?? "XrExE9yKIg1WjnnlVkGX"; // Matilda: warm, calm
-const LINES = [
+const LINES_V1 = [
   ["01-hook", "At the end of the day, put it down."],
   ["02-mood", "Pick a colour for how you feel. No numbers. No scores."],
   ["03-write", "Write a few words."],
@@ -23,6 +25,18 @@ const LINES = [
   ["06-private", "Every page is private, until you choose to share it."],
   ["07-outro", "Journal. Write a few honest lines tonight."],
 ];
+// v2 adds Lumi, stickers and friends. "Journal" is how the name is said.
+const LINES_V2 = [
+  ["01-hook", "This is Lumi. At the end of the day, let's put it down."],
+  ["02-mood", "Pick a colour for how you feel. No numbers. No scores."],
+  ["03-write", "Write a few words."],
+  ["04-photo", "Add a photo, or just say it out loud."],
+  ["05-stickers", "Then make it yours, with stickers you can move anywhere."],
+  ["06-month", "Watch your month take colour."],
+  ["07-friends", "Every page is private, until you share it. And friends can send a hug back."],
+  ["08-outro", "Journal. Write a few honest lines tonight."],
+];
+const LINES = V2 ? LINES_V2 : LINES_V1;
 
 if (process.argv.includes("--list")) {
   const res = await fetch(`${API}/voices`, { headers: { "xi-api-key": KEY } });

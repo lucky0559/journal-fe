@@ -303,3 +303,73 @@ export const Chevron: React.FC<IconProps & { dir: "left" | "right" }> = ({ dir, 
     <path d={dir === "left" ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"} />
   </Svg>
 );
+export const Bell: React.FC<IconProps> = (p) => (
+  <Svg {...p}>
+    <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" />
+    <path d="M10 21a2.2 2.2 0 0 0 4 0" />
+  </Svg>
+);
+
+/** A filled heart, for the hugs floating up from a reaction. */
+export const Heart: React.FC<{ size: number; color: string }> = ({ size, color }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24">
+    <path d="M12 21s-7.5-4.6-9.4-9.3C1.2 8.2 3.4 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 5.8 3.7 4.4 7.2C19.5 16.4 12 21 12 21z" fill={color} />
+  </svg>
+);
+
+/** A four-point sparkle (the app's Sparkle). */
+export const Sparkle: React.FC<{ size: number; color?: string; style?: React.CSSProperties }> = ({ size, color = "#f6c870", style }) => (
+  <svg width={size} height={size} viewBox="0 0 20 20" style={style}>
+    <path d="M10,0 Q10,10 20,10 Q10,10 10,20 Q10,10 0,10 Q10,10 10,0 Z" fill={color} />
+  </svg>
+);
+
+/** A crescent moon (the app's Moon), in dusk violet. */
+export const Moon: React.FC<{ size: number; color?: string; style?: React.CSSProperties }> = ({ size, color = C.violet, style }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" style={style}>
+    <path d="M62,6 A46,46 0 1 0 94,66 A36,36 0 0 1 62,6 Z" fill={color} />
+  </svg>
+);
+
+/**
+ * Lumi, the journal's companion: an amber blob with a face, drawn like the app (mobile/src/ui/Lumi.tsx). `blink` is
+ * 0-1 (1 = eyes shut); `squash` is a vertical scale around the feet for hops and landings.
+ */
+export const Lumi: React.FC<{ size: number; blink?: number; squash?: number; style?: React.CSSProperties }> = ({
+  size,
+  blink = 0,
+  squash = 1,
+  style,
+}) => (
+  <div
+    style={{
+      position: "relative",
+      width: size,
+      height: size * 0.92,
+      scale: `${1 + (1 - squash) * 0.8} ${squash}`,
+      transformOrigin: "50% 100%",
+      ...style,
+    }}
+  >
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "52% 48% 46% 54% / 58% 56% 44% 42%",
+        background: `radial-gradient(circle at 34% 28%, #ffd27e 0%, ${C.accent} 55%, #d98d22 100%)`,
+        boxShadow: `0 ${size * 0.12}px ${size * 0.3}px ${C.accent}40`,
+      }}
+    />
+    <svg width={size} height={size * 0.92} viewBox="0 0 100 92" style={{ position: "absolute", inset: 0 }}>
+      <ellipse cx="36" cy="42.3" rx="5.5" ry={Math.max(0.6, 5.5 * (1 - blink))} fill={C.bg} />
+      <ellipse cx="64" cy="42.3" rx="5.5" ry={Math.max(0.6, 5.5 * (1 - blink))} fill={C.bg} />
+      <circle cx="27" cy="55.2" r="6" fill="#f69186" opacity="0.35" />
+      <circle cx="73" cy="55.2" r="6" fill="#f69186" opacity="0.35" />
+      <path d="M42,55.2 Q50,64.4 58,55.2" stroke={C.bg} strokeWidth="3.5" strokeLinecap="round" fill="none" />
+    </svg>
+  </div>
+);
+
+/** Eyes shut for 6 frames around each of `at` (a soft blink). */
+export const blinkAt = (frame: number, at: number[]) =>
+  Math.max(0, ...at.map((a) => interpolate(frame, [a - 3, a, a + 3], [0, 1, 0], clamp)));

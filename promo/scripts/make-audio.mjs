@@ -118,16 +118,35 @@ const CH = {
   IV: [41, 45, 48, 52, 55], // Fmaj9
   V: [43, 47, 50, 52, 57], // G6/9
 };
-// [start in beats, length in beats, chord]. Bar 9 (frame 720) is where the outro lands on home.
-const TIMELINE = [
-  [0, 4, "I"], [4, 4, "vi"], [8, 4, "IV"], [12, 4, "V"],
-  [16, 4, "I"], [20, 4, "vi"], [24, 4, "IV"], [28, 4, "V"],
-  [32, 2, "IV"], [34, 2, "V"], [36, 8, "I"],
-];
-const LENGTH = 30; // seconds; the video is 29 s
-const DRUMS = [8, 36]; // beats: bar 2 (frame 160) to bar 9 (frame 720)
+// Each song: TIMELINE is [start in beats, length in beats, chord]; OUTRO is the beat where the outro lands on home
+// (drums stop, keys thin out); LENGTH and FADE (fade-out start) are in seconds.
+const V1 = {
+  file: "music.wav",
+  // Bar 9 (frame 720) is where the outro lands on home.
+  TIMELINE: [
+    [0, 4, "I"], [4, 4, "vi"], [8, 4, "IV"], [12, 4, "V"],
+    [16, 4, "I"], [20, 4, "vi"], [24, 4, "IV"], [28, 4, "V"],
+    [32, 2, "IV"], [34, 2, "V"], [36, 8, "I"],
+  ],
+  OUTRO: 36,
+  LENGTH: 30, // the video is 29 s
+  FADE: 26.6,
+};
+const V2 = {
+  file: "music-v2.wav",
+  // Bar 12 (frame 960) is where the v2 outro lands on home; the video is 1130 frames (37.7 s).
+  TIMELINE: [
+    [0, 4, "I"], [4, 4, "vi"], [8, 4, "IV"], [12, 4, "V"],
+    [16, 4, "I"], [20, 4, "vi"], [24, 4, "IV"], [28, 4, "V"],
+    [32, 4, "I"], [36, 4, "vi"], [40, 2, "IV"], [42, 2, "V"], [44, 2, "IV"], [46, 2, "V"], [48, 8, "I"],
+  ],
+  OUTRO: 48,
+  LENGTH: 39,
+  FADE: 35.2,
+};
 
-function music() {
+function music({ file, TIMELINE, OUTRO, LENGTH, FADE }) {
+  const DRUMS = [8, OUTRO]; // beats: bar 2 (frame 160) to the outro
   const pad = stereo(LENGTH), keys = stereo(LENGTH), bass = stereo(LENGTH), drums = stereo(LENGTH), fx = stereo(LENGTH);
 
   // Pad: two detuned soft saws per note, slow swell, chords overlap so changes glide.
@@ -160,10 +179,10 @@ function music() {
     for (let e = 0; e < len * 2; e++) {
       const beat = b0 + e / 2;
       if (beat < 4) continue; // the hook is pad only
-      const outro = beat >= 36;
+      const outro = beat >= OUTRO;
       const sparse = beat < 8 || outro;
       if (sparse && e % 2) continue;
-      if (outro && beat >= 40) continue;
+      if (outro && beat >= OUTRO + 4) continue;
       const vel = (e % 2 ? 0.13 : 0.2) * (outro ? 0.8 : 1);
       pluck(keys, beat * BEAT + (e % 2 ? 0.035 : 0), notes[ARP[e % 8]], vel, e % 2 ? 0.35 : -0.35);
     }
@@ -175,8 +194,8 @@ function music() {
     for (let bar = 0; bar < len; bar += 4) {
       for (const [at, dur] of [[0, 1.5], [1.5, 0.5], [2, 2]]) {
         const beat = b0 + bar + at;
-        if (beat < 8 || beat >= 44 || at >= len) continue;
-        const f = mtof(root), s0 = Math.round(beat * BEAT * SR), n = Math.round((dur * BEAT + (beat >= 36 ? 2 : 0)) * SR);
+        if (beat < 8 || beat >= OUTRO + 8 || at >= len) continue;
+        const f = mtof(root), s0 = Math.round(beat * BEAT * SR), n = Math.round((dur * BEAT + (beat >= OUTRO ? 2 : 0)) * SR);
         for (let i = 0; i < n; i++) {
           const t = i / SR;
           const env = Math.min(1, t / 0.012) * Math.min(1, (n - i) / (0.08 * SR));
@@ -216,7 +235,7 @@ function music() {
 
   // A noise swell into the groove (bar 2) and a softer one into the outro (bar 9).
   const lp = svf();
-  for (const [endBeat, len, gain] of [[8, 1.4, 0.16], [36, 1.6, 0.12]]) {
+  for (const [endBeat, len, gain] of [[8, 1.4, 0.16], [OUTRO, 1.6, 0.12]]) {
     const s0 = Math.round((endBeat * BEAT - len) * SR);
     for (let i = 0; i < len * SR; i++) {
       const p = i / (len * SR);
@@ -231,7 +250,7 @@ function music() {
   for (const [n, s] of Object.entries({ pad, keys, bass, drums })) console.log("  rms", n.padEnd(6), (20 * Math.log10(rms(s))).toFixed(1), "dB");
 
   const mix = stereo(LENGTH);
-  const fadeIn = 0.5 * SR, fadeOutStart = 26.6 * SR, fadeOutLen = 2.4 * SR;
+  const fadeIn = 0.5 * SR, fadeOutStart = FADE * SR, fadeOutLen = 2.4 * SR;
   for (let ch = 0; ch < 2; ch++) {
     for (let i = 0; i < mix[ch].length; i++) {
       const v = pad[ch][i] + keys[ch][i] + bass[ch][i] + drums[ch][i] + fx[ch][i] + room[ch][i];
@@ -239,7 +258,7 @@ function music() {
       mix[ch][i] = Math.tanh(v * 1.4) * fade;
     }
   }
-  writeWav("music.wav", mix);
+  writeWav(file, mix);
 }
 
 // ---- sound effects ------------------------------------------------------------------------------------------------
@@ -325,5 +344,6 @@ function sfx() {
   }
 }
 
-music();
+music(V1);
 sfx();
+music(V2); // last, so the shared random seed gives v1 and the effects exactly what they had before
