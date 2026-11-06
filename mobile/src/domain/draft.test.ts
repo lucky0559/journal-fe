@@ -154,17 +154,21 @@ describe('stickers and prompts', () => {
     expect(STICKER_IDS.slice(36, 39)).toEqual(['l-calm', 'l-cozy', 'l-proud']);
     expect(STICKER_IDS.slice(44, 46)).toEqual(['p-calm', 'p-cozy']);
     expect(stickerLabel('s-12~100~200')).toBe('astronaut riding a rocket');
-    expect(parseSticker('s-11~10~20')).toEqual({ id: 's-11', x: 10, y: 20 });
+    expect(parseSticker('s-11~10~20')).toEqual({ id: 's-11', x: 10, y: 20, s: 100 });
   });
   it('reads a sticker with or without a place, and a bare name from before the pictures', () => {
-    expect(parseSticker('p-brave~420~810')).toEqual({ id: 'p-brave', x: 420, y: 810 });
-    expect(parseSticker('l-calm')).toEqual({ id: 'l-calm', x: null, y: null });
-    expect(parseSticker('cozy')).toEqual({ id: 'l-cozy', x: null, y: null });
+    expect(parseSticker('p-brave~420~810')).toEqual({ id: 'p-brave', x: 420, y: 810, s: 100 })
+    expect(parseSticker('p-brave~420~810~180').s).toBe(180)
+    expect(parseSticker('p-brave~420~810~9999').s).toBe(300)
+    expect(parseSticker('p-brave~420~810~5').s).toBe(50);
+    expect(parseSticker('l-calm')).toEqual({ id: 'l-calm', x: null, y: null, s: 100 });
+    expect(parseSticker('cozy')).toEqual({ id: 'l-cozy', x: null, y: null, s: 100 });
     expect(parseSticker('nonsense~x~y').id).toBe('l-calm');
   });
   it('keeps a sticker on the page and gives unplaced ones a spot along the bottom', () => {
-    expect(encodeSticker({ id: 'l-calm', x: -50, y: 5000 })).toBe('l-calm~0~1000');
-    expect(placeAll(['l-calm', 'p-meh~500~300'])).toEqual([{ id: 'l-calm', x: 170, y: 820 }, { id: 'p-meh', x: 500, y: 300 }]);
+    expect(encodeSticker({ id: 'l-calm', x: -50, y: 5000, s: 100 })).toBe('l-calm~0~1000~100')
+    expect(encodeSticker({ id: 'l-calm', x: 5, y: 5, s: 900 })).toBe('l-calm~5~5~300');
+    expect(placeAll(['l-calm', 'p-meh~500~300'])).toEqual([{ id: 'l-calm', x: 170, y: 820, s: 100 }, { id: 'p-meh', x: 500, y: 300, s: 100 }]);
   });
   it('says a sticker in words for screen readers', () => {
     expect(stickerLabel('l-calm')).toBe('calm Lumi');

@@ -85,6 +85,17 @@ Stickers and all your pages in one place.
 </en-US>
 ```
 
+## 1.0.7 (versionCode 8)
+
+```
+<en-US>
+Make your stickers the size you like.
+
+• Pinch a sticker on your page to make it bigger or smaller
+• Hold and drag it to move it
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```

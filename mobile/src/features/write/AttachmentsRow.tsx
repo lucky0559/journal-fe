@@ -24,7 +24,7 @@ export function AttachmentsRow({ draft, dispatch }: { draft: Entry; dispatch: (a
           />
         ))}
       </View>
-      {draft.stickers.length ? <Text style={[body(12), { color: ramp.neutral[700] }]}>Tap a sticker to remove it. Once the page is saved, hold a sticker and drag it where you like.</Text> : null}
+      {draft.stickers.length ? <Text style={[body(12), { color: ramp.neutral[700] }]}>Tap a sticker to remove it. Once the page is saved, hold a sticker to drag it, and pinch it to make it bigger or smaller.</Text> : null}
     </View>
   );
 }

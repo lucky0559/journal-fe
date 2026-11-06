@@ -52,34 +52,42 @@ export const STICKER_IDS: readonly string[] = [
 ];
 export const fallbackSticker = 'l-calm';
 
-/** Where a sticker sits on a page: the middle of the sticker, as thousandths of the page's width and height. */
-export interface Placed { id: string; x: number; y: number }
+/**
+ * Where a sticker sits on a page and how big it is: the middle of the sticker as thousandths of the page's width and
+ * height, and its size as a percentage of the usual one (100).
+ */
+export interface Placed { id: string; x: number; y: number; s: number }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 export const MIN_X = 0;
 export const MAX_X = 1000;
 export const MIN_Y = 0;
 export const MAX_Y = 1000;
+export const MIN_SIZE = 50;
+export const MAX_SIZE = 300;
+export const DEFAULT_SIZE = 100;
 
 /**
- * A page keeps each sticker as one short string, `l-calm~420~810`, so it travels through the server unchanged and older
+ * A page keeps each sticker as one short string, `l-calm~420~810~100` (name, place, size), so it travels through the server unchanged and older
  * copies of the app still read it. A bare name from before there were pictures (`calm`) is Lumi, with no position yet.
  */
-export function parseSticker(raw: string): { id: string; x: number | null; y: number | null } {
-  const [name, x, y] = raw.split('~');
+export function parseSticker(raw: string): { id: string; x: number | null; y: number | null; s: number } {
+  const [name, x, y, size] = raw.split('~');
   const id = STICKER_IDS.includes(name) ? name : MOOD_KEYS.includes(name as MoodKey) ? `l-${name}` : fallbackSticker;
   const nx = Number(x);
   const ny = Number(y);
-  return x !== undefined && y !== undefined && Number.isFinite(nx) && Number.isFinite(ny) ? { id, x: nx, y: ny } : { id, x: null, y: null };
+  const ns = size === undefined ? DEFAULT_SIZE : clamp(Number(size) || DEFAULT_SIZE, MIN_SIZE, MAX_SIZE);
+  return x !== undefined && y !== undefined && Number.isFinite(nx) && Number.isFinite(ny) ? { id, x: nx, y: ny, s: ns } : { id, x: null, y: null, s: ns };
 }
 
-export const encodeSticker = (p: Placed): string => `${p.id}~${Math.round(clamp(p.x, MIN_X, MAX_X))}~${Math.round(clamp(p.y, MIN_Y, MAX_Y))}`;
+export const encodeSticker = (p: Placed): string =>
+  `${p.id}~${Math.round(clamp(p.x, MIN_X, MAX_X))}~${Math.round(clamp(p.y, MIN_Y, MAX_Y))}~${Math.round(clamp(p.s, MIN_SIZE, MAX_SIZE))}`;
 
 /** Every sticker with a place: the ones nobody has moved yet sit in a row along the bottom of the page. */
 export function placeAll(raw: string[]): Placed[] {
   return raw.map((r, i) => {
     const p = parseSticker(r);
-    return { id: p.id, x: p.x ?? 170 + (i % 4) * 220, y: p.y ?? 820 - Math.floor(i / 4) * 170 };
+    return { id: p.id, x: p.x ?? 170 + (i % 4) * 220, y: p.y ?? 820 - Math.floor(i / 4) * 170, s: p.s };
   });
 }
 
