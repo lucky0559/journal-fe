@@ -96,6 +96,16 @@ Make your stickers the size you like.
 </en-US>
 ```
 
+## 1.0.8 (versionCode 9)
+
+```
+<en-US>
+A smoother sticker.
+
+• Resizing a sticker no longer flickers when you let go
+</en-US>
+```
+
 ## Internal / closed testing note (for testers)
 
 ```

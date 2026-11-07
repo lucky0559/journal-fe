@@ -7,6 +7,8 @@ import { StickerArt } from '@/ui/StickerArt';
 
 /** A sticker at its usual size (100%) is this many points wide. */
 const BASE = 92;
+/** Every sticker is drawn this wide and scaled down to its size, so resizing never redraws it. */
+const FULL = BASE * (MAX_SIZE / 100);
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 interface Props {
@@ -36,28 +38,25 @@ export function PaperStickers({ stickers, onChange }: Props) {
 }
 
 function Movable({ p, tilt, box, movable, onChange }: { p: Placed; tilt: number; box: { w: number; h: number }; movable: boolean; onChange: (patch: Partial<Placed>) => void }) {
-  // The sticker is placed by its middle (cx, cy, in points) and sized by `scale`. Both only ever change through these
-  // values, so letting go leaves it exactly where it was dropped: nothing snaps back while the saved place makes its
-  // way into the props.
-  const [scale, setScale] = useState(p.s / 100);
-  const size = BASE * scale;
-  const half = size / 2;
-  const cx = useSharedValue(clamp((p.x / 1000) * box.w, half, Math.max(half, box.w - half)));
-  const cy = useSharedValue(clamp((p.y / 1000) * box.h, half, Math.max(half, box.h - half)));
+  // The sticker is drawn once, at its biggest size, and placed by its middle (cx, cy, in points) and shrunk to its size
+  // with a transform (`size`, 0.5 to 3). Moving and resizing only ever change these values, never the layout, so
+  // letting go leaves it exactly as it was dropped: nothing snaps or redraws while the saved place reaches the props.
+  const size = useSharedValue(p.s / 100);
+  const cx = useSharedValue(clamp((p.x / 1000) * box.w, (BASE * size.value) / 2, Math.max((BASE * size.value) / 2, box.w - (BASE * size.value) / 2)));
+  const cy = useSharedValue(clamp((p.y / 1000) * box.h, (BASE * size.value) / 2, Math.max((BASE * size.value) / 2, box.h - (BASE * size.value) / 2)));
   const lift = useSharedValue(0);
-  const pinch = useSharedValue(1);
-  const start = useRef({ x: 0, y: 0 });
+  const start = useRef({ x: 0, y: 0, s: 1 });
   const busy = useRef(false);
 
   useEffect(() => {
     if (busy.current) return;
-    setScale(p.s / 100);
+    size.value = p.s / 100;
     const h = (BASE * (p.s / 100)) / 2;
     cx.value = clamp((p.x / 1000) * box.w, h, Math.max(h, box.w - h));
     cy.value = clamp((p.y / 1000) * box.h, h, Math.max(h, box.h - h));
-  }, [p.x, p.y, p.s, box.w, box.h, cx, cy]);
-  // the live pinch ends when the new size has been drawn
-  useEffect(() => { pinch.value = 1; }, [scale, pinch]);
+  }, [p.x, p.y, p.s, box.w, box.h, size, cx, cy]);
+
+  const half = () => (BASE * size.value) / 2;
 
   const pan = Gesture.Pan()
     .enabled(movable)
@@ -65,13 +64,13 @@ function Movable({ p, tilt, box, movable, onChange }: { p: Placed; tilt: number;
     .activateAfterLongPress(220)
     .onStart(() => {
       busy.current = true;
-      start.current = { x: cx.value, y: cy.value };
+      start.current = { ...start.current, x: cx.value, y: cy.value };
       lift.value = withTiming(1, { duration: 120 });
     })
     .onUpdate((e) => {
       // the whole sticker stays on the page
-      cx.value = clamp(start.current.x + e.translationX, half, Math.max(half, box.w - half));
-      cy.value = clamp(start.current.y + e.translationY, half, Math.max(half, box.h - half));
+      cx.value = clamp(start.current.x + e.translationX, half(), Math.max(half(), box.w - half()));
+      cy.value = clamp(start.current.y + e.translationY, half(), Math.max(half(), box.h - half()));
     })
     .onEnd(() => onChange({ x: (cx.value / box.w) * 1000, y: (cy.value / box.h) * 1000 }))
     .onFinalize(() => {
@@ -82,25 +81,22 @@ function Movable({ p, tilt, box, movable, onChange }: { p: Placed; tilt: number;
   const grow = Gesture.Pinch()
     .enabled(movable)
     .runOnJS(true)
-    .onStart(() => { busy.current = true; })
-    .onUpdate((e) => { pinch.value = clamp(e.scale, MIN_SIZE / 100 / scale, MAX_SIZE / 100 / scale); })
-    .onEnd(() => {
-      const next = clamp(scale * pinch.value, MIN_SIZE / 100, MAX_SIZE / 100);
-      const h = (BASE * next) / 2;
-      // a bigger sticker may reach past an edge: nudge it back so the whole sticker stays on the page
-      cx.value = clamp(cx.value, h, Math.max(h, box.w - h));
-      cy.value = clamp(cy.value, h, Math.max(h, box.h - h));
-      setScale(next);
-      onChange({ x: (cx.value / box.w) * 1000, y: (cy.value / box.h) * 1000, s: next * 100 });
+    .onStart(() => { busy.current = true; start.current = { ...start.current, s: size.value }; })
+    .onUpdate((e) => {
+      size.value = clamp(start.current.s * e.scale, MIN_SIZE / 100, MAX_SIZE / 100);
+      // a bigger sticker may reach past an edge: keep the whole sticker on the page
+      cx.value = clamp(cx.value, half(), Math.max(half(), box.w - half()));
+      cy.value = clamp(cy.value, half(), Math.max(half(), box.h - half()));
     })
+    .onEnd(() => onChange({ x: (cx.value / box.w) * 1000, y: (cy.value / box.h) * 1000, s: size.value * 100 }))
     .onFinalize(() => { busy.current = false; });
 
   const style = useAnimatedStyle(() => ({
     transform: [
-      { translateX: cx.value - half },
-      { translateY: cy.value - half },
+      { translateX: cx.value - FULL / 2 },
+      { translateY: cy.value - FULL / 2 },
       { rotate: `${tilt}deg` },
-      { scale: pinch.value * (1 + 0.14 * lift.value) },
+      { scale: (size.value * BASE / FULL) * (1 + 0.14 * lift.value) },
     ],
     opacity: 1 - 0.08 * lift.value,
   }));
@@ -111,9 +107,9 @@ function Movable({ p, tilt, box, movable, onChange }: { p: Placed; tilt: number;
       accessible={movable}
       accessibilityLabel={`${stickerLabel(p.id)} sticker`}
       accessibilityHint={movable ? 'Hold, then drag to move it. Pinch to resize it.' : undefined}
-      style={[{ position: 'absolute', left: 0, top: 0, width: size, height: size }, style]}
+      style={[{ position: 'absolute', left: 0, top: 0, width: FULL, height: FULL }, style]}
     >
-      <StickerArt id={p.id} size={size} />
+      <StickerArt id={p.id} size={FULL} />
     </Animated.View>
   );
   return movable ? <GestureDetector gesture={Gesture.Simultaneous(pan, grow)}>{art}</GestureDetector> : art;
